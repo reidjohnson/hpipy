@@ -1,0 +1,244 @@
+"""Random forest HPI extensions."""
+
+import logging
+from typing import Any, Optional, Tuple, Union
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
+
+import numpy as np
+import pandas as pd
+from quantile_forest import RandomForestQuantileRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.inspection import partial_dependence
+
+from hpipy.price_index import HedonicIndex
+from hpipy.price_model import BaseHousePriceModel
+
+
+class RandomForestIndex(HedonicIndex):
+    """Random forest house price index."""
+
+    @staticmethod
+    def get_model() -> type[BaseHousePriceModel]:
+        """Get a random forest house price model."""
+        return RandomForestModel
+
+
+class RandomForestModel(BaseHousePriceModel):
+    """Random forest house price model."""
+
+    def _create_model(
+        self,
+        X: Union[pd.DataFrame, pd.Series],
+        y: pd.Series,
+        **kwargs: Any,
+    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
+        """Create a random forest house price model."""
+        return self._model_with_coefficients(X, y, **kwargs)
+
+    def _model_with_coefficients(
+        self,
+        X: Union[pd.DataFrame, pd.Series],
+        y: pd.Series,
+        estimator: str,
+        n_estimators: int,
+        random_seed: int,
+        **kwargs: Any,
+    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
+        """Fit model and populate coefficients to produce index."""
+        # Fit the model.
+        model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_seed).fit(
+            X, y
+        )
+        # model = RangerForestRegressor(
+        #    n_estimators=n_estimators,
+        #    categorical_features=["trans_period"],
+        #    seed=random_seed,
+        # ).fit(X, y)
+        if estimator == "pdp":
+            return self._model_pdp(model, X, y, random_seed=random_seed, **kwargs)
+        raise ValueError
+
+    def _model_pdp(
+        self,
+        model: Union[RandomForestRegressor, RandomForestQuantileRegressor],
+        X: Union[pd.DataFrame, pd.Series],
+        y: pd.Series,
+        log_dep: bool = False,
+        random_seed: int = 0,
+        **kwargs: Any,
+    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
+        """Generate explanation from partial dependence plot (PDP) values."""
+        # Get simulation dataframe.
+        sim_X, _ = self._create_sim_df(X, y, random_seed=random_seed, **kwargs)
+
+        # col_indices = [idx for idx, x in enumerate(X.columns) if x.startswith("trans_period_")]
+        # partial_dependencies = []
+        # for col_idx in range(len(X.columns)):
+        #     predictions = partial_dependence(
+        #         model, sim_X, col_idx, categorical_features=col_indices
+        #     )
+        #     partial_dependencies.append(predictions["average"].squeeze()[-1])
+
+        col_idx = list(X.columns).index("trans_period")
+        predictions = partial_dependence(model, sim_X, col_idx, categorical_features=[col_idx])
+        values = predictions["grid_values"][0]
+        partial_dependencies = predictions["average"].squeeze()
+
+        pdp_df = (
+            pd.DataFrame({"yhat": np.nan}, index=np.arange(X["trans_period"].max()) + 1)
+            .combine_first(pd.DataFrame({"yhat": partial_dependencies}, index=values))
+            .interpolate(fill_value="ffill")
+            .bfill()
+        )
+
+        # Add coefficients.
+        if log_dep:
+            coefs = pdp_df["yhat"] - pdp_df["yhat"].iloc[0]
+        else:
+            coefs = pdp_df["yhat"] / pdp_df["yhat"].iloc[0]
+
+        model.coef_ = coefs
+
+        return model
+
+    def _create_sim_df(
+        self,
+        X: Union[pd.DataFrame, pd.Series],
+        y: pd.Series,
+        random_seed: int,
+        sim_ids: Optional[int] = None,
+        sim_count: Optional[int] = None,
+        sim_per: Optional[float] = None,
+        **kwargs: Any,
+    ) -> Tuple[Union[pd.DataFrame, pd.Series], pd.Series]:
+        """Create simulation data."""
+        # If no filters.
+        if sim_ids is None and sim_count is None and sim_per is None:
+            return X, y
+
+        # If by sim id.
+        if sim_ids is not None:
+            return X.iloc[sim_ids], y[sim_ids]
+
+        # If a sim percentage is provided.
+        if sim_count is None:
+            if sim_per is not None:
+                sim_count = int(np.floor(sim_per * len(X)))
+            else:
+                sim_count = len(X)
+
+        # Take sample.
+        np.random.seed(random_seed)
+        indices = np.random.randint(len(X), size=sim_count)
+        X = X.iloc[indices[:sim_count]]
+        y = y[indices[:sim_count].tolist()]
+
+        return X, y
+
+    def fit(
+        self,
+        dep_var: Optional[str] = None,
+        ind_var: Optional[list[str]] = None,
+        estimator: str = "pdp",
+        log_dep: bool = True,
+        n_estimators: int = 100,
+        random_seed: int = 0,
+        **kwargs: Any,
+    ) -> Self:
+        """Fit the random forest model and generate index coefficients.
+
+        Args:
+            dep_var (Optional[str], optional): Dependent variable.
+                Defaults to None.
+            ind_var (Optional[list[str]], optional): Independent variable(s).
+                Defaults to None.
+            estimator (str, optional): Estimator type.
+                Defaults to "pdp".
+            log_dep (bool, optional): Log transform the dependent variable.
+                Defaults to True.
+            n_estimators (int, optional): Number of estimators.
+                Defaults to 100.
+            random_seed (int, optional): Random seed to use.
+                Defaults to 0.
+        """
+        hpi_df = self.hpi_df.copy()
+
+        if dep_var is None or ind_var is None:
+            raise ValueError("'dep_var' and 'ind_var' must be supplied.")
+
+        # oh_enc = OneHotEncoder(drop="first")
+        # oh_enc.fit(hpi_df[["trans_period"]])
+        # X_cats = pd.DataFrame(
+        #     oh_enc.transform(hpi_df[["trans_period"]]).toarray(),
+        #     columns=oh_enc.get_feature_names_out(["trans_period"]),
+        # )
+        # X = pd.concat([hpi_df[ind_var].reset_index(drop=True), X_cats], axis=1)
+
+        for var in ind_var:
+            if hpi_df[var].dtype == "object":
+                hpi_df[var] = hpi_df[var].astype("category")
+                hpi_df[var] = hpi_df[var].cat.codes
+
+        X = hpi_df[ind_var + ["trans_period"]].reset_index(drop=True)
+        y = np.log1p(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
+
+        # Extract base period mean price.
+        base_price = hpi_df["price"][hpi_df["trans_period"] == hpi_df["trans_period"].min()].mean()
+
+        # Check for legal estimator type.
+        if estimator not in ["pdp"]:
+            logging.warning(
+                "Provided estimator type is not supported. Allowed estimators are: "
+                "'pdp'. Defaulting to 'pdp'."
+            )
+            estimator = "pdp"
+
+        # Check log dep vs data.
+        if log_dep and np.any(hpi_df["price"] <= 0) or (hpi_df["price"].isnull().sum() > 0):
+            raise ValueError("Your 'price' field includes invalid values.")
+
+        model = self._create_model(
+            X=X,
+            y=y,
+            estimator=estimator,
+            n_estimators=n_estimators,
+            log_dep=log_dep,
+            random_seed=random_seed,
+            **kwargs,
+        )
+
+        # Check for successful model estimation.
+        if not isinstance(model, (RandomForestRegressor, RandomForestQuantileRegressor)):
+            raise ValueError("Model estimator was unsuccessful.")
+
+        # Period names.
+        # p_names = [len(ind_var) + idx for idx in range(len(oh_enc.categories_[0]) - 1)]
+        # periods = list(range(1, len(oh_enc.categories_[0]) + 1))
+        periods = list(np.arange(hpi_df["trans_period"].max()) + 1)
+
+        # Coefficients.
+        # coefs = np.hstack([[0], model.coef_[p_names]])
+        coefs = model.coef_
+
+        model_df = pd.DataFrame({"time": periods, "coefficient": coefs})
+
+        self.coefficients = model_df
+        self.model_obj = model
+        self.periods = self.period_table
+        self.base_price = base_price
+        self.params = {
+            "estimator": estimator,
+            "log_dep": log_dep,
+            "ind_var": ind_var,
+            "dep_var": dep_var,
+            "n_estimators": n_estimators,
+            "random_seed": random_seed,
+        }
+        self.X = X
+        self.y = y
+
+        return self
