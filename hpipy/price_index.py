@@ -45,6 +45,14 @@ class BaseHousePriceIndex(ABC):
     def coef_to_index(
         coef_df: pd.DataFrame, log_dep: bool, base_price: int = 1
     ) -> Tuple[np.ndarray, np.ndarray]:
+        """Convert coefficients to an index.
+
+        Args:
+            coef_df (pd.DataFrame): Coefficients.
+            log_dep (bool): Log dependent variable.
+            base_price (int, optional): Base price.
+                Defaults to 1.
+        """
         coef_df.loc[coef_df["coefficient"].abs() < 1e-15, "coefficient"] = 0
         coef_df.loc[coef_df["coefficient"].eq(0) & (coef_df.index > 0), "coefficient"] = np.nan
 
@@ -453,7 +461,80 @@ class BaseHousePriceIndex(ABC):
 
 
 class RepeatTransactionIndex(BaseHousePriceIndex):
-    """Repeat transaction house price index."""
+    """Repeat transaction house price index.
+
+    This class implements the repeat transaction methodology for constructing house price indices.
+    It uses pairs of transactions for the same property to estimate price changes over time,
+    controlling for property-specific characteristics that remain constant between sales.
+
+    Parameters
+    ----------
+    data : TransactionData
+        The transaction data used to construct the index.
+    model : BaseHousePriceModel
+        The underlying price model used to estimate the index.
+    name : pd.Series
+        The names of the time periods in the index.
+    periods : pd.Series
+        The time periods covered by the index.
+    value : pd.Series
+        The index values.
+    index : Any
+        The index values in a different format.
+    imputed : np.ndarray
+        Boolean array indicating which periods were imputed.
+    smooth : Any
+        Smoothed version of the index values.
+    volatility : pd.DataFrame
+        Volatility measures for the index.
+    volatility_smooth : pd.DataFrame
+        Smoothed volatility measures.
+    revision : pd.DataFrame
+        Revision measures for the index.
+    revision_smooth : pd.DataFrame
+        Smoothed revision measures.
+
+    Methods
+    -------
+    get_data()
+        Returns the appropriate transaction data class.
+    get_model()
+        Returns the appropriate price model class.
+    _create_transactions(trans_data, *args, **kwargs)
+        Creates transaction data from input data.
+    _create_model(trans_data, estimator, log_dep, **kwargs)
+        Creates a price model from transaction data.
+    create_index(trans_data, *args, **kwargs)
+        Creates a new index from transaction data.
+    create_series(train_period=12, max_period=None, **kwargs)
+        Creates a series of indices for different time periods.
+    smooth_index(order=3, in_place=False)
+        Smooths the index values.
+    smooth_series(order=3)
+        Smooths a series of indices.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from hpipy.price_index import RepeatTransactionIndex
+    >>> # Create sample transaction data.
+    >>> data = pd.DataFrame({
+    ...     "property_id": [1, 1, 2, 2],
+    ...     "transaction_id": [1, 2, 3, 4],
+    ...     "price": [200000, 250000, 300000, 350000],
+    ...     "date": ["2020-01", "2021-01", "2020-02", "2021-02"],
+    ... })
+    >>> # Create index.
+    >>> index = RepeatTransactionIndex.create_index(
+    ...     data,
+    ...     prop_id="property_id",
+    ...     trans_id="transaction_id",
+    ...     price="price",
+    ...     periodicity="M",
+    ...     min_date="2020-01",
+    ...     max_date="2021-02",
+    ... )
+    """
 
     @staticmethod
     def get_data() -> type[TransactionData]:
@@ -488,7 +569,83 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
 
 
 class HedonicIndex(BaseHousePriceIndex):
-    """Hedonic house price index."""
+    """Hedonic house price index.
+
+    This class implements the hedonic methodology for constructing house price indices.
+    It uses property characteristics to control for quality differences between properties
+    and estimates the pure price change over time.
+
+    Parameters
+    ----------
+    data : TransactionData
+        The transaction data used to construct the index.
+    model : BaseHousePriceModel
+        The underlying price model used to estimate the index.
+    name : pd.Series
+        The names of the time periods in the index.
+    periods : pd.Series
+        The time periods covered by the index.
+    value : pd.Series
+        The index values.
+    index : Any
+        The index values in a different format.
+    imputed : np.ndarray
+        Boolean array indicating which periods were imputed.
+    smooth : Any
+        Smoothed version of the index values.
+    volatility : pd.DataFrame
+        Volatility measures for the index.
+    volatility_smooth : pd.DataFrame
+        Smoothed volatility measures.
+    revision : pd.DataFrame
+        Revision measures for the index.
+    revision_smooth : pd.DataFrame
+        Smoothed revision measures.
+
+    Methods
+    -------
+    get_data()
+        Returns the appropriate transaction data class.
+    get_model()
+        Returns the appropriate price model class.
+    _create_transactions(trans_data, *args, **kwargs)
+        Creates transaction data from input data.
+    _create_model(trans_data, dep_var, ind_var, **kwargs)
+        Creates a price model from transaction data.
+    create_index(trans_data, *args, **kwargs)
+        Creates a new index from transaction data.
+    create_series(train_period=12, max_period=None, **kwargs)
+        Creates a series of indices for different time periods.
+    smooth_index(order=3, in_place=False)
+        Smooths the index values.
+    smooth_series(order=3)
+        Smooths a series of indices.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from hpipy.price_index import HedonicIndex
+    >>> # Create sample transaction data.
+    >>> data = pd.DataFrame({
+    ...     "property_id": [1, 2, 3, 4],
+    ...     "transaction_id": [1, 2, 3, 4],
+    ...     "price": [200000, 250000, 300000, 350000],
+    ...     "date": ["2020-01", "2020-01", "2021-01", "2021-01"],
+    ...     "sqft": [1500, 1800, 2000, 2200],
+    ...     "bedrooms": [3, 3, 4, 4],
+    ... })
+    >>> # Create index.
+    >>> index = HedonicIndex.create_index(
+    ...     data,
+    ...     prop_id="property_id",
+    ...     trans_id="transaction_id",
+    ...     price="price",
+    ...     periodicity="M",
+    ...     min_date="2020-01",
+    ...     max_date="2021-01",
+    ...     ind_var=["sqft", "bedrooms"],
+    ... )
+    """
 
     @staticmethod
     def get_data() -> type[TransactionData]:
