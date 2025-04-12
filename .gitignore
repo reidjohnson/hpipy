@@ -167,3 +167,4 @@ data/*
 !data/ex_sales.csv
 !data/seattle_sales.csv
 model_outputs/*
+requirements.txt

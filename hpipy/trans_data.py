@@ -175,7 +175,12 @@ class RepeatTransactionData(TransactionData):
                 ["prop_id", "trans_period", "price"],
                 ascending=[True, True, False],
             )
-            .assign(temp=lambda x: x["prop_id"] + "_" + x["trans_period"].astype(str))
+            .assign(
+                **{
+                    "trans_period": lambda x: x["trans_period"].astype(int),
+                    "temp": lambda x: x["prop_id"] + "_" + x["trans_period"].astype(str),
+                }
+            )
             .drop_duplicates("temp")  # remove any properties that sold twice in same time period
             .drop(columns="temp")
         )
@@ -228,7 +233,7 @@ class RepeatTransactionData(TransactionData):
 
             # Create a dataframe of combinations of repeat sales.
             s = x_df.groupby("prop_id").apply(
-                lambda x: list(itertools.combinations(x["trans_id"], 2))
+                lambda x: list(itertools.combinations(x["trans_id"], 2)), include_groups=False
             )
             d3 = pd.DataFrame(
                 np.vstack([[[s.index[idx]] + list(x_i) for x_i in x] for idx, x in enumerate(s)]),

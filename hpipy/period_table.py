@@ -202,10 +202,10 @@ class PeriodTable:
             date_range = pd.date_range(
                 trans_df["trans_date"].min().to_period("Y").to_timestamp(),
                 trans_df["trans_date"].max().to_period("Y").to_timestamp(),
-                freq="AS",
+                freq="YS",
             )
             start_date = list(date_range)
-            end_date = list(date_range.to_period("A").to_timestamp(how="end"))
+            end_date = list(date_range.to_period("Y").to_timestamp(how="end"))
             period = list(range(1, len(start_date) + 1))
             name = [f"{x.strftime('%Y')}" for x in start_date]
             data = {"start_date": start_date, "end_date": end_date, "period": period, "name": name}
@@ -293,11 +293,7 @@ class PeriodTable:
                     freq=f"{freq}D",
                 )
             start_date = list(date_range)
-            end_date = list(
-                np.array(
-                    (pd.Series(date_range) + datetime.timedelta(days=freq)).dt.to_pydatetime()
-                )
-            )
+            end_date = list(pd.Series(date_range) + datetime.timedelta(days=freq))
 
             if start == "last" and start_date[0] > min(first, trans_df["trans_date"].min()):
                 start_date[0] = min(first, trans_df["trans_date"].min())
@@ -414,7 +410,7 @@ class PeriodTable:
                 labels=False,
             )
             + 1
-        )
+        ).astype(float)
 
         # Check for missing periods.
         num_periods = trans_df["trans_period"].nunique()
