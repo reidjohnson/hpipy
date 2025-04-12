@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.coef\_to\_index
+==================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.coef_to_index

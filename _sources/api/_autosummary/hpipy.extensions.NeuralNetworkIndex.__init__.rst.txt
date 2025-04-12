@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.\_\_init\_\_
+================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: NeuralNetworkIndex.__init__

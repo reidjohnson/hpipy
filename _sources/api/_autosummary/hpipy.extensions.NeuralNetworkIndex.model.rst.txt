@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.model
+=========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkIndex.model

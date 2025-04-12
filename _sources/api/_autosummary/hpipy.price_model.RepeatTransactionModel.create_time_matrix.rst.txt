@@ -1,0 +1,6 @@
+hpipy.price\_model.RepeatTransactionModel.create\_time\_matrix
+==============================================================
+
+.. currentmodule:: hpipy.price_model
+
+.. automethod:: RepeatTransactionModel.create_time_matrix

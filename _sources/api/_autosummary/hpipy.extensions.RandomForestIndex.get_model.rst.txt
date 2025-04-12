@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.get\_model
+=============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.get_model

@@ -1,0 +1,6 @@
+hpipy.price\_model.RepeatTransactionModel.periods
+=================================================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoattribute:: RepeatTransactionModel.periods

@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.create\_index
+=================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: NeuralNetworkIndex.create_index

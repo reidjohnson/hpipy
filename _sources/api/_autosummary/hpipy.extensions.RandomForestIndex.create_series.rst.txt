@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.create\_series
+=================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.create_series

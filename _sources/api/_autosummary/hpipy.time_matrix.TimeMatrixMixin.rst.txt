@@ -1,0 +1,37 @@
+﻿hpipy.time\_matrix.TimeMatrixMixin
+==================================
+
+.. currentmodule:: hpipy.time_matrix
+
+.. autoclass:: TimeMatrixMixin
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~TimeMatrixMixin.__init__
+      ~TimeMatrixMixin.create_time_matrix
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

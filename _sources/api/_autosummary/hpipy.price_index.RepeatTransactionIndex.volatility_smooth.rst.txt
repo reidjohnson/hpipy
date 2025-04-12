@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.volatility\_smooth
+============================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: RepeatTransactionIndex.volatility_smooth

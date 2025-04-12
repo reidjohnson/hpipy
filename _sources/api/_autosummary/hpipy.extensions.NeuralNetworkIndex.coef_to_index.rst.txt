@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.coef\_to\_index
+===================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: NeuralNetworkIndex.coef_to_index

@@ -1,0 +1,6 @@
+hpipy.price\_model.RepeatTransactionModel.base\_price
+=====================================================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoattribute:: RepeatTransactionModel.base_price

@@ -1,0 +1,6 @@
+hpipy.price\_model.HedonicModel.model\_obj
+==========================================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoattribute:: HedonicModel.model_obj

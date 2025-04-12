@@ -1,0 +1,6 @@
+hpipy.price\_model.RepeatTransactionModel.fit
+=============================================
+
+.. currentmodule:: hpipy.price_model
+
+.. automethod:: RepeatTransactionModel.fit

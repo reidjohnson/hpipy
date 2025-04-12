@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.revision
+========================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.revision

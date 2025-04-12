@@ -1,0 +1,6 @@
+hpipy.trans\_data.TransactionData.\_\_init\_\_
+==============================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. automethod:: TransactionData.__init__

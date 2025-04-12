@@ -1,0 +1,6 @@
+hpipy.price\_model.RepeatTransactionModel.coefficients
+======================================================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoattribute:: RepeatTransactionModel.coefficients

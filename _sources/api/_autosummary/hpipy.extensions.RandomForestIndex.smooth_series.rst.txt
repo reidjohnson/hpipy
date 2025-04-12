@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.smooth\_series
+=================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.smooth_series

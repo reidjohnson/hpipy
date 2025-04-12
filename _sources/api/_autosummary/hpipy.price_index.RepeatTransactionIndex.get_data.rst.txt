@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.get\_data
+===================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: RepeatTransactionIndex.get_data

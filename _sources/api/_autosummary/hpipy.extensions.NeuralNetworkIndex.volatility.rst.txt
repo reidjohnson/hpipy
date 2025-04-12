@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.volatility
+==============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkIndex.volatility

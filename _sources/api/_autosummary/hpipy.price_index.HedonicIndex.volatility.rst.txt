@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.volatility
+==========================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.volatility

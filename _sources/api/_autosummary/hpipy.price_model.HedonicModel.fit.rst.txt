@@ -1,0 +1,6 @@
+hpipy.price\_model.HedonicModel.fit
+===================================
+
+.. currentmodule:: hpipy.price_model
+
+.. automethod:: HedonicModel.fit

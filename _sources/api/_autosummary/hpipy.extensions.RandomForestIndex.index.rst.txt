@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.index
+========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestIndex.index

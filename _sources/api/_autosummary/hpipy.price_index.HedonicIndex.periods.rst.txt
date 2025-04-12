@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.periods
+=======================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.periods

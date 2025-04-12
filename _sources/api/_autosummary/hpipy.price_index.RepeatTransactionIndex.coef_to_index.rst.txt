@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.coef\_to\_index
+=========================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: RepeatTransactionIndex.coef_to_index

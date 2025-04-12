@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.smooth\_index
+=============================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: HedonicIndex.smooth_index

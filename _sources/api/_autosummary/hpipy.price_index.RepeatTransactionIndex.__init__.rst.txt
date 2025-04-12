@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.\_\_init\_\_
+======================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: RepeatTransactionIndex.__init__

@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.coef\_to\_index
+===============================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: HedonicIndex.coef_to_index

@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.volatility\_smooth
+=====================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestIndex.volatility_smooth

@@ -1,0 +1,6 @@
+hpipy.trans\_data.TransactionData.create\_forecast\_periods
+===========================================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. automethod:: TransactionData.create_forecast_periods

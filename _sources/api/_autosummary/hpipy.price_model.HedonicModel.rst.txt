@@ -1,0 +1,48 @@
+﻿hpipy.price\_model.HedonicModel
+===============================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoclass:: HedonicModel
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~HedonicModel.__init__
+      ~HedonicModel.fit
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~HedonicModel.coefficients
+      ~HedonicModel.model_obj
+      ~HedonicModel.periods
+      ~HedonicModel.base_price
+      ~HedonicModel.params
+   
+   
+
+   
+   
+   
+
+   
+   
+   

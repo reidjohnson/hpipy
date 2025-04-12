@@ -1,0 +1,28 @@
+﻿hpipy.utils.metrics.series\_volatility
+======================================
+
+.. currentmodule:: hpipy.utils.metrics
+
+.. autoclass:: series_volatility
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

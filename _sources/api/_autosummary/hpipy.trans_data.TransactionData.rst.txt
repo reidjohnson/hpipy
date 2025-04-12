@@ -1,0 +1,47 @@
+﻿hpipy.trans\_data.TransactionData
+=================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. autoclass:: TransactionData
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~TransactionData.__init__
+      ~TransactionData.create_forecast_periods
+      ~TransactionData.create_transactions
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~TransactionData.trans_data
+      ~TransactionData.trans_df
+      ~TransactionData.period_table
+   
+   
+
+   
+   
+   
+
+   
+   
+   

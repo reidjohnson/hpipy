@@ -1,0 +1,62 @@
+﻿hpipy.extensions.NeuralNetworkIndex
+===================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoclass:: NeuralNetworkIndex
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~NeuralNetworkIndex.__init__
+      ~NeuralNetworkIndex.coef_to_index
+      ~NeuralNetworkIndex.create_index
+      ~NeuralNetworkIndex.create_series
+      ~NeuralNetworkIndex.from_model
+      ~NeuralNetworkIndex.get_data
+      ~NeuralNetworkIndex.get_model
+      ~NeuralNetworkIndex.smooth_index
+      ~NeuralNetworkIndex.smooth_series
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~NeuralNetworkIndex.data
+      ~NeuralNetworkIndex.model
+      ~NeuralNetworkIndex.name
+      ~NeuralNetworkIndex.periods
+      ~NeuralNetworkIndex.value
+      ~NeuralNetworkIndex.index
+      ~NeuralNetworkIndex.imputed
+      ~NeuralNetworkIndex.smooth
+      ~NeuralNetworkIndex.volatility
+      ~NeuralNetworkIndex.volatility_smooth
+      ~NeuralNetworkIndex.revision
+      ~NeuralNetworkIndex.revision_smooth
+   
+   
+
+   
+   
+   
+
+   
+   
+   

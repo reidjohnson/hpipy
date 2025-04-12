@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.revision
+============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkIndex.revision

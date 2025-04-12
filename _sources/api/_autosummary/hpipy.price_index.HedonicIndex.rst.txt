@@ -1,0 +1,62 @@
+﻿hpipy.price\_index.HedonicIndex
+===============================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoclass:: HedonicIndex
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~HedonicIndex.__init__
+      ~HedonicIndex.coef_to_index
+      ~HedonicIndex.create_index
+      ~HedonicIndex.create_series
+      ~HedonicIndex.from_model
+      ~HedonicIndex.get_data
+      ~HedonicIndex.get_model
+      ~HedonicIndex.smooth_index
+      ~HedonicIndex.smooth_series
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~HedonicIndex.data
+      ~HedonicIndex.model
+      ~HedonicIndex.name
+      ~HedonicIndex.periods
+      ~HedonicIndex.value
+      ~HedonicIndex.index
+      ~HedonicIndex.imputed
+      ~HedonicIndex.smooth
+      ~HedonicIndex.volatility
+      ~HedonicIndex.volatility_smooth
+      ~HedonicIndex.revision
+      ~HedonicIndex.revision_smooth
+   
+   
+
+   
+   
+   
+
+   
+   
+   

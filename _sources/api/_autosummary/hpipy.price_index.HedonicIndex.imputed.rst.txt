@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.imputed
+=======================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.imputed

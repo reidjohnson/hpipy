@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.smooth
+================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: RepeatTransactionIndex.smooth

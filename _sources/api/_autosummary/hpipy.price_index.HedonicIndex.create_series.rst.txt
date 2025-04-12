@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.create\_series
+==============================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: HedonicIndex.create_series

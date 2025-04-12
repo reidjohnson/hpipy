@@ -1,0 +1,6 @@
+hpipy.period\_table.PeriodTable.create\_period\_table
+=====================================================
+
+.. currentmodule:: hpipy.period_table
+
+.. automethod:: PeriodTable.create_period_table

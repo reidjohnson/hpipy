@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.smooth\_index
+================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.smooth_index

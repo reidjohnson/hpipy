@@ -1,0 +1,6 @@
+hpipy.trans\_data.TransactionData.trans\_df
+===========================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. autoattribute:: TransactionData.trans_df

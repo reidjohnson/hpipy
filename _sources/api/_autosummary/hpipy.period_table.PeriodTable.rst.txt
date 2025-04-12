@@ -1,0 +1,45 @@
+﻿hpipy.period\_table.PeriodTable
+===============================
+
+.. currentmodule:: hpipy.period_table
+
+.. autoclass:: PeriodTable
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~PeriodTable.__init__
+      ~PeriodTable.create_period_table
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~PeriodTable.trans_df
+      ~PeriodTable.period_table
+   
+   
+
+   
+   
+   
+
+   
+   
+   

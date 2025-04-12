@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.model
+=====================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.model

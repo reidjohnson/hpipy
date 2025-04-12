@@ -1,0 +1,6 @@
+hpipy.period\_table.PeriodTable.trans\_df
+=========================================
+
+.. currentmodule:: hpipy.period_table
+
+.. autoattribute:: PeriodTable.trans_df

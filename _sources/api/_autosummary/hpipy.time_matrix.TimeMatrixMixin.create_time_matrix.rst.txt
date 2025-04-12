@@ -1,0 +1,6 @@
+hpipy.time\_matrix.TimeMatrixMixin.create\_time\_matrix
+=======================================================
+
+.. currentmodule:: hpipy.time_matrix
+
+.. automethod:: TimeMatrixMixin.create_time_matrix

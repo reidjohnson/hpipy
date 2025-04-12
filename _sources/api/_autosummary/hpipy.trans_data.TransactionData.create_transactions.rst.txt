@@ -1,0 +1,6 @@
+hpipy.trans\_data.TransactionData.create\_transactions
+======================================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. automethod:: TransactionData.create_transactions

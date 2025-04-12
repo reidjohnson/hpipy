@@ -1,0 +1,62 @@
+﻿hpipy.extensions.RandomForestIndex
+==================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoclass:: RandomForestIndex
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~RandomForestIndex.__init__
+      ~RandomForestIndex.coef_to_index
+      ~RandomForestIndex.create_index
+      ~RandomForestIndex.create_series
+      ~RandomForestIndex.from_model
+      ~RandomForestIndex.get_data
+      ~RandomForestIndex.get_model
+      ~RandomForestIndex.smooth_index
+      ~RandomForestIndex.smooth_series
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~RandomForestIndex.data
+      ~RandomForestIndex.model
+      ~RandomForestIndex.name
+      ~RandomForestIndex.periods
+      ~RandomForestIndex.value
+      ~RandomForestIndex.index
+      ~RandomForestIndex.imputed
+      ~RandomForestIndex.smooth
+      ~RandomForestIndex.volatility
+      ~RandomForestIndex.volatility_smooth
+      ~RandomForestIndex.revision
+      ~RandomForestIndex.revision_smooth
+   
+   
+
+   
+   
+   
+
+   
+   
+   

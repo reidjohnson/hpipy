@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.get\_data
+============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestIndex.get_data

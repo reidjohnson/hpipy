@@ -1,0 +1,6 @@
+hpipy.trans\_data.TransactionData.period\_table
+===============================================
+
+.. currentmodule:: hpipy.trans_data
+
+.. autoattribute:: TransactionData.period_table

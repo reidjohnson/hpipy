@@ -1,0 +1,6 @@
+hpipy.time\_matrix.TimeMatrixMixin.\_\_init\_\_
+===============================================
+
+.. currentmodule:: hpipy.time_matrix
+
+.. automethod:: TimeMatrixMixin.__init__

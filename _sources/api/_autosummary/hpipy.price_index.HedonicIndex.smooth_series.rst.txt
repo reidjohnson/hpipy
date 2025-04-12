@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.smooth\_series
+==============================================
+
+.. currentmodule:: hpipy.price_index
+
+.. automethod:: HedonicIndex.smooth_series

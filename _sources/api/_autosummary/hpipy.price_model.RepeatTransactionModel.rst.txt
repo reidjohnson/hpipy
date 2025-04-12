@@ -1,0 +1,49 @@
+﻿hpipy.price\_model.RepeatTransactionModel
+=========================================
+
+.. currentmodule:: hpipy.price_model
+
+.. autoclass:: RepeatTransactionModel
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~RepeatTransactionModel.__init__
+      ~RepeatTransactionModel.create_time_matrix
+      ~RepeatTransactionModel.fit
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~RepeatTransactionModel.coefficients
+      ~RepeatTransactionModel.model_obj
+      ~RepeatTransactionModel.periods
+      ~RepeatTransactionModel.base_price
+      ~RepeatTransactionModel.params
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,62 @@
+﻿hpipy.price\_index.RepeatTransactionIndex
+=========================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoclass:: RepeatTransactionIndex
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~RepeatTransactionIndex.__init__
+      ~RepeatTransactionIndex.coef_to_index
+      ~RepeatTransactionIndex.create_index
+      ~RepeatTransactionIndex.create_series
+      ~RepeatTransactionIndex.from_model
+      ~RepeatTransactionIndex.get_data
+      ~RepeatTransactionIndex.get_model
+      ~RepeatTransactionIndex.smooth_index
+      ~RepeatTransactionIndex.smooth_series
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~RepeatTransactionIndex.data
+      ~RepeatTransactionIndex.model
+      ~RepeatTransactionIndex.name
+      ~RepeatTransactionIndex.periods
+      ~RepeatTransactionIndex.value
+      ~RepeatTransactionIndex.index
+      ~RepeatTransactionIndex.imputed
+      ~RepeatTransactionIndex.smooth
+      ~RepeatTransactionIndex.volatility
+      ~RepeatTransactionIndex.volatility_smooth
+      ~RepeatTransactionIndex.revision
+      ~RepeatTransactionIndex.revision_smooth
+   
+   
+
+   
+   
+   
+
+   
+   
+   
