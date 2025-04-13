@@ -1,5 +1,11 @@
 # hpiPy
 
+[![PyPI - Version](https://img.shields.io/pypi/v/hpipy)](https://pypi.org/project/hpipy)
+[![License](https://img.shields.io/github/license/reidjohnson/hpipy)](https://github.com/reidjohnson/hpipy/blob/main/LICENSE)
+[![GitHub Actions](https://github.com/reidjohnson/hpipy/actions/workflows/build.yml/badge.svg)](https://github.com/reidjohnson/hpipy/actions/workflows/build.yml)
+[![Codecov](https://codecov.io/gh/reidjohnson/hpipy/branch/main/graph/badge.svg?token=STRT8T67YP)](https://codecov.io/gh/reidjohnson/hpipy)
+[![Code Style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 **hpiPy** simplifies and standardizes the creation of house price indices in Python.
 
 The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. The package also includes a random forest–based method with partial dependence plots for post-model interpretability, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data. Based on [hpiR](https://github.com/andykrause/hpiR).
