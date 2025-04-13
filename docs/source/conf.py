@@ -18,6 +18,7 @@ version = __version__
 release = __version__
 
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
@@ -25,7 +26,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_design",
-    "myst_parser",
+    "sphinxext_altair.altairplot",
 ]
 
 templates_path = ["_templates"]

@@ -10,26 +10,31 @@ Basic Usage
 
 Here's a simple example of creating a house price index using repeat sales data:
 
-.. code-block:: python
+.. altair-plot::
 
-    >>> import pandas as pd
-    >>> from hpipy.price_index import RepeatTransactionIndex
+    import pandas as pd
+    from hpipy.price_index import RepeatTransactionIndex
+    from hpipy.utils.plotting import plot_index
 
     # Load your sales data.
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
 
     # Create an index.
-    >>> hpi = RepeatTransactionIndex.create_index(
-    ...     trans_data=df,
-    ...     date="sale_date",
-    ...     price="sale_price",
-    ...     prop_id="pinx",
-    ...     trans_id="sale_id",
-    ...     estimator="robust",
-    ...     log_dep=True,
-    ...     smooth=True,
-    ... )
+    hpi = RepeatTransactionIndex.create_index(
+        trans_data=df,
+        date="sale_date",
+        price="sale_price",
+        prop_id="pinx",
+        trans_id="sale_id",
+        estimator="robust",
+        log_dep=True,
+        smooth=True,
+        periodicity="M",
+    )
 
+    # Visualize the index.
+    plot_index(hpi, smooth=True).properties(height=225, width=600, title="Example Index")
+   
 Data Format
 -----------
 

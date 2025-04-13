@@ -1,5 +1,6 @@
+myst-parser
+pydata-sphinx-theme
 sphinx
 sphinx-copybutton
 sphinx-design
-pydata-sphinx-theme
-myst-parser
+sphinxext-altair
