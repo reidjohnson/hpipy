@@ -33,7 +33,7 @@ Here's a simple example of creating a house price index using repeat sales data:
     )
 
     # Visualize the index.
-    plot_index(hpi, smooth=True).properties(height=225, width=600, title="Example Index")
+    plot_index(hpi, smooth=True).properties(width=600, title="Example Index")
    
 Data Format
 -----------
