@@ -31,6 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/altair-plot.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
@@ -43,8 +44,11 @@
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/hpipy/extensions/neural/_base';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -375,7 +379,26 @@
                 <article class="bd-article">
                   
   <h1>Source code for hpipy.extensions.neural._base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Neural network HPI extensions.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Neural network HPI extensions.</span>
+
+<span class="sd">This module implements neural network-based house price indices using two</span>
+<span class="sd">distinct approaches:</span>
+
+<span class="sd">1. Residual Approach: This method extracts the house price index directly from</span>
+<span class="sd">   the market pathway of the neural network. It isolates the temporal</span>
+<span class="sd">   component of price changes by  zeroing out all non-time features and</span>
+<span class="sd">   examining the network&#39;s output, effectively capturing the &quot;residual&quot; market</span>
+<span class="sd">   trend.</span>
+
+<span class="sd">2. Attributional Approach: This method derives the index by analyzing the</span>
+<span class="sd">   explainability of both market and time components. It uses attribution</span>
+<span class="sd">   techniques to decompose the  network&#39;s predictions and identify how much of</span>
+<span class="sd">   the price change can be attributed to  temporal factors versus other market</span>
+<span class="sd">   characteristics.</span>
+
+<span class="sd">Both approaches aim to capture market trends, but differ in how they extract</span>
+<span class="sd">temporal information from the neural network&#39;s learned representations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -725,12 +748,32 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the neural network model and generate index coefficients.</span>
 
+<span class="sd">        The model supports two distinct approaches for extracting the house</span>
+<span class="sd">        price index, controlled by the `estimator` parameter:</span>
+
+<span class="sd">        1. &quot;residual&quot;: This approach extracts the index directly from the</span>
+<span class="sd">           market pathway of the neural network. It works by zeroing out all</span>
+<span class="sd">           of the neural network. It works by zeroing out all non-temporal</span>
+<span class="sd">           features and examining the network&#39;s output, effectively isolating</span>
+<span class="sd">           the temporal component of price changes. This method is more direct</span>
+<span class="sd">           and computationally efficient.</span>
+
+<span class="sd">        2. &quot;attributional&quot;: This approach derives the index through</span>
+<span class="sd">           explainability analysis of both market and time components. It uses</span>
+<span class="sd">           attribution techniques to decompose the network&#39;s predictions and</span>
+<span class="sd">           quantify how much of the price change can be attributed to temporal</span>
+<span class="sd">           factors versus other market characteristics. This method provides</span>
+<span class="sd">           more detailed insights into price drivers but is computationally</span>
+<span class="sd">           more intensive.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            dep_var (str): Dependent variable.</span>
 <span class="sd">            ind_var (list[str]): Independent variable(s).</span>
 <span class="sd">            date (str): Date column name.</span>
-<span class="sd">            estimator (str, optional): Estimator type. &quot;residual&quot; or</span>
-<span class="sd">                &quot;attributional&quot;. Defaults to &quot;residual&quot;.</span>
+<span class="sd">            estimator (str, optional): Estimator type. Choose between</span>
+<span class="sd">                &quot;residual&quot; (extracts index from market pathway) or</span>
+<span class="sd">                &quot;attributional&quot; (derives index  through explainability).</span>
+<span class="sd">                Defaults to &quot;residual&quot;.</span>
 <span class="sd">            feature_dict (Optional[dict[str, list[str]]], optional): Feature</span>
 <span class="sd">                dictionary.</span>
 <span class="sd">                Defaults to None.</span>

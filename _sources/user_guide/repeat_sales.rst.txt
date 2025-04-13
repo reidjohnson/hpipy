@@ -17,26 +17,26 @@ Here's how to prepare your data:
 
 .. code-block:: python
 
-    import pandas as pd
-    from hpipy.period_table import PeriodTable
-    from hpipy.trans_data import RepeatTransactionData
+    >>> import pandas as pd
+    >>> from hpipy.period_table import PeriodTable
+    >>> from hpipy.trans_data import RepeatTransactionData
 
     # Load your sales data
-    df = pd.read_csv("sales_data.csv", parse_dates=["sale_date"])
+    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
 
     # Create a period table (converts dates to periods)
-    sales_hdata = PeriodTable(df).create_period_table(
-        "sale_date",
-        periodicity="monthly",  # or "quarterly", "yearly"
-    )
+    >>> sales_hdata = PeriodTable(df).create_period_table(
+    ...     "sale_date",
+    ...     periodicity="monthly",  # or "quarterly", "yearly"
+    ... )
 
     # Create repeat sales pairs.
-    trans_data = RepeatTransactionData(sales_hdata).create_transactions(
-        prop_id="pinx",
-        trans_id="sale_id",
-        price="sale_price",
-        min_period_dist=12,  # minimum months between sales
-    )
+    >>> trans_data = RepeatTransactionData(sales_hdata).create_transactions(
+    ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
+    ...     min_period_dist=12,  # minimum months between sales
+    ... )
 
 Creating the Index
 ------------------
@@ -45,19 +45,19 @@ Once your data is prepared, you can create the repeat sales index:
 
 .. code-block:: python
 
-    from hpipy.price_index import RepeatTransactionIndex
+    >>> from hpipy.price_index import RepeatTransactionIndex
 
     # Create the index.
-    hpi = RepeatTransactionIndex.create_index(
-        trans_data=trans_data,
-        date="sale_date",
-        price="sale_price",
-        prop_id="pinx",
-        trans_id="sale_id",
-        estimator="robust",  # or "base", "weighted"
-        log_dep=True,  # use log of price differences
-        smooth=True,  # apply smoothing to the index
-    )
+    >>> hpi = RepeatTransactionIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     date="sale_date",
+    ...     price="sale_price",
+    ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     estimator="robust",  # or "base", "weighted"
+    ...     log_dep=True,  # use log of price differences
+    ...     smooth=True,  # apply smoothing to the index
+    ... )
 
 Parameters
 ----------
@@ -90,17 +90,17 @@ For more control over the index creation process, you can use the lower-level AP
 
 .. code-block:: python
 
-    from hpipy.price_index import RepeatTransactionIndex
-    from hpipy.price_model import RepeatTransactionModel
+    >>> from hpipy.price_index import RepeatTransactionIndex
+    >>> from hpipy.price_model import RepeatTransactionModel
 
     # Create and fit the model.
-    model = RepeatTransactionModel(
-        trans_data,
-        log_dep=True,
-    ).fit()
+    >>> model = RepeatTransactionModel(
+    ...     trans_data,
+    ...     log_dep=True,
+    ... ).fit()
 
     # Create the index.
-    hpi = RepeatTransactionIndex.from_model(model)
+    >>> hpi_from_model = RepeatTransactionIndex.from_model(model)
 
 Evaluating the Index
 --------------------
@@ -109,14 +109,15 @@ You can evaluate the index quality using various metrics:
 
 .. code-block:: python
 
-    from hpipy.utils.metrics import accuracy, volatility
-    from hpipy.utils.plotting import plot_index
+    >>> from hpipy.utils.metrics import accuracy, volatility
+    >>> from hpipy.utils.plotting import plot_index
 
     # Calculate accuracy.
-    acc = accuracy(hpi)
+    >>> acc = accuracy(hpi)
 
     # Calculate volatility.
-    vol = volatility(hpi)
+    >>> vol = volatility(hpi)
 
     # Plot the index.
-    plot_index(hpi)
+    >>> plot_index(hpi)
+    alt.Chart(...)

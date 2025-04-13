@@ -10,13 +10,14 @@ Basic Usage
 
 Here's a simple example of creating a house price index using repeat sales data:
 
-.. code-block:: python
+.. altair-plot::
 
     import pandas as pd
     from hpipy.price_index import RepeatTransactionIndex
+    from hpipy.utils.plotting import plot_index
 
     # Load your sales data.
-    df = pd.read_csv("sales_data.csv", parse_dates=["sale_date"])
+    df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
 
     # Create an index.
     hpi = RepeatTransactionIndex.create_index(
@@ -28,11 +29,12 @@ Here's a simple example of creating a house price index using repeat sales data:
         estimator="robust",
         log_dep=True,
         smooth=True,
+        periodicity="M",
     )
 
-    # Print the index.
-    print(hpi)
-
+    # Visualize the index.
+    plot_index(hpi, smooth=True).properties(height=225, width=600, title="Example Index")
+   
 Data Format
 -----------
 
@@ -47,13 +49,15 @@ Example data structure:
 
 .. code-block:: python
 
-    >>> df.head()
-       sale_id    sale_date  sale_price    pinx
-    0        1  2010-01-15     250000  prop_01
-    1        2  2010-02-01     300000  prop_02
-    2        3  2012-06-15     275000  prop_01
-    3        4  2012-07-01     320000  prop_02
-    4        5  2010-03-15     280000  prop_03
+    >>> import pandas as pd
+    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df.iloc[:, :4].head()
+               pinx      sale_id  sale_price  sale_date
+    0  ..0007600046   2011..2621      308900 2011-02-22
+    1  ..0007600054  2010..16414      369950 2010-08-24
+    2  ..0007600057  2014..23738      520000 2014-08-05
+    3  ..0007600057  2016..28612      625000 2016-08-22
+    4  ..0007600065  2014..15956      465000 2014-06-05
 
 Available Methods
 -----------------
