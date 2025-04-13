@@ -316,7 +316,7 @@ class PeriodTable:
                 raise ValueError
             # Set quantiles.
             period_qtls = [(x / nbr_periods) for x in range(0, nbr_periods + 1)]
-            date_qtls = trans_df["trans_date"].astype(int).quantile(period_qtls[:-1]).values
+            date_qtls = trans_df["trans_date"].astype("int64").quantile(period_qtls[:-1]).values
             date_qtls[0] = date_qtls[0] - 1
             start_date = pd.to_datetime(
                 pd.Series(

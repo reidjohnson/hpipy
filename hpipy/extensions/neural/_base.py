@@ -1,4 +1,23 @@
-"""Neural network HPI extensions."""
+"""Neural network HPI extensions.
+
+This module implements neural network-based house price indices using two
+distinct approaches:
+
+1. Residual Approach: This method extracts the house price index directly from
+   the market pathway of the neural network. It isolates the temporal
+   component of price changes by  zeroing out all non-time features and
+   examining the network's output, effectively capturing the "residual" market
+   trend.
+
+2. Attributional Approach: This method derives the index by analyzing the
+   explainability of both market and time components. It uses attribution
+   techniques to decompose the  network's predictions and identify how much of
+   the price change can be attributed to  temporal factors versus other market
+   characteristics.
+
+Both approaches aim to capture market trends, but differ in how they extract
+temporal information from the neural network's learned representations.
+"""
 
 import copy
 import logging
@@ -342,12 +361,32 @@ class NeuralNetworkModel(BaseHousePriceModel):
     ) -> Self:
         """Fit the neural network model and generate index coefficients.
 
+        The model supports two distinct approaches for extracting the house
+        price index, controlled by the `estimator` parameter:
+
+        1. "residual": This approach extracts the index directly from the
+           market pathway of the neural network. It works by zeroing out all
+           of the neural network. It works by zeroing out all non-temporal
+           features and examining the network's output, effectively isolating
+           the temporal component of price changes. This method is more direct
+           and computationally efficient.
+
+        2. "attributional": This approach derives the index through
+           explainability analysis of both market and time components. It uses
+           attribution techniques to decompose the network's predictions and
+           quantify how much of the price change can be attributed to temporal
+           factors versus other market characteristics. This method provides
+           more detailed insights into price drivers but is computationally
+           more intensive.
+
         Args:
             dep_var (str): Dependent variable.
             ind_var (list[str]): Independent variable(s).
             date (str): Date column name.
-            estimator (str, optional): Estimator type. "residual" or
-                "attributional". Defaults to "residual".
+            estimator (str, optional): Estimator type. Choose between
+                "residual" (extracts index from market pathway) or
+                "attributional" (derives index  through explainability).
+                Defaults to "residual".
             feature_dict (Optional[dict[str, list[str]]], optional): Feature
                 dictionary.
                 Defaults to None.

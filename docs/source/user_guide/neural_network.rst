@@ -6,12 +6,45 @@ The Neural Network method in hpiPy provides a deep learning approach to house pr
 Overview
 --------
 
-The Neural Network approach:
+The Neural Network method:
 
 1. Separates property-specific and market-level effects
 2. Learns non-linear relationships automatically
 3. Can handle high-dimensional feature spaces
 4. Supports both local and global market patterns
+
+The Neural Network supports two distinct approaches for extracting the house price index.
+
+Residual Approach
+~~~~~~~~~~~~~~~~~
+
+The residual approach extracts the index directly from the market pathway of the neural network. It works by:
+
+1. Training the network on the full feature set
+2. During index extraction, zeroing out all non-temporal features
+3. Examining the network's output to capture the "residual" market trend
+4. Computing the index from these isolated temporal effects
+
+This approach is:
+
+* More computationally efficient
+* Direct in its interpretation
+* The default approach in hpiPy
+
+Attributional Approach
+~~~~~~~~~~~~~~~~~~~~~~
+
+The attributional approach derives the index through explainability analysis of both market and time components. It:
+
+1. Trains the network on the full feature set
+2. Uses attribution techniques to decompose predictions
+3. Quantifies how much price change is due to temporal vs. market factors
+4. Computes the index from the attributed temporal components
+
+This approach offers:
+
+* Higher computational complexity
+* More granular decomposition of effects
 
 Data Preparation
 ----------------
@@ -27,61 +60,99 @@ Example setup:
 
 .. code-block:: python
 
-    import pandas as pd
-    from hpipy.period_table import PeriodTable
-    from hpipy.extensions import NeuralNetworkIndex
+    >>> import pandas as pd
+    >>> from hpipy.extensions import NeuralNetworkIndex
+    >>> from hpipy.period_table import PeriodTable
+    >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load and prepare data.
-    df = pd.read_csv("sales_data.csv", parse_dates=["sale_date"])
+    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
     
     # Create period table.
-    trans_data = PeriodTable(df).create_period_table(
-        "sale_date",
-        periodicity="monthly",
-    )
+    >>> sales_hdata = PeriodTable(df).create_period_table(
+    ...     "sale_date",
+    ...     periodicity="monthly",
+    ... )
+
+    # Prepare hedonic data.
+    >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+    ...     price="sale_price",
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ... )
 
 Creating the Index
 ------------------
 
-Create a Neural Network-based index:
+Create a Neural Network-based index using either approach:
 
 .. code-block:: python
 
-    # Create the index.
-    hpi = NeuralNetworkIndex.create_index(
-        trans_data=trans_data,
-        trans_id="sale_id",
-        prop_id="pinx",
-        date="sale_date",
-        price="sale_price",
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        estimator="attributional",
-        feature_dict={
-            "numerics": [],
-            "log_numerics": ["tot_sf"],
-            "categoricals": [],
-            "ordinals": ["beds", "baths"],
-            "hpi": ["sale_date"],
-        },
-    )
+    # Create index using residual approach (default)
+    >>> hpi_residual = NeuralNetworkIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ...     date="sale_date",
+    ...     price="sale_price",
+    ...     dep_var="price",
+    ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     estimator="residual",  # default
+    ...     feature_dict={
+    ...         "numerics": [],
+    ...         "log_numerics": ["tot_sf"],
+    ...         "categoricals": [],
+    ...         "ordinals": ["beds", "baths"],
+    ...         "hpi": ["sale_date"],
+    ...     },
+    ...     preprocess_geo=False,
+    ... )
+
+    # Create index using attributional approach
+    >>> hpi_attr = NeuralNetworkIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ...     date="sale_date",
+    ...     price="sale_price",
+    ...     dep_var="price",
+    ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     estimator="attributional",
+    ...     feature_dict={
+    ...         "numerics": [],
+    ...         "log_numerics": ["tot_sf"],
+    ...         "categoricals": [],
+    ...         "ordinals": ["beds", "baths"],
+    ...         "hpi": ["sale_date"],
+    ...     },
+    ...     preprocess_geo=False,
+    ... )
 
 Network Architecture
 --------------------
 
 The neural network consists of:
 
-1. Property Characteristics Network:
-   * Processes property features
-   * Learns property-specific value components
+1. Property Characteristics Network
 
-2. Time Effect Network:
-   * Captures temporal market trends
-   * Generates the house price index
+  * Processes property features
+  * Learns property-specific value components
+  * Handles both continuous and categorical inputs
+  * Uses embeddings for categorical features
 
-3. Combined Output:
-   * Merges property and time effects
-   * Produces final price predictions
+2. Time Effect Network
+
+  * Captures temporal market trends
+  * Generates the house price index
+  * Processes temporal features
+  * Learns market-level patterns
+
+3. Combined Output
+
+  * Merges property and time effects
+  * Produces final price predictions
+  * Balances feature importance
+  * Enables index extraction
 
 Parameters
 ----------
@@ -89,10 +160,19 @@ Parameters
 Key neural network parameters:
 
 estimator : str
-    Estimator type. "residual" or "attributional". Defaults to "residual".
+    Estimator type. Choose between:
+    
+    * "residual": Extracts index from market pathway (default)
+    * "attributional": Derives index through explainability analysis
 
 feature_dict : dict
-    Feature dictionary.
+    Feature dictionary specifying how different variables should be processed:
+    
+    * numerics: Standard numeric features
+    * log_numerics: Features to be log-transformed
+    * categoricals: Categorical features for embedding
+    * ordinals: Ordinal features
+    * hpi: Temporal features for index generation
 
 hidden_layers : list
     List of integers specifying the number of neurons in each hidden layer.
@@ -118,15 +198,17 @@ dropout : float
 Evaluating the Index
 --------------------
 
-Evaluate the random forest index using various metrics:
+Evaluate the neural network index using various metrics:
 
 .. code-block:: python
 
-    from hpipy.utils.metrics import volatility
-    from hpipy.utils.plotting import plot_index
+    >>> from hpipy.utils.metrics import volatility
+    >>> from hpipy.utils.plotting import plot_index
 
     # Calculate metrics.
-    vol = volatility(hpi)
+    >>> vol_residual = volatility(hpi_residual)
+    >>> vol_attr = volatility(hpi_attr)
 
     # Visualize results.
-    plot_index(hpi)
+    >>> plot_index(hpi_residual) & plot_index(hpi_attr)
+    alt.VConcatChart(...)

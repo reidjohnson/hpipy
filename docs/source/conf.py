@@ -79,3 +79,7 @@ myst_enable_extensions = [
     "colon_fence",
     "deflist",
 ]
+
+# Copybutton settings.
+copybutton_prompt_text = r">>> |\.\.\. "
+copybutton_prompt_is_regexp = True

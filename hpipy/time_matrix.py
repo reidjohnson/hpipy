@@ -32,8 +32,8 @@ class TimeMatrixMixin:
                 the minimum and maximum periods in the input data.
         """
         # Extract start/end/diff.
-        time_start = repeat_trans_df["period_1"].min().astype(int)
-        time_end = repeat_trans_df["period_2"].max().astype(int)
+        time_start = repeat_trans_df["period_1"].min()
+        time_end = repeat_trans_df["period_2"].max()
         time_diff = time_end - time_start
 
         # Set up empty matrix.

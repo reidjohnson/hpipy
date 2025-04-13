@@ -2,7 +2,7 @@
 
 **hpiPy** simplifies and standardizes the creation of house price indices in Python.
 
-The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. The package also includes a random forest–based method with partial dependence plots for post-model interpretability, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data. The package is based on [hpiR](https://github.com/andykrause/hpiR).
+The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. The package also includes a random forest–based method with partial dependence plots for post-model interpretability, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data. Based on [hpiR](https://github.com/andykrause/hpiR).
 
 ## Running the Tests
 
@@ -47,6 +47,10 @@ hpi = RepeatTransactionIndex.create_index(
     smooth=True,
 )
 ```
+
+## Documentation
+
+An installation guide, API documentation, and examples can be found in the [documentation](https://reidjohnson.github.io/hpipy/).
 
 ## Acknowledgements
 

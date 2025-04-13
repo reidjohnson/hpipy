@@ -17,25 +17,25 @@ Here's how to prepare your data:
 
 .. code-block:: python
 
-    import pandas as pd
-    from hpipy.period_table import PeriodTable
-    from hpipy.trans_data import HedonicTransactionData
+    >>> import pandas as pd
+    >>> from hpipy.period_table import PeriodTable
+    >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load your sales data.
-    df = pd.read_csv("sales_data.csv", parse_dates=["sale_date"])
+    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
 
     # Create a period table.
-    sales_hdata = PeriodTable(df).create_period_table(
-        "sale_date",
-        periodicity="monthly",
-    )
+    >>> sales_hdata = PeriodTable(df).create_period_table(
+    ...     "sale_date",
+    ...     periodicity="monthly",
+    ... )
 
     # Prepare hedonic data.
-    trans_data = HedonicTransactionData(sales_hdata).create_transactions(
-        price="sale_price",
-        trans_id="sale_id",
-        prop_id="pinx",
-    )
+    >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+    ...     price="sale_price",
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ... )
 
 Creating the Index
 ------------------
@@ -44,19 +44,19 @@ Once your data is prepared, you can create the hedonic price index:
 
 .. code-block:: python
 
-    from hpipy.price_index import HedonicIndex
+    >>> from hpipy.price_index import HedonicIndex
 
     # Create the index.
-    hpi = HedonicIndex.create_index(
-        trans_data=trans_data,
-        date="sale_date",
-        price="sale_price",
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        estimator="robust",  # or "base", "weighted"
-        log_dep=True,
-        smooth=True,
-    )
+    >>> hpi = HedonicIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     date="sale_date",
+    ...     price="sale_price",
+    ...     dep_var="price",
+    ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     estimator="robust",  # or "base", "weighted"
+    ...     log_dep=True,
+    ...     smooth=True,
+    ... )
 
 Parameters
 ----------
@@ -86,18 +86,18 @@ For more control over the hedonic model:
 
 .. code-block:: python
 
-    from hpipy.price_index import HedonicIndex
-    from hpipy.price_model import HedonicModel
+    >>> from hpipy.price_index import HedonicIndex
+    >>> from hpipy.price_model import HedonicModel
 
     # Create and fit the model.
-    model = HedonicModel(trans_data).fit(
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        log_dep=True,
-    )
+    >>> model = HedonicModel(trans_data).fit(
+    ...     dep_var="price",
+    ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     log_dep=True,
+    ... )
 
     # Create the index.
-    hpi = HedonicIndex.from_model(model)
+    >>> hpi = HedonicIndex.from_model(model)
 
 Feature Engineering
 -------------------
@@ -108,25 +108,27 @@ The hedonic method often benefits from careful feature engineering:
    
    .. code-block:: python
 
+       >>> import numpy as np
+
        # Log transform skewed features.
-       df["log_sqft"] = np.log(df["sqft"])
+       >>> df["log_sqft"] = np.log(df["tot_sf"])
 
        # Create interaction terms.
-       df["price_per_sqft"] = df["price"] / df["sqft"]
+       >>> df["price_per_sqft"] = df["sale_price"] / df["tot_sf"]
 
 2. Categorical Features:
    
    .. code-block:: python
 
        # One-hot encode categorical variables.
-       df = pd.get_dummies(df, columns=["property_type", "neighborhood"])
+       >>> df = pd.get_dummies(df, columns=["use_type", "area"])
 
 3. Spatial Features:
    
    .. code-block:: python
 
        # Create location-based features.
-       df["dist_to_cbd"] = calculate_dist(df["lat"], df["lon"], cbd_lat, cbd_lon)
+       >>> df["lat_lon"] = df[["latitude", "longitude"]].round(2).astype(str).agg("_".join, axis=1)
 
 Evaluating the Index
 --------------------
@@ -135,11 +137,12 @@ Evaluate the hedonic index using various metrics:
 
 .. code-block:: python
 
-    from hpipy.utils.metrics import volatility
-    from hpipy.utils.plotting import plot_index
+    >>> from hpipy.utils.metrics import volatility
+    >>> from hpipy.utils.plotting import plot_index
 
     # Calculate metrics.
-    vol = volatility(hpi)
+    >>> vol = volatility(hpi)
 
     # Visualize results.
-    plot_index(hpi)
+    >>> plot_index(hpi)
+    alt.Chart(...)

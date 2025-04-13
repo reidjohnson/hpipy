@@ -27,18 +27,26 @@ Example setup:
 
 .. code-block:: python
 
-    import pandas as pd
-    from hpipy.period_table import PeriodTable
-    from hpipy.extensions import RandomForestIndex
+    >>> import pandas as pd
+    >>> from hpipy.extensions import RandomForestIndex
+    >>> from hpipy.period_table import PeriodTable
+    >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load and prepare data.
-    df = pd.read_csv("sales_data.csv", parse_dates=["sale_date"])
+    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
     
     # Create period table.
-    trans_data = PeriodTable(df).create_period_table(
-        "sale_date",
-        periodicity="monthly",
-    )
+    >>> sales_hdata = PeriodTable(df).create_period_table(
+    ...     "sale_date",
+    ...     periodicity="monthly",
+    ... )
+
+    # Prepare hedonic data.
+    >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+    ...     price="sale_price",
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ... )
 
 Creating the Index
 ------------------
@@ -48,19 +56,19 @@ Create a Random Forest-based index:
 .. code-block:: python
 
     # Create the index.
-    hpi = RandomForestIndex.create_index(
-        trans_data=trans_data,
-        trans_id="sale_id",
-        prop_id="pinx",
-        date="sale_date",
-        price="sale_price",
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        n_estimators=100,
-        min_samples_leaf=5,
-        max_features="sqrt",
-        smooth=True,
-    )
+    >>> hpi = RandomForestIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     trans_id="sale_id",
+    ...     prop_id="pinx",
+    ...     date="sale_date",
+    ...     price="sale_price",
+    ...     dep_var="price",
+    ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     n_estimators=100,
+    ...     min_samples_leaf=5,
+    ...     max_features="sqrt",
+    ...     smooth=True,
+    ... )
 
 Parameters
 ----------
@@ -90,8 +98,7 @@ Analyze feature importance:
 .. code-block:: python
 
     # Get feature importance.
-    importance = hpi.model.model_obj.feature_importances_
-    print(importance)
+    >>> importance = hpi.model.model_obj.feature_importances_
 
 Evaluating the Index
 --------------------
@@ -100,11 +107,12 @@ Evaluate the random forest index using various metrics:
 
 .. code-block:: python
 
-    from hpipy.utils.metrics import volatility
-    from hpipy.utils.plotting import plot_index
+    >>> from hpipy.utils.metrics import volatility
+    >>> from hpipy.utils.plotting import plot_index
 
     # Calculate metrics.
-    vol = volatility(hpi)
+    >>> vol = volatility(hpi)
 
     # Visualize results.
-    plot_index(hpi)
+    >>> plot_index(hpi)
+    alt.Chart(...)
