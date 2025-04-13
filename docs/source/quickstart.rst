@@ -85,7 +85,7 @@ hpiPy supports several methods for creating house price indices:
       from hpipy.extensions import RandomForestIndex
       hpi = RandomForestIndex.create_index(...)
 
-3. Neural Network Method
+4. Neural Network Method
    
    .. code-block:: python
 
