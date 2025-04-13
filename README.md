@@ -39,6 +39,7 @@ hpi = RepeatTransactionIndex.create_index(
     estimator="robust",
     log_dep=True,
     smooth=True,
+    periodicity="M",
 )
 ```
 
