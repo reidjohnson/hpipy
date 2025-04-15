@@ -25,12 +25,12 @@ A basic example of creating a house price index:
 ```python
 import altair as alt
 import pandas as pd
-from hpipy.datasets import load_ex_sales
+from hpipy.datasets import load_seattle_sales
 from hpipy.price_index import RepeatTransactionIndex
 from hpipy.utils.plotting import plot_index
 
 # Load prepared data.
-df = load_ex_sales()
+df = load_seattle_sales()
 
 # Create an index.
 hpi = RepeatTransactionIndex.create_index(
@@ -47,8 +47,10 @@ hpi = RepeatTransactionIndex.create_index(
 
 # Visualize the index.
 with alt.renderers.enable("browser"):
-    plot_index(hpi, smooth=True).properties(title="Example Index").show()
+    plot_index(hpi, smooth=True).properties(title="Example Index", width=600).show()
 ```
+
+![Example Index Visualization](https://raw.githubusercontent.com/reidjohnson/hpipy/main/images/seattle_index.png)
 
 ## Documentation
 
