@@ -37,7 +37,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = { find = { where = ["."], include = ["hpipy"] } }
+packages = { find = { where = ["."], include = ["hpipy*"] } }
 
 [tool.setuptools.dynamic]
 version = { file = "hpipy/version.txt" }
