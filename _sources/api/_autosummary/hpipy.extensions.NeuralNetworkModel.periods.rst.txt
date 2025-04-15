@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.periods
+===========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkModel.periods

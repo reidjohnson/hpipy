@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.\_\_init\_\_
+===============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestModel.__init__

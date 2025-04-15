@@ -1,0 +1,48 @@
+﻿hpipy.extensions.RandomForestModel
+==================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoclass:: RandomForestModel
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~RandomForestModel.__init__
+      ~RandomForestModel.fit
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~RandomForestModel.coefficients
+      ~RandomForestModel.model_obj
+      ~RandomForestModel.periods
+      ~RandomForestModel.base_price
+      ~RandomForestModel.params
+   
+   
+
+   
+   
+   
+
+   
+   
+   

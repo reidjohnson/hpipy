@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.base\_price
+==============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestModel.base_price

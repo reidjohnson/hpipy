@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.coefficients
+===============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestModel.coefficients

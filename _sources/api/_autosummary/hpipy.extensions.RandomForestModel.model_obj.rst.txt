@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.model\_obj
+=============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestModel.model_obj

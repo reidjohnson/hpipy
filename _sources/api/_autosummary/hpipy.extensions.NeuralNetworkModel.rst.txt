@@ -1,0 +1,48 @@
+﻿hpipy.extensions.NeuralNetworkModel
+===================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoclass:: NeuralNetworkModel
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      ~NeuralNetworkModel.__init__
+      ~NeuralNetworkModel.fit
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~NeuralNetworkModel.coefficients
+      ~NeuralNetworkModel.model_obj
+      ~NeuralNetworkModel.periods
+      ~NeuralNetworkModel.base_price
+      ~NeuralNetworkModel.params
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.periods
+==========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestModel.periods

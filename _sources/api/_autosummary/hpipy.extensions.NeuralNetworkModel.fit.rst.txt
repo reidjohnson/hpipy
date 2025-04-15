@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.fit
+=======================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: NeuralNetworkModel.fit

@@ -90,46 +90,36 @@ Create a Neural Network-based index using either approach:
 
     >>> from hpipy.extensions import NeuralNetworkIndex
 
-    # Create index using residual approach (default)
-    >>> hpi_residual = NeuralNetworkIndex.create_index(
-    ...     trans_data=trans_data,
-    ...     prop_id="pinx",
-    ...     trans_id="sale_id",
-    ...     price="sale_price",
-    ...     date="sale_date",
-    ...     dep_var="price",
-    ...     ind_var=["tot_sf", "beds", "baths"],
-    ...     estimator="residual",  # default
-    ...     feature_dict={
+    >>> kwargs = {
+    ...     "prop_id": "pinx",
+    ...     "trans_id": "sale_id",
+    ...     "price": "sale_price",
+    ...     "date": "sale_date",
+    ...     "dep_var": "price",
+    ...     "ind_var": ["tot_sf", "beds", "baths"],
+    ...     "feature_dict": {
     ...         "numerics": [],
     ...         "log_numerics": ["tot_sf"],
     ...         "categoricals": [],
     ...         "ordinals": ["beds", "baths"],
     ...         "hpi": ["sale_date"],
     ...     },
-    ...     preprocess_geo=False,
-    ...     random_seed=0,
+    ...     "preprocess_geo": False,
+    ...     "random_seed": 0,
+    ... }
+
+    # Create index using residual approach (default)
+    >>> hpi_residual = NeuralNetworkIndex.create_index(
+    ...     trans_data=trans_data,
+    ...     estimator="residual",  # default
+    ...     **kwargs,
     ... )
 
     # Create index using attributional approach
     >>> hpi_attr = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
-    ...     prop_id="pinx",
-    ...     trans_id="sale_id",
-    ...     price="sale_price",
-    ...     date="sale_date",
-    ...     dep_var="price",
-    ...     ind_var=["tot_sf", "beds", "baths"],
     ...     estimator="attributional",
-    ...     feature_dict={
-    ...         "numerics": [],
-    ...         "log_numerics": ["tot_sf"],
-    ...         "categoricals": [],
-    ...         "ordinals": ["beds", "baths"],
-    ...         "hpi": ["sale_date"],
-    ...     },
-    ...     preprocess_geo=False,
-    ...     random_seed=0,
+    ...     **kwargs,
     ... )
 
 Network Architecture
@@ -243,43 +233,28 @@ Evaluate the neural network index using various metrics:
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price"
     )
-    hpi_residual = NeuralNetworkIndex.create_index(
-        trans_data=trans_data,
-        prop_id="pinx",
-        trans_id="sale_id",
-        price="sale_price",
-        date="sale_date",
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        estimator="residual",  # default
-        feature_dict={
+    kwargs = {
+        "prop_id": "pinx",
+        "trans_id": "sale_id",
+        "price": "sale_price",
+        "date": "sale_date",
+        "dep_var": "price",
+        "ind_var": ["tot_sf", "beds", "baths"],
+        "feature_dict": {
             "numerics": [],
             "log_numerics": ["tot_sf"],
             "categoricals": [],
             "ordinals": ["beds", "baths"],
             "hpi": ["sale_date"],
         },
-        preprocess_geo=False,
-        random_seed=0,
+        "preprocess_geo": False,
+        "random_seed": 0,
+    }
+    hpi_residual = NeuralNetworkIndex.create_index(
+        trans_data=trans_data, estimator="residual", **kwargs
     )
     hpi_attr = NeuralNetworkIndex.create_index(
-        trans_data=trans_data,
-        prop_id="pinx",
-        trans_id="sale_id",
-        price="sale_price",
-        date="sale_date",
-        dep_var="price",
-        ind_var=["tot_sf", "beds", "baths"],
-        estimator="attributional",
-        feature_dict={
-            "numerics": [],
-            "log_numerics": ["tot_sf"],
-            "categoricals": [],
-            "ordinals": ["beds", "baths"],
-            "hpi": ["sale_date"],
-        },
-        preprocess_geo=False,
-        random_seed=0,
+        trans_data=trans_data, estimator="attributional", **kwargs
     )
     chart = alt.layer(
         (

@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.params
+==========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkModel.params

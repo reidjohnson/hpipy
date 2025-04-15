@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.fit
+======================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: RandomForestModel.fit

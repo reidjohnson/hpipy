@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestModel.params
+=========================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestModel.params

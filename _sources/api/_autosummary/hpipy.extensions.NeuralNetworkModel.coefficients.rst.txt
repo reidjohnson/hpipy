@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.coefficients
+================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkModel.coefficients

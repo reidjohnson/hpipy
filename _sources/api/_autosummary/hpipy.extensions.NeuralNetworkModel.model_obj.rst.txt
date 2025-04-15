@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.model\_obj
+==============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkModel.model_obj

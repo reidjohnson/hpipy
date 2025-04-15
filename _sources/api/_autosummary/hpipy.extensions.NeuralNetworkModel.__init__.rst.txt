@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.\_\_init\_\_
+================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. automethod:: NeuralNetworkModel.__init__

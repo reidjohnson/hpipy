@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkModel.base\_price
+===============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkModel.base_price
