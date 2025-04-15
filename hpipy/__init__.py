@@ -9,6 +9,6 @@ except ImportError:
     with open(version_txt) as f:
         __version__ = f.read().strip()
 
-from . import extensions, price_index, utils
+from . import datasets, extensions, price_index, utils
 
-__all__ = ["extensions", "price_index", "utils"]
+__all__ = ["datasets", "extensions", "price_index", "utils"]

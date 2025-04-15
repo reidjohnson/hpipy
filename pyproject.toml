@@ -42,6 +42,9 @@ packages = { find = { where = ["."], include = ["hpipy*"] } }
 [tool.setuptools.dynamic]
 version = { file = "hpipy/version.txt" }
 
+[tool.setuptools.package-data]
+"hpipy.datasets.data" = ["*.csv"]
+
 [tool.black]
 line-length = 99
 

@@ -318,9 +318,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Bad prediction dataframe.
     with pytest.raises(ValueError):
-        _ = hed_series = series_accuracy(
-            hed_series, test_method="insample", test_type="rt"  # type: ignore
-        )
+        _ = series_accuracy(hed_series, test_method="insample", test_type="rt")  # type: ignore
 
     # Smooth and in place.
     rt_series = series_accuracy(

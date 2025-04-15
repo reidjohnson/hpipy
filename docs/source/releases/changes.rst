@@ -7,6 +7,7 @@ Version 0.1.2 (released April 15, 2025)
 ---------------------------------------
 
 * Fix build issues
+* Add dataset loader
 
 **Full Changelog**: https://github.com/reidjohnson/hpipy/compare/v0.1.1...v0.1.2
 

@@ -108,13 +108,26 @@ class BaseHousePriceIndex(ABC):
         return index, is_imputed
 
     @classmethod
-    def from_model(cls, model: BaseHousePriceModel, max_period: Optional[int] = None) -> Self:
+    def from_model(
+        cls,
+        model: BaseHousePriceModel,
+        trans_data: Optional[TransactionData] = None,
+        max_period: Optional[int] = None,
+        smooth: bool = False,
+        **kwargs: Any,
+    ) -> Self:
         """Create an index from a house price model.
 
         Args:
             model (BaseHousePriceModel): House price model object.
-            max_period (Optional[int], optional): Maximum period for the index.
+            trans_data (Optional[TransactionData], optional): Transaction data
+                object.
                 Defaults to None.
+            max_period (Optional[int], optional): Maximum period for the
+                index.
+                Defaults to None.
+            smooth (bool, optional): Smooth the index.
+                Defaults to False.
         """
         if max_period is None:
             max_period = int(model.coefficients["time"].max())
@@ -158,11 +171,29 @@ class BaseHousePriceIndex(ABC):
             value=index,
             imputed=is_imputed[:max_period],
         )
+
+        if not isinstance(instance, BaseHousePriceIndex):
+            raise Exception("Converting model results to index failed.")
+
+        if smooth:
+            if "smooth_order" not in kwargs:
+                smooth_order = 3
+            else:
+                smooth_order = kwargs["smooth_order"]
+
+            instance = instance.smooth_index(order=smooth_order, in_place=True)
+            if not hasattr(instance, "smooth"):
+                raise Exception("Smoothing index failed.")
+
+        if trans_data is not None:
+            instance.data = trans_data
+
         assert instance.model is not None
         assert instance.name is not None
         assert instance.periods is not None
         assert instance.value is not None
         assert instance.imputed is not None
+
         return instance
 
     @staticmethod
@@ -285,23 +316,13 @@ class BaseHousePriceIndex(ABC):
             raise Exception("Estimating model failed.")
 
         # Convert to an index.
-        index = cls.from_model(model, max_period=max_period)
-
-        if not isinstance(index, BaseHousePriceIndex):
-            raise Exception("Converting model results to index failed.")
-
-        if smooth:
-            if "smooth_order" not in kwargs:
-                smooth_order = 3
-            else:
-                smooth_order = kwargs["smooth_order"]
-
-            index = index.smooth_index(order=smooth_order, in_place=True)
-            if not hasattr(index, "smooth"):
-                raise Exception("Smoothing index failed.")
-
-        index.data = trans_data
-        index.model = model
+        index = cls.from_model(
+            model,
+            trans_data=trans_data,
+            max_period=max_period,
+            smooth=smooth,
+            **kwargs,
+        )
 
         return index
 
@@ -367,8 +388,13 @@ class BaseHousePriceIndex(ABC):
             if isinstance(self.data, TransactionData):
                 data.trans_df = data.trans_df.iloc[row_ids[idx]]
             model_i = self._create_model(data, **model.params, **kwargs)
-            index_i = copy.deepcopy(self.from_model(model_i, max_period=time_range[idx] - 1))
-            index_i.data = data
+            index_i = copy.deepcopy(
+                self.from_model(
+                    model_i,
+                    trans_data=data,
+                    max_period=time_range[idx] - 1,
+                )
+            )
             is_hpis.append(index_i)
 
         self.hpis = is_hpis
@@ -463,9 +489,10 @@ class BaseHousePriceIndex(ABC):
 class RepeatTransactionIndex(BaseHousePriceIndex):
     """Repeat transaction house price index.
 
-    This class implements the repeat transaction methodology for constructing house price indices.
-    It uses pairs of transactions for the same property to estimate price changes over time,
-    controlling for property-specific characteristics that remain constant between sales.
+    This class implements the repeat transaction methodology for constructing
+    house price indices. It uses pairs of transactions for the same property
+    to estimate price changes over time, controlling for property-specific
+    characteristics that remain constant between sales.
 
     Parameters
     ----------
@@ -571,9 +598,10 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
 class HedonicIndex(BaseHousePriceIndex):
     """Hedonic house price index.
 
-    This class implements the hedonic methodology for constructing house price indices.
-    It uses property characteristics to control for quality differences between properties
-    and estimates the pure price change over time.
+    This class implements the hedonic methodology for constructing house price
+    indices. It uses property characteristics to control for quality
+    differences between properties and estimates the pure price change over
+    time.
 
     Parameters
     ----------

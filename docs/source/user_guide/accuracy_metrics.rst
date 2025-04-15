@@ -6,11 +6,12 @@ Accuracy metrics measure how well the index predicts actual property values:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.metrics import accuracy
     >>> from hpipy.utils.plotting import plot_index_accuracy
 
-    >>> df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_seattle_sales()
 
     >>> hpi = RepeatTransactionIndex.create_index(
     ...    trans_data=df,
@@ -42,10 +43,11 @@ Accuracy metrics measure how well the index predicts actual property values:
 
     import altair as alt
     import pandas as pd
+    from hpipy.datasets import load_seattle_sales
     from hpipy.price_index import RepeatTransactionIndex
     from hpipy.utils.metrics import accuracy
     from hpipy.utils.plotting import plot_index_accuracy
-    df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
+    df = load_seattle_sales()
     hpi = RepeatTransactionIndex.create_index(
        trans_data=df,
        prop_id="pinx",

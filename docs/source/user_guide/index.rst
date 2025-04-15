@@ -5,8 +5,8 @@ User Guide
 
 Welcome to the **hpiPy User Guide**. This guide walks you through creating and evaluating **House Price Indices** using various methods—from repeat sales to hedonic pricing to machine learning.
 
-Index Construction Methods
---------------------------
+Price Index Methods
+-------------------
 
 Use one of the following methods to build house price indices:
 

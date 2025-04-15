@@ -6,11 +6,12 @@ Compare different index methods:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.extensions import NeuralNetworkIndex, RandomForestIndex
     >>> from hpipy.price_index import HedonicIndex, RepeatTransactionIndex
     >>> from hpipy.utils.metrics import accuracy, volatility
 
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_ex_sales()
 
     >>> index_kwargs = {
     ...    "trans_data": df,

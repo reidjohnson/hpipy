@@ -1,15 +1,9 @@
 """Configure unit tests."""
 
-import os
-
 import pandas as pd
 import pytest
 
-BASE_PATH = os.path.dirname(os.path.realpath(__file__))
-
-TEST_DATA_DIR = os.path.join(BASE_PATH, "../../data")
-TOY_DATA_FILE = "ex_sales.csv"
-SEATTLE_DATA_FILE = "seattle_sales.csv"
+from hpipy.datasets import load_ex_sales, load_seattle_sales
 
 
 class MyTestDataset:
@@ -17,12 +11,12 @@ class MyTestDataset:
 
     def __init__(self) -> None:
         """Initialize toy dataset class."""
-        self._dataset = os.path.join(TEST_DATA_DIR, TOY_DATA_FILE)
+        pass
 
     @property
     def dataset(self) -> pd.DataFrame:
         """Dataset."""
-        return pd.read_csv(self._dataset, parse_dates=["sale_date"])
+        return load_ex_sales()
 
 
 @pytest.fixture(scope="session")
@@ -36,12 +30,12 @@ class SeattleDataset:
 
     def __init__(self) -> None:
         """Initialize Seattle dataset class."""
-        self._dataset = os.path.join(TEST_DATA_DIR, SEATTLE_DATA_FILE)
+        pass
 
     @property
     def dataset(self) -> pd.DataFrame:
         """Dataset."""
-        return pd.read_csv(self._dataset, parse_dates=["sale_date"])
+        return load_seattle_sales()
 
 
 @pytest.fixture(scope="session")

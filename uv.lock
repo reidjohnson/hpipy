@@ -357,8 +357,7 @@ wheels = [
 
 [[package]]
 name = "hpipy"
-version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "altair" },
     { name = "captum" },
@@ -384,21 +383,21 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "altair", specifier = ">=5.5.0" },
+    { name = "altair", specifier = "~=5.5.0" },
     { name = "black", marker = "extra == 'dev'", specifier = ">=25.1.0" },
-    { name = "captum", specifier = ">=0.8.0" },
+    { name = "captum", specifier = "~=0.8.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.2.0" },
-    { name = "h3", specifier = ">=4.2.1" },
+    { name = "h3", specifier = "~=4.2.1" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=6.0.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.15.0" },
-    { name = "numpy", marker = "python_full_version < '3.13'", specifier = ">=1.26.4" },
-    { name = "pandas", specifier = ">=2.2.3" },
+    { name = "numpy", marker = "python_full_version < '3.13'", specifier = "~=1.26.4" },
+    { name = "pandas", specifier = "~=2.2.3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.5" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.1.1" },
-    { name = "quantile-forest", specifier = ">=1.4.0" },
-    { name = "scikit-learn", specifier = ">=1.6.1" },
-    { name = "scipy", specifier = ">=1.15.2" },
-    { name = "statsmodels", specifier = ">=0.14.4" },
+    { name = "quantile-forest", specifier = "~=1.4.0" },
+    { name = "scikit-learn", specifier = "~=1.6.1" },
+    { name = "scipy", specifier = "~=1.15.2" },
+    { name = "statsmodels", specifier = "~=0.14.4" },
     { name = "torch", specifier = "~=2.6.0" },
 ]
 provides-extras = ["dev"]

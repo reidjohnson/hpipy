@@ -61,11 +61,12 @@ Example setup:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load and prepare data.
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_ex_sales()
     
     # Create period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
@@ -232,11 +233,12 @@ Evaluate the neural network index using various metrics:
 
     import altair as alt
     import pandas as pd
+    from hpipy.datasets import load_ex_sales
     from hpipy.extensions import NeuralNetworkIndex
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import HedonicTransactionData
     from hpipy.utils.plotting import plot_index
-    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price"
