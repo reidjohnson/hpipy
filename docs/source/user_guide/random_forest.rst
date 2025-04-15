@@ -101,7 +101,7 @@ Analyze feature importance:
 
     >>> importance = hpi.model.model_obj.feature_importances_
     >>> importance
-    array([0.73845824, 0.03189192, 0.05942835, 0.1702215 ])
+    array(...)
 
 Evaluating the Index
 --------------------
