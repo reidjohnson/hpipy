@@ -61,7 +61,7 @@ Once your data is prepared, you can create the hedonic price index:
     ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
-    ...     estimator="robust",  # or "base", "weighted"
+    ...     estimator="base",  # or "robust", "weighted"
     ...     log_dep=True,
     ...     smooth=True,
     ... )
@@ -78,14 +78,14 @@ estimator : str
     * "robust": Robust regression (less sensitive to outliers).
     * "weighted": Weighted regression.
 
-characteristics : list
-    List of property characteristic columns to use in the model.
+dep_var : str
+    Dependent variable to model.
+
+ind_var : list
+    Independent variables to use in the model.
 
 log_dep : bool
     Whether to use log of price as dependent variable (recommended).
-
-smooth : bool
-    Whether to apply smoothing to the final index.
 
 Advanced Usage
 --------------
@@ -101,6 +101,7 @@ For more control over the hedonic model:
     >>> model = HedonicModel(trans_data).fit(
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     estimator="base",
     ...     log_dep=True,
     ... )
 
@@ -181,7 +182,7 @@ Evaluate the hedonic index using various metrics:
         prop_id="pinx", trans_id="sale_id", price="sale_price"
     )
     model = HedonicModel(trans_data).fit(
-        dep_var="price", ind_var=["tot_sf", "beds", "baths"], log_dep=True
+        dep_var="price", ind_var=["tot_sf", "beds", "baths"], estimator="base", log_dep=True
     )
     hpi = HedonicIndex.from_model(model, trans_data=trans_data, smooth=True)
     chart = plot_index(hpi, smooth=True).properties(title="Hedonic Index", width=600)

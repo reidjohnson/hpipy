@@ -116,7 +116,7 @@ Create a Neural Network-based index using either approach:
     ... )
 
     # Create index using attributional approach
-    >>> hpi_attr = NeuralNetworkIndex.create_index(
+    >>> hpi_attributional = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
     ...     estimator="attributional",
     ...     **kwargs,
@@ -153,41 +153,47 @@ Parameters
 
 Key neural network parameters:
 
+dep_var : str
+    Dependent variable to model.
+
+ind_var : list
+    Independent variables to use in the model.
+
 estimator : str
     Estimator type. Choose between:
-    
+
     * "residual": Extracts index from market pathway (default)
     * "attributional": Derives index through explainability analysis
 
 feature_dict : dict
     Feature dictionary specifying how different variables should be processed:
-    
+
     * numerics: Standard numeric features
     * log_numerics: Features to be log-transformed
     * categoricals: Categorical features for embedding
     * ordinals: Ordinal features
     * hpi: Temporal features for index generation
 
-hidden_layers : list
-    List of integers specifying the number of neurons in each hidden layer.
+num_models : int
+    Number of models to train in ensemble.
 
-activation : str
-    Activation function to use ("relu", "tanh", etc.).
-
-learning_rate : float
-    Learning rate for optimization.
-
-epochs : int
+num_epochs : int
     Number of training epochs.
 
 batch_size : int
     Batch size for training.
 
-smooth : bool
-    Whether to apply smoothing to the final index.
+hidden_dims : list
+    List of integers specifying the number of neurons in each hidden layer.
 
-dropout : float
+emb_size : int
+    Embedding size for categorical features.
+
+dropout_rate : float
     Dropout rate for regularization (0 to 1).
+
+learning_rate : float
+    Learning rate for optimization.
 
 Evaluating the Index
 --------------------
@@ -202,7 +208,7 @@ Evaluate the neural network index using various metrics:
 
     # Calculate metrics.
     >>> vol_residual = volatility(hpi_residual)
-    >>> vol_attr = volatility(hpi_attr)
+    >>> vol_attributional = volatility(hpi_attributional)
 
     # Visualize results.
     >>> alt.layer(
@@ -212,7 +218,7 @@ Evaluate the neural network index using various metrics:
     ...         .encode(color=alt.Color("method:N", title="Method"))
     ...     ),
     ...     (
-    ...         plot_index(hpi_attr)
+    ...         plot_index(hpi_attributional)
     ...         .transform_calculate(method="'Attributional'")
     ...         .encode(color=alt.Color("method:N", title="Method"))
     ...     ),
@@ -253,7 +259,7 @@ Evaluate the neural network index using various metrics:
     hpi_residual = NeuralNetworkIndex.create_index(
         trans_data=trans_data, estimator="residual", **kwargs
     )
-    hpi_attr = NeuralNetworkIndex.create_index(
+    hpi_attributional = NeuralNetworkIndex.create_index(
         trans_data=trans_data, estimator="attributional", **kwargs
     )
     chart = alt.layer(
@@ -263,7 +269,7 @@ Evaluate the neural network index using various metrics:
             .encode(color=alt.Color("method:N", title="Method"))
         ),
         (
-            plot_index(hpi_attr)
+            plot_index(hpi_attributional)
             .transform_calculate(method="'Attributional'")
             .encode(color=alt.Color("method:N", title="Method"))
         ),

@@ -81,15 +81,6 @@ estimator : str
 log_dep : bool
     Whether to use log price differences (recommended).
 
-smooth : bool
-    Whether to apply smoothing to the final index.
-
-min_period_dist : int
-    Minimum number of periods between sales pairs.
-
-seq_only : bool
-    If True, only use sequential sales pairs (no skipping intermediate sales).
-
 Advanced Usage
 --------------
 
@@ -103,6 +94,7 @@ For more control over the index creation process, you can use the lower-level AP
     # Create and fit the model.
     >>> model = RepeatTransactionModel(
     ...     trans_data,
+    ...     estimator="robust",
     ...     log_dep=True,
     ... ).fit()
 
@@ -145,6 +137,6 @@ You can evaluate the index quality using various metrics:
     trans_data = RepeatTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price", min_period_dist=12
     )
-    model = RepeatTransactionModel(trans_data, log_dep=True).fit()
+    model = RepeatTransactionModel(trans_data, estimator="robust", log_dep=True).fit()
     hpi = RepeatTransactionIndex.from_model(model, trans_data=trans_data, smooth=True)
     chart = plot_index(hpi, smooth=True).properties(title="Repeat Sales Index", width=600)
