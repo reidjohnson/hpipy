@@ -1,5 +1,5 @@
-Neural Network Method
-=====================
+Neural Network
+==============
 
 The Neural Network method in hpiPy provides a deep learning approach to house price index creation, capable of learning complex patterns and separating property-specific effects from market-level trends.
 
@@ -61,7 +61,6 @@ Example setup:
 .. code-block:: python
 
     >>> import pandas as pd
-    >>> from hpipy.extensions import NeuralNetworkIndex
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
@@ -76,9 +75,9 @@ Example setup:
 
     # Prepare hedonic data.
     >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
-    ...     price="sale_price",
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
     ... )
 
 Creating the Index
@@ -88,13 +87,15 @@ Create a Neural Network-based index using either approach:
 
 .. code-block:: python
 
+    >>> from hpipy.extensions import NeuralNetworkIndex
+
     # Create index using residual approach (default)
     >>> hpi_residual = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
-    ...     date="sale_date",
+    ...     trans_id="sale_id",
     ...     price="sale_price",
+    ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
     ...     estimator="residual",  # default
@@ -106,15 +107,16 @@ Create a Neural Network-based index using either approach:
     ...         "hpi": ["sale_date"],
     ...     },
     ...     preprocess_geo=False,
+    ...     random_seed=0,
     ... )
 
     # Create index using attributional approach
     >>> hpi_attr = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
-    ...     date="sale_date",
+    ...     trans_id="sale_id",
     ...     price="sale_price",
+    ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
     ...     estimator="attributional",
@@ -126,6 +128,7 @@ Create a Neural Network-based index using either approach:
     ...         "hpi": ["sale_date"],
     ...     },
     ...     preprocess_geo=False,
+    ...     random_seed=0,
     ... )
 
 Network Architecture
@@ -202,6 +205,7 @@ Evaluate the neural network index using various metrics:
 
 .. code-block:: python
 
+    >>> import altair as alt
     >>> from hpipy.utils.metrics import volatility
     >>> from hpipy.utils.plotting import plot_index
 
@@ -210,5 +214,80 @@ Evaluate the neural network index using various metrics:
     >>> vol_attr = volatility(hpi_attr)
 
     # Visualize results.
-    >>> plot_index(hpi_residual) & plot_index(hpi_attr)
-    alt.VConcatChart(...)
+    >>> alt.layer(
+    ...     (
+    ...         plot_index(hpi_residual)
+    ...         .transform_calculate(method="'Residual'")
+    ...         .encode(color=alt.Color("method:N", title="Method"))
+    ...     ),
+    ...     (
+    ...         plot_index(hpi_attr)
+    ...         .transform_calculate(method="'Attributional'")
+    ...         .encode(color=alt.Color("method:N", title="Method"))
+    ...     ),
+    ... ).properties(title="Neural Network Index")
+    alt.LayerChart(...)
+
+.. invisible-altair-plot::
+
+    import altair as alt
+    import pandas as pd
+    from hpipy.extensions import NeuralNetworkIndex
+    from hpipy.period_table import PeriodTable
+    from hpipy.trans_data import HedonicTransactionData
+    from hpipy.utils.plotting import plot_index
+    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
+    trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+        prop_id="pinx", trans_id="sale_id", price="sale_price"
+    )
+    hpi_residual = NeuralNetworkIndex.create_index(
+        trans_data=trans_data,
+        prop_id="pinx",
+        trans_id="sale_id",
+        price="sale_price",
+        date="sale_date",
+        dep_var="price",
+        ind_var=["tot_sf", "beds", "baths"],
+        estimator="residual",  # default
+        feature_dict={
+            "numerics": [],
+            "log_numerics": ["tot_sf"],
+            "categoricals": [],
+            "ordinals": ["beds", "baths"],
+            "hpi": ["sale_date"],
+        },
+        preprocess_geo=False,
+        random_seed=0,
+    )
+    hpi_attr = NeuralNetworkIndex.create_index(
+        trans_data=trans_data,
+        prop_id="pinx",
+        trans_id="sale_id",
+        price="sale_price",
+        date="sale_date",
+        dep_var="price",
+        ind_var=["tot_sf", "beds", "baths"],
+        estimator="attributional",
+        feature_dict={
+            "numerics": [],
+            "log_numerics": ["tot_sf"],
+            "categoricals": [],
+            "ordinals": ["beds", "baths"],
+            "hpi": ["sale_date"],
+        },
+        preprocess_geo=False,
+        random_seed=0,
+    )
+    chart = alt.layer(
+        (
+            plot_index(hpi_residual)
+            .transform_calculate(method="'Residual'")
+            .encode(color=alt.Color("method:N", title="Method"))
+        ),
+        (
+            plot_index(hpi_attr)
+            .transform_calculate(method="'Attributional'")
+            .encode(color=alt.Color("method:N", title="Method"))
+        ),
+    ).properties(title="Neural Network Index", width=525)

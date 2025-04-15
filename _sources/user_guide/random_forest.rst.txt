@@ -1,5 +1,5 @@
-Random Forest Method
-====================
+Random Forest
+=============
 
 The Random Forest method provides a machine learning approach to house price index creation, offering advantages like handling non-linear relationships and complex interactions between features automatically.
 
@@ -28,7 +28,6 @@ Example setup:
 .. code-block:: python
 
     >>> import pandas as pd
-    >>> from hpipy.extensions import RandomForestIndex
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
@@ -43,9 +42,9 @@ Example setup:
 
     # Prepare hedonic data.
     >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
-    ...     price="sale_price",
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
     ... )
 
 Creating the Index
@@ -55,19 +54,22 @@ Create a Random Forest-based index:
 
 .. code-block:: python
 
+    >>> from hpipy.extensions import RandomForestIndex
+
     # Create the index.
     >>> hpi = RandomForestIndex.create_index(
     ...     trans_data=trans_data,
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
-    ...     date="sale_date",
+    ...     trans_id="sale_id",
     ...     price="sale_price",
+    ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
     ...     n_estimators=100,
     ...     min_samples_leaf=5,
     ...     max_features="sqrt",
     ...     smooth=True,
+    ...     random_seed=0,
     ... )
 
 Parameters
@@ -97,8 +99,9 @@ Analyze feature importance:
 
 .. code-block:: python
 
-    # Get feature importance.
     >>> importance = hpi.model.model_obj.feature_importances_
+    >>> importance
+    array(...)
 
 Evaluating the Index
 --------------------
@@ -114,5 +117,33 @@ Evaluate the random forest index using various metrics:
     >>> vol = volatility(hpi)
 
     # Visualize results.
-    >>> plot_index(hpi)
+    >>> plot_index(hpi).properties(title="Random Forest Index")
     alt.Chart(...)
+
+.. invisible-altair-plot::
+
+    import pandas as pd
+    from hpipy.extensions import RandomForestIndex
+    from hpipy.period_table import PeriodTable
+    from hpipy.trans_data import HedonicTransactionData
+    from hpipy.utils.plotting import plot_index
+    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
+    trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+        prop_id="pinx", trans_id="sale_id", price="sale_price"
+    )
+    hpi = RandomForestIndex.create_index(
+        trans_data=trans_data,
+        prop_id="pinx",
+        trans_id="sale_id",
+        price="sale_price",
+        date="sale_date",
+        dep_var="price",
+        ind_var=["tot_sf", "beds", "baths"],
+        n_estimators=100,
+        min_samples_leaf=5,
+        max_features="sqrt",
+        smooth=True,
+        random_seed=0,
+    )
+    chart = plot_index(hpi).properties(title="Random Forest Index", width=600)

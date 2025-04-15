@@ -1,7 +1,13 @@
-Repeat Sales Method
-===================
+Repeat Sales
+============
 
 The repeat sales method is one of the most widely used approaches for creating house price indices. It uses pairs of sales of the same property to estimate price changes over time.
+
+.. note::
+
+    Background on basic model construction for repeat sales models can be found in:
+
+    Case and Quigley (1991), "The Dynamics of Real Estate Prices", *The Review of Economics and Statistics*, 73(1), 50-58. DOI: `10.2307/2109686 <https://doi.org/10.2307/2109686>`_.
 
 Data Preparation
 ----------------
@@ -50,10 +56,10 @@ Once your data is prepared, you can create the repeat sales index:
     # Create the index.
     >>> hpi = RepeatTransactionIndex.create_index(
     ...     trans_data=trans_data,
-    ...     date="sale_date",
-    ...     price="sale_price",
     ...     prop_id="pinx",
     ...     trans_id="sale_id",
+    ...     price="sale_price",
+    ...     date="sale_date",
     ...     estimator="robust",  # or "base", "weighted"
     ...     log_dep=True,  # use log of price differences
     ...     smooth=True,  # apply smoothing to the index
@@ -119,5 +125,29 @@ You can evaluate the index quality using various metrics:
     >>> vol = volatility(hpi)
 
     # Plot the index.
-    >>> plot_index(hpi)
+    >>> plot_index(hpi).properties(title="Repeat Sales Index")
     alt.Chart(...)
+
+.. invisible-altair-plot::
+
+    import pandas as pd
+    from hpipy.period_table import PeriodTable
+    from hpipy.trans_data import RepeatTransactionData
+    from hpipy.price_index import RepeatTransactionIndex
+    from hpipy.utils.plotting import plot_index
+    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
+    trans_data = RepeatTransactionData(sales_hdata).create_transactions(
+        prop_id="pinx", trans_id="sale_id", price="sale_price", min_period_dist=12
+    )
+    hpi = RepeatTransactionIndex.create_index(
+        trans_data=trans_data,
+        prop_id="pinx",
+        trans_id="sale_id",
+        price="sale_price",
+        date="sale_date",
+        estimator="robust",
+        log_dep=True,
+        smooth=True,
+    )
+    chart = plot_index(hpi).properties(title="Repeat Sales Index", width=600)

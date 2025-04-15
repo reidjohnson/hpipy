@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Hedonic Pricing Method &#8212; hpiPy: House Price Indices in Python</title>
+    <title>Hedonic Pricing &#8212; hpiPy: House Price Indices in Python</title>
   
   
   
@@ -53,8 +53,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/hedonic_pricing';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Random Forest Method" href="random_forest.html" />
-    <link rel="prev" title="Repeat Sales Method" href="repeat_sales.html" />
+    <link rel="next" title="Random Forest" href="random_forest.html" />
+    <link rel="prev" title="Repeat Sales" href="repeat_sales.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -333,12 +333,20 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales Method</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hedonic Pricing Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Price Index Methods</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hedonic Pricing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Comparison</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="accuracy_metrics.html">Accuracy Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility_metrics.html">Volatility Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="revision_metrics.html">Revision Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparative_analysis.html">Comparative Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_window_analysis.html">Time Window Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -382,7 +390,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Hedonic Pricing Method</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Hedonic Pricing</span></li>
   </ul>
 </nav>
 </div>
@@ -399,9 +407,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="hedonic-pricing-method">
-<h1>Hedonic Pricing Method<a class="headerlink" href="#hedonic-pricing-method" title="Link to this heading">#</a></h1>
+  <section id="hedonic-pricing">
+<h1>Hedonic Pricing<a class="headerlink" href="#hedonic-pricing" title="Link to this heading">#</a></h1>
 <p>The hedonic pricing method creates house price indices by modeling property values as a function of their characteristics (e.g., size, location, age) and time period. This approach can use all transactions, not just repeat sales.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Background on basic model construction for hedonic pricing models can be found in:</p>
+<p>Bourassa et al. (2006), “A Simple Alternative House Price Index Method”,
+<em>Journal of Housing Economics</em>, 15(1), 80-97. DOI: <a class="reference external" href="https://doi.org/10.1016/j.jhe.2006.03.001">10.1016/j.jhe.2006.03.001</a>.</p>
+</div>
 <section id="data-preparation">
 <h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Link to this heading">#</a></h2>
 <p>For hedonic pricing, your data should include:</p>
@@ -427,9 +441,9 @@
 
 <span class="go"># Prepare hedonic data.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">trans_data</span> <span class="o">=</span> <span class="n">HedonicTransactionData</span><span class="p">(</span><span class="n">sales_hdata</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">prop_id</span><span class="o">=</span><span class="s2">&quot;pinx&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
@@ -442,8 +456,8 @@
 <span class="go"># Create the index.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpi</span> <span class="o">=</span> <span class="n">HedonicIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">date</span><span class="o">=</span><span class="s2">&quot;sale_date&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">date</span><span class="o">=</span><span class="s2">&quot;sale_date&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">dep_var</span><span class="o">=</span><span class="s2">&quot;price&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ind_var</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tot_sf&quot;</span><span class="p">,</span> <span class="s2">&quot;beds&quot;</span><span class="p">,</span> <span class="s2">&quot;baths&quot;</span><span class="p">],</span>
 <span class="gp">... </span>    <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;robust&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;base&quot;, &quot;weighted&quot;</span>
@@ -513,7 +527,12 @@
 </li>
 <li><p>Spatial Features:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create location-based features.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;lat_lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;lat_lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]]</span>
+<span class="o">...</span>     <span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">...</span>     <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="o">...</span>     <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -529,11 +548,29 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vol</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
 
 <span class="go"># Visualize results.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_index</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_index</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span><span class="o">.</span><span class="n">properties</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Hedonic Index&quot;</span><span class="p">)</span>
 <span class="go">alt.Chart(...)</span>
 </pre></div>
 </div>
-</section>
+
+        <div class="altair-chart">
+            <script type="application/json" id="vega-spec-140383181686352">
+                {"$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 300}}, "data": {"name": "data-2bb8413d67794a95277995880e3fb341"}, "datasets": {"data-2bb8413d67794a95277995880e3fb341": [{"x": "2010-01-31T00:00:00", "y": 100.0}, {"x": "2010-02-28T00:00:00", "y": 111.2453835037781}, {"x": "2010-03-31T00:00:00", "y": 113.4073288886603}, {"x": "2010-04-30T00:00:00", "y": 120.41186980857313}, {"x": "2010-05-31T00:00:00", "y": 116.81218504249635}, {"x": "2010-06-30T00:00:00", "y": 113.37758130693605}, {"x": "2010-07-31T00:00:00", "y": 115.18424772362307}, {"x": "2010-08-31T00:00:00", "y": 127.04727129253293}, {"x": "2010-09-30T00:00:00", "y": 121.22059801676164}, {"x": "2010-10-31T00:00:00", "y": 114.78415539696134}, {"x": "2010-11-30T00:00:00", "y": 114.26609043047313}, {"x": "2010-12-31T00:00:00", "y": 104.76632386312642}, {"x": "2011-01-31T00:00:00", "y": 105.9335866525854}, {"x": "2011-02-28T00:00:00", "y": 108.52231568554916}, {"x": "2011-03-31T00:00:00", "y": 108.69861364514992}, {"x": "2011-04-30T00:00:00", "y": 122.49883119401652}, {"x": "2011-05-31T00:00:00", "y": 113.77860121371086}, {"x": "2011-06-30T00:00:00", "y": 116.55151822681367}, {"x": "2011-07-31T00:00:00", "y": 118.00456348977406}, {"x": "2011-08-31T00:00:00", "y": 118.60567667342838}, {"x": "2011-09-30T00:00:00", "y": 116.40793388976583}, {"x": "2011-10-31T00:00:00", "y": 105.26885231249783}, {"x": "2011-11-30T00:00:00", "y": 126.14715542609329}, {"x": "2011-12-31T00:00:00", "y": 103.92402305563849}, {"x": "2012-01-31T00:00:00", "y": 117.67115384289961}, {"x": "2012-02-29T00:00:00", "y": 118.10577213229341}, {"x": "2012-03-31T00:00:00", "y": 105.8427842700609}, {"x": "2012-04-30T00:00:00", "y": 109.54859285903224}, {"x": "2012-05-31T00:00:00", "y": 114.89136020436244}, {"x": "2012-06-30T00:00:00", "y": 123.08794722849703}, {"x": "2012-07-31T00:00:00", "y": 115.18802510121601}, {"x": "2012-08-31T00:00:00", "y": 123.55505633914396}, {"x": "2012-09-30T00:00:00", "y": 115.09520332413285}, {"x": "2012-10-31T00:00:00", "y": 122.0897803174118}, {"x": "2012-11-30T00:00:00", "y": 132.3940643099497}, {"x": "2012-12-31T00:00:00", "y": 133.95865116103954}, {"x": "2013-01-31T00:00:00", "y": 122.60204235052771}, {"x": "2013-02-28T00:00:00", "y": 124.31151945465957}, {"x": "2013-03-31T00:00:00", "y": 127.8448890707573}, {"x": "2013-04-30T00:00:00", "y": 126.96605747388566}, {"x": "2013-05-31T00:00:00", "y": 123.73223322824786}, {"x": "2013-06-30T00:00:00", "y": 133.02297112309122}, {"x": "2013-07-31T00:00:00", "y": 130.699590014654}, {"x": "2013-08-31T00:00:00", "y": 132.70177949008303}, {"x": "2013-09-30T00:00:00", "y": 130.98434012189682}, {"x": "2013-10-31T00:00:00", "y": 138.0811370172677}, {"x": "2013-11-30T00:00:00", "y": 126.3488695830881}, {"x": "2013-12-31T00:00:00", "y": 124.21989694809301}, {"x": "2014-01-31T00:00:00", "y": 117.14498948402708}, {"x": "2014-02-28T00:00:00", "y": 126.53234858780276}, {"x": "2014-03-31T00:00:00", "y": 132.77764032608695}, {"x": "2014-04-30T00:00:00", "y": 144.07792945232586}, {"x": "2014-05-31T00:00:00", "y": 139.98088118416362}, {"x": "2014-06-30T00:00:00", "y": 148.36594069451803}, {"x": "2014-07-31T00:00:00", "y": 143.77200724214111}, {"x": "2014-08-31T00:00:00", "y": 140.0099613537694}, {"x": "2014-09-30T00:00:00", "y": 141.59233409515127}, {"x": "2014-10-31T00:00:00", "y": 133.31009398253758}, {"x": "2014-11-30T00:00:00", "y": 142.37547254108392}, {"x": "2014-12-31T00:00:00", "y": 157.09293044692353}, {"x": "2015-01-31T00:00:00", "y": 148.1329811386021}, {"x": "2015-02-28T00:00:00", "y": 141.2282490676398}, {"x": "2015-03-31T00:00:00", "y": 137.52309986697972}, {"x": "2015-04-30T00:00:00", "y": 156.33643055681853}, {"x": "2015-05-31T00:00:00", "y": 162.8166792859961}, {"x": "2015-06-30T00:00:00", "y": 156.95090497708074}, {"x": "2015-07-31T00:00:00", "y": 160.49262245519748}, {"x": "2015-08-31T00:00:00", "y": 165.9138788688756}, {"x": "2015-09-30T00:00:00", "y": 157.38804344926575}, {"x": "2015-10-31T00:00:00", "y": 152.0253810732859}, {"x": "2015-11-30T00:00:00", "y": 155.20169937189235}, {"x": "2015-12-31T00:00:00", "y": 162.07455450874707}, {"x": "2016-01-31T00:00:00", "y": 158.27081848633028}, {"x": "2016-02-29T00:00:00", "y": 173.88178510441875}, {"x": "2016-03-31T00:00:00", "y": 175.56605389143317}, {"x": "2016-04-30T00:00:00", "y": 174.9553790519805}, {"x": "2016-05-31T00:00:00", "y": 178.13730995299514}, {"x": "2016-06-30T00:00:00", "y": 179.95374694377028}, {"x": "2016-07-31T00:00:00", "y": 187.37732034505973}, {"x": "2016-08-31T00:00:00", "y": 179.48346334066954}, {"x": "2016-09-30T00:00:00", "y": 172.744008586959}, {"x": "2016-10-31T00:00:00", "y": 178.43805306477225}, {"x": "2016-11-30T00:00:00", "y": 171.74664232567736}, {"x": "2016-12-31T00:00:00", "y": 179.1709308956261}]}, "encoding": {"tooltip": [{"field": "x", "title": "Time Period", "type": "temporal"}, {"field": "y", "format": ".3f", "title": "Index Value", "type": "quantitative"}], "x": {"axis": {"format": "%Y", "labelAngle": 0, "title": "Time Period", "values": ["2010-01-31T00:00:00.000000000", "2011-01-31T00:00:00.000000000", "2012-01-31T00:00:00.000000000", "2013-01-31T00:00:00.000000000", "2014-01-31T00:00:00.000000000", "2015-01-31T00:00:00.000000000", "2016-01-31T00:00:00.000000000"]}, "field": "x", "type": "temporal"}, "y": {"field": "y", "scale": {"zero": false}, "title": "Index Value", "type": "quantitative"}}, "height": 300, "mark": {"size": 4, "type": "line"}, "title": "Hedonic Index", "width": 600}
+            </script>
+            <script>
+                const el = document.getElementById("vega-spec-140383181686352");
+                const spec = JSON.parse(el.textContent);
+                vegaEmbed(el.parentElement, spec, {
+                    actions: {
+                        export: true,
+                        source: true,
+                        editor: true,
+                        compiled: false
+                    }
+                });
+            </script>
+        </div>
+        </section>
 </section>
 
 
@@ -552,7 +589,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Repeat Sales Method</p>
+        <p class="prev-next-title">Repeat Sales</p>
       </div>
     </a>
     <a class="right-next"
@@ -560,7 +597,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Random Forest Method</p>
+        <p class="prev-next-title">Random Forest</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -53,8 +53,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Repeat Sales Method" href="repeat_sales.html" />
-    <link rel="prev" title="Quickstart" href="../quickstart.html" />
+    <link rel="next" title="Repeat Sales" href="repeat_sales.html" />
+    <link rel="prev" title="Quick Start" href="../quickstart.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -333,12 +333,20 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Price Index Methods</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Comparison</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="accuracy_metrics.html">Accuracy Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility_metrics.html">Volatility Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="revision_metrics.html">Revision Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparative_analysis.html">Comparative Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_window_analysis.html">Time Window Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -398,54 +406,108 @@
                   
   <section id="user-guide">
 <span id="user-guide-index"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
-<p>This user guide provides detailed information about using hpiPy for creating and evaluating house price indices.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="repeat_sales.html#data-preparation">Data Preparation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="repeat_sales.html#creating-the-index">Creating the Index</a></li>
-<li class="toctree-l2"><a class="reference internal" href="repeat_sales.html#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="repeat_sales.html#advanced-usage">Advanced Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="repeat_sales.html#evaluating-the-index">Evaluating the Index</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#data-preparation">Data Preparation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#creating-the-index">Creating the Index</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#advanced-usage">Advanced Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#feature-engineering">Feature Engineering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hedonic_pricing.html#evaluating-the-index">Evaluating the Index</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#data-preparation">Data Preparation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#creating-the-index">Creating the Index</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#feature-importance">Feature Importance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random_forest.html#evaluating-the-index">Evaluating the Index</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#data-preparation">Data Preparation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#creating-the-index">Creating the Index</a></li>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#network-architecture">Network Architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="neural_network.html#evaluating-the-index">Evaluating the Index</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html#accuracy-metrics">Accuracy Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html#volatility-metrics">Volatility Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html#revision-metrics">Revision Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html#comparative-analysis">Comparative Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html#time-window-analysis">Time Window Analysis</a></li>
-</ul>
-</li>
-</ul>
+<p>Welcome to the <strong>hpiPy User Guide</strong>. This guide walks you through creating and evaluating <strong>House Price Indices</strong> using various methods—from repeat sales to hedonic pricing to machine learning.</p>
+<section id="index-construction-methods">
+<h2>Index Construction Methods<a class="headerlink" href="#index-construction-methods" title="Link to this heading">#</a></h2>
+<p>Use one of the following methods to build house price indices:</p>
+<div class="sd-container-fluid sd-sphinx-override sd-m-2 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📈 Repeat Sales</div>
+<p class="sd-card-text">Build house price indices by pairing repeat sales of unchanged properties.</p>
 </div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="repeat_sales.html"><span class="doc">Repeat Sales</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🏘️ Hedonic Pricing</div>
+<p class="sd-card-text">Model house price indices as a function of house features like size, location, and age.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="hedonic_pricing.html"><span class="doc">Hedonic Pricing</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🌲 Random Forest</div>
+<p class="sd-card-text">Use an ensemble of decision trees to learn complex, non-linear price patterns.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="random_forest.html"><span class="doc">Random Forest</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🧠 Neural Network</div>
+<p class="sd-card-text">Apply a deep learning model to learn complex, non-linear price patterns.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="neural_network.html"><span class="doc">Neural Network</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluation-comparison">
+<h2>Evaluation &amp; Comparison<a class="headerlink" href="#evaluation-comparison" title="Link to this heading">#</a></h2>
+<p>Once you’ve created your indices, use the following tools to evaluate and compare methods:</p>
+<div class="sd-container-fluid sd-sphinx-override sd-m-2 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Accuracy Metrics</div>
+<p class="sd-card-text">Measure how well an index predicts actual property values.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="accuracy_metrics.html"><span class="doc">Accuracy Metrics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Volatility Metrics</div>
+<p class="sd-card-text">Quantify the smoothness and stability of an index over time.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="volatility_metrics.html"><span class="doc">Volatility Metrics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Revision Metrics</div>
+<p class="sd-card-text">Track how index values change with new data over time.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="revision_metrics.html"><span class="doc">Revision Metrics</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Comparative Analysis</div>
+<p class="sd-card-text">Compare multiple index construction methods side by side.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="comparative_analysis.html"><span class="doc">Comparative Analysis</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Time Window Analysis</div>
+<p class="sd-card-text">Evaluate metrics across different rolling time windows.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="time_window_analysis.html"><span class="doc">Time Window Analysis</span></a></div>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
 </section>
 
 
@@ -464,7 +526,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Quickstart</p>
+        <p class="prev-next-title">Quick Start</p>
       </div>
     </a>
     <a class="right-next"
@@ -472,7 +534,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Repeat Sales Method</p>
+        <p class="prev-next-title">Repeat Sales</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -486,6 +548,21 @@
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#index-construction-methods">Index Construction Methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-comparison">Evaluation &amp; Comparison</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">

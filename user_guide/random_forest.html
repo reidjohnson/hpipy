@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Random Forest Method &#8212; hpiPy: House Price Indices in Python</title>
+    <title>Random Forest &#8212; hpiPy: House Price Indices in Python</title>
   
   
   
@@ -53,8 +53,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/random_forest';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Neural Network Method" href="neural_network.html" />
-    <link rel="prev" title="Hedonic Pricing Method" href="hedonic_pricing.html" />
+    <link rel="next" title="Neural Network" href="neural_network.html" />
+    <link rel="prev" title="Hedonic Pricing" href="hedonic_pricing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -333,12 +333,20 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing Method</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Random Forest Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Price Index Methods</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Random Forest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Comparison</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="accuracy_metrics.html">Accuracy Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility_metrics.html">Volatility Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="revision_metrics.html">Revision Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparative_analysis.html">Comparative Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_window_analysis.html">Time Window Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -382,7 +390,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Random Forest Method</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Random Forest</span></li>
   </ul>
 </nav>
 </div>
@@ -399,8 +407,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="random-forest-method">
-<h1>Random Forest Method<a class="headerlink" href="#random-forest-method" title="Link to this heading">#</a></h1>
+  <section id="random-forest">
+<h1>Random Forest<a class="headerlink" href="#random-forest" title="Link to this heading">#</a></h1>
 <p>The Random Forest method provides a machine learning approach to house price index creation, offering advantages like handling non-linear relationships and complex interactions between features automatically.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
@@ -423,7 +431,6 @@
 </ul>
 <p>Example setup:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestIndex</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.period_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeriodTable</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.trans_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">HedonicTransactionData</span>
 
@@ -438,9 +445,9 @@
 
 <span class="go"># Prepare hedonic data.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">trans_data</span> <span class="o">=</span> <span class="n">HedonicTransactionData</span><span class="p">(</span><span class="n">sales_hdata</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">prop_id</span><span class="o">=</span><span class="s2">&quot;pinx&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
@@ -448,20 +455,23 @@
 <section id="creating-the-index">
 <h2>Creating the Index<a class="headerlink" href="#creating-the-index" title="Link to this heading">#</a></h2>
 <p>Create a Random Forest-based index:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the index.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">hpi</span> <span class="o">=</span> <span class="n">RandomForestIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">prop_id</span><span class="o">=</span><span class="s2">&quot;pinx&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">date</span><span class="o">=</span><span class="s2">&quot;sale_date&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">dep_var</span><span class="o">=</span><span class="s2">&quot;price&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">ind_var</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tot_sf&quot;</span><span class="p">,</span> <span class="s2">&quot;beds&quot;</span><span class="p">,</span> <span class="s2">&quot;baths&quot;</span><span class="p">],</span>
-<span class="o">...</span>     <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">max_features</span><span class="o">=</span><span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="o">...</span> <span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestIndex</span>
+
+<span class="go"># Create the index.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpi</span> <span class="o">=</span> <span class="n">RandomForestIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">prop_id</span><span class="o">=</span><span class="s2">&quot;pinx&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">date</span><span class="o">=</span><span class="s2">&quot;sale_date&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">dep_var</span><span class="o">=</span><span class="s2">&quot;price&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">ind_var</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tot_sf&quot;</span><span class="p">,</span> <span class="s2">&quot;beds&quot;</span><span class="p">,</span> <span class="s2">&quot;baths&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">max_features</span><span class="o">=</span><span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -484,8 +494,9 @@
 <section id="feature-importance">
 <h2>Feature Importance<a class="headerlink" href="#feature-importance" title="Link to this heading">#</a></h2>
 <p>Analyze feature importance:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get feature importance.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">importance</span> <span class="o">=</span> <span class="n">hpi</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_obj</span><span class="o">.</span><span class="n">feature_importances_</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">importance</span> <span class="o">=</span> <span class="n">hpi</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">model_obj</span><span class="o">.</span><span class="n">feature_importances_</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">importance</span>
+<span class="go">array(...)</span>
 </pre></div>
 </div>
 </section>
@@ -499,11 +510,29 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vol</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
 
 <span class="go"># Visualize results.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_index</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_index</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span><span class="o">.</span><span class="n">properties</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Random Forest Index&quot;</span><span class="p">)</span>
 <span class="go">alt.Chart(...)</span>
 </pre></div>
 </div>
-</section>
+
+        <div class="altair-chart">
+            <script type="application/json" id="vega-spec-140383159273232">
+                {"$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 300}}, "data": {"name": "data-634349f46fc9454dfb79639fd8ccf28d"}, "datasets": {"data-634349f46fc9454dfb79639fd8ccf28d": [{"x": "2010-01-31T00:00:00", "y": 100.0}, {"x": "2010-02-28T00:00:00", "y": 102.98362113499783}, {"x": "2010-03-31T00:00:00", "y": 103.93264047609006}, {"x": "2010-04-30T00:00:00", "y": 105.61057325774514}, {"x": "2010-05-31T00:00:00", "y": 105.82467747960442}, {"x": "2010-06-30T00:00:00", "y": 104.6778548274587}, {"x": "2010-07-31T00:00:00", "y": 105.23441759190149}, {"x": "2010-08-31T00:00:00", "y": 106.99370550013032}, {"x": "2010-09-30T00:00:00", "y": 107.06390304408143}, {"x": "2010-10-31T00:00:00", "y": 105.2250202249724}, {"x": "2010-11-30T00:00:00", "y": 104.02631585577664}, {"x": "2010-12-31T00:00:00", "y": 101.54510510060877}, {"x": "2011-01-31T00:00:00", "y": 101.64950425017831}, {"x": "2011-02-28T00:00:00", "y": 102.30663562164733}, {"x": "2011-03-31T00:00:00", "y": 102.21676806738384}, {"x": "2011-04-30T00:00:00", "y": 103.71848232238925}, {"x": "2011-05-31T00:00:00", "y": 103.17036907925173}, {"x": "2011-06-30T00:00:00", "y": 102.93068324254035}, {"x": "2011-07-31T00:00:00", "y": 105.1487978396763}, {"x": "2011-08-31T00:00:00", "y": 104.7364641134156}, {"x": "2011-09-30T00:00:00", "y": 104.6079793213221}, {"x": "2011-10-31T00:00:00", "y": 103.52389522510815}, {"x": "2011-11-30T00:00:00", "y": 105.42961601652037}, {"x": "2011-12-31T00:00:00", "y": 103.55592307318334}, {"x": "2012-01-31T00:00:00", "y": 103.15501932803875}, {"x": "2012-02-29T00:00:00", "y": 102.86482664762504}, {"x": "2012-03-31T00:00:00", "y": 101.47458328741408}, {"x": "2012-04-30T00:00:00", "y": 102.37626788910859}, {"x": "2012-05-31T00:00:00", "y": 103.73278318657424}, {"x": "2012-06-30T00:00:00", "y": 108.10383163006676}, {"x": "2012-07-31T00:00:00", "y": 107.33458147074877}, {"x": "2012-08-31T00:00:00", "y": 109.18310012758923}, {"x": "2012-09-30T00:00:00", "y": 107.53720468651467}, {"x": "2012-10-31T00:00:00", "y": 109.99285783950097}, {"x": "2012-11-30T00:00:00", "y": 112.25295485912005}, {"x": "2012-12-31T00:00:00", "y": 112.63264275016813}, {"x": "2013-01-31T00:00:00", "y": 112.77078186066636}, {"x": "2013-02-28T00:00:00", "y": 113.46473343805987}, {"x": "2013-03-31T00:00:00", "y": 115.69305167620796}, {"x": "2013-04-30T00:00:00", "y": 115.10560104177456}, {"x": "2013-05-31T00:00:00", "y": 117.0113409963069}, {"x": "2013-06-30T00:00:00", "y": 118.02323336405362}, {"x": "2013-07-31T00:00:00", "y": 116.88053327332106}, {"x": "2013-08-31T00:00:00", "y": 118.74077881323409}, {"x": "2013-09-30T00:00:00", "y": 119.33557272972364}, {"x": "2013-10-31T00:00:00", "y": 120.70217359944269}, {"x": "2013-11-30T00:00:00", "y": 119.09213862874486}, {"x": "2013-12-31T00:00:00", "y": 118.13750184716065}, {"x": "2014-01-31T00:00:00", "y": 117.71079128549063}, {"x": "2014-02-28T00:00:00", "y": 121.11626795837338}, {"x": "2014-03-31T00:00:00", "y": 122.29979430493425}, {"x": "2014-04-30T00:00:00", "y": 126.35572559205586}, {"x": "2014-05-31T00:00:00", "y": 129.04936351411837}, {"x": "2014-06-30T00:00:00", "y": 131.29004996065535}, {"x": "2014-07-31T00:00:00", "y": 129.67489754409954}, {"x": "2014-08-31T00:00:00", "y": 127.96216659632611}, {"x": "2014-09-30T00:00:00", "y": 128.91451943172575}, {"x": "2014-10-31T00:00:00", "y": 129.2715167125869}, {"x": "2014-11-30T00:00:00", "y": 133.02150847814886}, {"x": "2014-12-31T00:00:00", "y": 136.24071452437119}, {"x": "2015-01-31T00:00:00", "y": 135.64281745567052}, {"x": "2015-02-28T00:00:00", "y": 133.90355795459894}, {"x": "2015-03-31T00:00:00", "y": 132.1050908433952}, {"x": "2015-04-30T00:00:00", "y": 135.7796241983636}, {"x": "2015-05-31T00:00:00", "y": 143.2170518988384}, {"x": "2015-06-30T00:00:00", "y": 144.80017980337013}, {"x": "2015-07-31T00:00:00", "y": 144.00340149496787}, {"x": "2015-08-31T00:00:00", "y": 145.68591794532847}, {"x": "2015-09-30T00:00:00", "y": 146.1099690554761}, {"x": "2015-10-31T00:00:00", "y": 143.47599522214486}, {"x": "2015-11-30T00:00:00", "y": 143.70942534762946}, {"x": "2015-12-31T00:00:00", "y": 146.5688919465268}, {"x": "2016-01-31T00:00:00", "y": 149.61847053983232}, {"x": "2016-02-29T00:00:00", "y": 154.7117989777989}, {"x": "2016-03-31T00:00:00", "y": 156.1728136723248}, {"x": "2016-04-30T00:00:00", "y": 158.05202548001236}, {"x": "2016-05-31T00:00:00", "y": 160.1112393957668}, {"x": "2016-06-30T00:00:00", "y": 162.87248017195313}, {"x": "2016-07-31T00:00:00", "y": 162.98890777797385}, {"x": "2016-08-31T00:00:00", "y": 161.4498098600225}, {"x": "2016-09-30T00:00:00", "y": 159.77789943516987}, {"x": "2016-10-31T00:00:00", "y": 160.92546278812793}, {"x": "2016-11-30T00:00:00", "y": 157.94900761632204}, {"x": "2016-12-31T00:00:00", "y": 161.12115608273547}]}, "encoding": {"tooltip": [{"field": "x", "title": "Time Period", "type": "temporal"}, {"field": "y", "format": ".3f", "title": "Index Value", "type": "quantitative"}], "x": {"axis": {"format": "%Y", "labelAngle": 0, "title": "Time Period", "values": ["2010-01-31T00:00:00.000000000", "2011-01-31T00:00:00.000000000", "2012-01-31T00:00:00.000000000", "2013-01-31T00:00:00.000000000", "2014-01-31T00:00:00.000000000", "2015-01-31T00:00:00.000000000", "2016-01-31T00:00:00.000000000"]}, "field": "x", "type": "temporal"}, "y": {"field": "y", "scale": {"zero": false}, "title": "Index Value", "type": "quantitative"}}, "height": 300, "mark": {"size": 4, "type": "line"}, "title": "Random Forest Index", "width": 600}
+            </script>
+            <script>
+                const el = document.getElementById("vega-spec-140383159273232");
+                const spec = JSON.parse(el.textContent);
+                vegaEmbed(el.parentElement, spec, {
+                    actions: {
+                        export: true,
+                        source: true,
+                        editor: true,
+                        compiled: false
+                    }
+                });
+            </script>
+        </div>
+        </section>
 </section>
 
 
@@ -522,7 +551,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Hedonic Pricing Method</p>
+        <p class="prev-next-title">Hedonic Pricing</p>
       </div>
     </a>
     <a class="right-next"
@@ -530,7 +559,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Neural Network Method</p>
+        <p class="prev-next-title">Neural Network</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

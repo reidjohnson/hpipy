@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Evaluation Metrics &#8212; hpiPy: House Price Indices in Python</title>
+    <title>Time Window Analysis &#8212; hpiPy: House Price Indices in Python</title>
   
   
   
@@ -50,11 +50,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/evaluation_metrics';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/time_window_analysis';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Reference" href="../api/index.html" />
-    <link rel="prev" title="Neural Network Method" href="neural_network.html" />
+    <link rel="prev" title="Comparative Analysis" href="comparative_analysis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -333,12 +333,20 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest Method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network Method</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Evaluation Metrics</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Price Index Methods</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_network.html">Neural Network</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Comparison</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="accuracy_metrics.html">Accuracy Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volatility_metrics.html">Volatility Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="revision_metrics.html">Revision Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparative_analysis.html">Comparative Analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Time Window Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -382,7 +390,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Evaluation Metrics</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Window Analysis</span></li>
   </ul>
 </nav>
 </div>
@@ -399,73 +407,46 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="evaluation-metrics">
-<h1>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h1>
-<p>hpiPy provides a comprehensive set of metrics to evaluate house price indices, focusing on accuracy, volatility, and revision metrics. These metrics help compare different methods and assess index quality.</p>
-<section id="accuracy-metrics">
-<h2>Accuracy Metrics<a class="headerlink" href="#accuracy-metrics" title="Link to this heading">#</a></h2>
-<p>Accuracy metrics measure how well the index predicts actual property values:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_index_accuracy</span>
-
-<span class="c1"># Calculate accuracy for a single index.</span>
-<span class="n">acc</span> <span class="o">=</span> <span class="n">accuracy</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-
-<span class="c1"># Plot accuracy metrics.</span>
-<span class="n">plot_index_accuracy</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="volatility-metrics">
-<h2>Volatility Metrics<a class="headerlink" href="#volatility-metrics" title="Link to this heading">#</a></h2>
-<p>Volatility metrics measure the stability and smoothness of the index:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">volatility</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_index_volatility</span>
-
-<span class="c1"># Calculate volatility for a single index.</span>
-<span class="n">vol</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-
-<span class="c1"># Plot volatility metrics.</span>
-<span class="n">plot_index_volatility</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="revision-metrics">
-<h2>Revision Metrics<a class="headerlink" href="#revision-metrics" title="Link to this heading">#</a></h2>
-<p>Revision metrics assess how index values change as new data becomes available:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">revision</span>
-
-<span class="c1"># Calculate revision metrics.</span>
-<span class="n">rev</span> <span class="o">=</span> <span class="n">revision</span><span class="p">(</span><span class="n">index_series</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="comparative-analysis">
-<h2>Comparative Analysis<a class="headerlink" href="#comparative-analysis" title="Link to this heading">#</a></h2>
-<p>Compare different index methods:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create indices using different methods.</span>
-<span class="n">rt_index</span> <span class="o">=</span> <span class="n">RepeatTransactionIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">hed_index</span> <span class="o">=</span> <span class="n">HedonicIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">rf_index</span> <span class="o">=</span> <span class="n">RandomForestIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">nn_index</span> <span class="o">=</span> <span class="n">NeuralNetworkIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<span class="c1"># Compare accuracy.</span>
-<span class="n">accuracies</span> <span class="o">=</span> <span class="p">[</span><span class="n">accuracy</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="p">[</span><span class="n">rt_index</span><span class="p">,</span> <span class="n">hed_index</span><span class="p">,</span> <span class="n">rf_index</span><span class="p">,</span> <span class="n">nn_inde</span><span class="p">]]</span>
-
-<span class="c1"># Compare volatility.</span>
-<span class="n">volatilities</span> <span class="o">=</span> <span class="p">[</span><span class="n">volatility</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="p">[</span><span class="n">rt_index</span><span class="p">,</span> <span class="n">hed_index</span><span class="p">,</span> <span class="n">rf_index</span><span class="p">,</span> <span class="n">nn_inde</span><span class="p">]]</span>
-</pre></div>
-</div>
-</section>
-<section id="time-window-analysis">
-<h2>Time Window Analysis<a class="headerlink" href="#time-window-analysis" title="Link to this heading">#</a></h2>
+  <section id="time-window-analysis">
+<h1>Time Window Analysis<a class="headerlink" href="#time-window-analysis" title="Link to this heading">#</a></h1>
 <p>Analyze metrics over different time windows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate rolling metrics.</span>
-<span class="n">rolling_acc</span> <span class="o">=</span> <span class="n">accuracy</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># 12-month window</span>
-<span class="n">rolling_vol</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_index</span><span class="w"> </span><span class="kn">import</span> <span class="n">RepeatTransactionIndex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">volatility</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/seattle_sales.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sale_date&quot;</span><span class="p">])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hpi</span> <span class="o">=</span> <span class="n">RepeatTransactionIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">trans_data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">prop_id</span><span class="o">=</span><span class="s2">&quot;pinx&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">trans_id</span><span class="o">=</span><span class="s2">&quot;sale_id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">price</span><span class="o">=</span><span class="s2">&quot;sale_price&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">date</span><span class="o">=</span><span class="s2">&quot;sale_date&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">periodicity</span><span class="o">=</span><span class="s2">&quot;M&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;robust&quot;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">log_dep</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_acc</span> <span class="o">=</span> <span class="n">accuracy</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_acc</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">   pair_id  rt_price     pred_price     error  log_error  pred_period</span>
+<span class="go">0        1    577200  555422.458246 -0.037730  -0.038460           75</span>
+<span class="go">1        2    488737  458143.826186 -0.062596  -0.064641           63</span>
+<span class="go">2        3    570000  582619.340460  0.022139   0.021898           77</span>
+<span class="go">3        4    402500  416336.126392  0.034375   0.033798           63</span>
+<span class="go">4        5    385000  429625.133353  0.115909   0.109669           69</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_vol</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_vol</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">        roll      mean    median</span>
+<span class="go">6   0.016548  0.017985  0.017387</span>
+<span class="go">7   0.021586  0.017985  0.017387</span>
+<span class="go">8   0.020780  0.017985  0.017387</span>
+<span class="go">9   0.019267  0.017985  0.017387</span>
+<span class="go">10  0.018373  0.017985  0.017387</span>
 </pre></div>
 </div>
-</section>
 </section>
 
 
@@ -479,12 +460,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="neural_network.html"
+       href="comparative_analysis.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Neural Network Method</p>
+        <p class="prev-next-title">Comparative Analysis</p>
       </div>
     </a>
     <a class="right-next"
@@ -508,26 +489,10 @@
 
 
   <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accuracy-metrics">Accuracy Metrics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#volatility-metrics">Volatility Metrics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#revision-metrics">Revision Metrics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparative-analysis">Comparative Analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time-window-analysis">Time Window Analysis</a></li>
-</ul>
-  </nav></div>
-
-  <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/user_guide/evaluation_metrics.rst.txt"
+      <li><a href="../_sources/user_guide/time_window_analysis.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>
