@@ -8,9 +8,6 @@ import pandas as pd
 
 from hpipy.price_index import BaseHousePriceIndex
 
-# alt.data_transformers.enable("default", max_rows=50_000)
-alt.renderers.enable("mimetype")
-
 
 def plot_index(
     hpi: BaseHousePriceIndex,
@@ -34,9 +31,7 @@ def plot_index(
 
     base = (
         alt.Chart(source)
-        .mark_line(
-            size=4,
-        )
+        .mark_line(size=4)
         .encode(
             x=alt.X(
                 "x:T",
@@ -45,6 +40,10 @@ def plot_index(
                 ),
             ),
             y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Index Value"),
+            tooltip=[
+                alt.Tooltip("x:T", title="Time Period"),
+                alt.Tooltip("y:Q", format=".3f", title="Index Value"),
+            ],
         )
     )
 
@@ -53,13 +52,16 @@ def plot_index(
 
         circles = (
             alt.Chart(source[source["imp"] == 1])
-            .mark_circle(
-                color="red",
-                size=250,
-            )
+            .transform_calculate(imp="if(datum.imp == 1, 'True', 'False')")
+            .mark_circle(color="red", size=250)
             .encode(
                 x=alt.X("x:T", axis=alt.Axis(format="%Y", labelAngle=0, title="Time Period")),
                 y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Index Value"),
+                tooltip=[
+                    alt.Tooltip("x:T", title="Time Period"),
+                    alt.Tooltip("y:Q", format=".3f", title="Index Value"),
+                    alt.Tooltip("imp:N", title="Imputed"),
+                ],
             )
         )
         base += circles
@@ -71,22 +73,21 @@ def plot_index(
 
         smooth = (
             alt.Chart(source)
-            .mark_line(
-                color="red",
-                size=3,
-            )
+            .transform_calculate(imp="if(datum.imp == 1, 'True', 'False')")
+            .mark_line(color="red", size=3)
             .encode(
                 x=alt.X("x:T", axis=alt.Axis(format="%Y", labelAngle=0, title="Time Period")),
                 y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Index Value"),
+                tooltip=[
+                    alt.Tooltip("x:T", title="Time Period"),
+                    alt.Tooltip("y:Q", format=".3f", title="Index Value"),
+                    alt.Tooltip("imp:N", title="Imputed"),
+                ],
             )
         )
         base += smooth
 
-    chart = base
-    chart = chart.properties(
-        height=300,
-        width=800,
-    )
+    chart = base.properties(height=300, width=800)
 
     return chart
 
@@ -97,14 +98,8 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
 
     bar1 = (
         alt.Chart(source)
-        .mark_boxplot(
-            clip=True,
-            extent="min-max",
-            size=size,
-        )
-        .transform_calculate(
-            abserror=np.abs(alt.datum["error"]),
-        )
+        .mark_boxplot(clip=True, extent="min-max", size=size)
+        .transform_calculate(abserror=np.abs(alt.datum["error"]))
         .encode(
             x=alt.X(
                 "pred_period:Q",
@@ -117,20 +112,17 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
                 scale=alt.Scale(domain=[0, source["error"].quantile(0.99)]),
                 title="Absolute Error",
             ),
+            tooltip=[
+                alt.Tooltip("pred_period:Q", title="Time Period"),
+                alt.Tooltip("abserror:Q", format=".3f", title="Absolute Error"),
+            ],
         )
-        .properties(
-            height=150,
-            width=375,
-        )
+        .properties(height=150, width=375)
     )
 
     bar2 = (
         alt.Chart(source)
-        .mark_boxplot(
-            clip=True,
-            extent="min-max",
-            size=size,
-        )
+        .mark_boxplot(clip=True, extent="min-max", size=size)
         .encode(
             x=alt.X(
                 "pred_period:Q",
@@ -143,25 +135,19 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
                 scale=alt.Scale(domain=source["error"].quantile([0.01, 0.99]).values),
                 title="Error",
             ),
+            tooltip=[
+                alt.Tooltip("pred_period:Q", title="Time Period"),
+                alt.Tooltip("error:Q", format=".3f", title="Error"),
+            ],
         )
-        .properties(
-            height=150,
-            width=375,
-        )
+        .properties(height=150, width=375)
     )
 
     density1 = (
         alt.Chart(source)
-        .mark_area(
-            clip=True,
-        )
-        .transform_calculate(
-            abserror=np.abs(alt.datum["error"]),
-        )
-        .transform_density(
-            "abserror",
-            as_=["abserror", "density"],
-        )
+        .mark_area(clip=True)
+        .transform_calculate(abserror=np.abs(alt.datum["error"]))
+        .transform_density("abserror", as_=["abserror", "density"])
         .encode(
             x=alt.X(
                 "abserror:Q",
@@ -169,22 +155,18 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
                 title="Absolute Error",
             ),
             y=alt.Y("density:Q", title="Density of Error"),
+            tooltip=[
+                alt.Tooltip("abserror:Q", format=".3f", title="Absolute Error"),
+                alt.Tooltip("density:Q", format=".3f", title="Density of Error"),
+            ],
         )
-        .properties(
-            height=150,
-            width=375,
-        )
+        .properties(height=150, width=375)
     )
 
     density2 = (
         alt.Chart(source)
-        .mark_area(
-            clip=True,
-        )
-        .transform_density(
-            "error",
-            as_=["error", "density"],
-        )
+        .mark_area(clip=True)
+        .transform_density("error", as_=["error", "density"])
         .encode(
             x=alt.X(
                 "error:Q",
@@ -192,11 +174,12 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
                 title="Error",
             ),
             y=alt.Y("density:Q", title="Density of Error"),
+            tooltip=[
+                alt.Tooltip("error:Q", format=".3f", title="Error"),
+                alt.Tooltip("density:Q", format=".3f", title="Density of Error"),
+            ],
         )
-        .properties(
-            height=150,
-            width=375,
-        )
+        .properties(height=150, width=375)
     )
 
     chart = (bar1 | bar2) & (density1 | density2)
@@ -217,23 +200,21 @@ def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.Chart:
 
     base = (
         alt.Chart(source)
-        .mark_line(
-            size=4,
-        )
+        .mark_line(size=4)
         .encode(
             x=alt.X("x:Q", title="Time Period"),
             y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Volatility"),
+            tooltip=[
+                alt.Tooltip("x:Q", title="Time Period"),
+                alt.Tooltip("y:Q", format=".3f", title="Volatility"),
+            ],
         )
     )
 
     mean = base.mark_line(color="gray", size=3, strokeDash=[4, 4]).encode(y=alt.Y("mean:Q"))
     median = base.mark_line(color="gray", size=3, strokeDash=[2, 4]).encode(y=alt.Y("median:Q"))
 
-    chart = base + mean + median
-    chart = chart.properties(
-        height=300,
-        width=800,
-    )
+    chart = (base + mean + median).properties(height=300, width=800)
 
     return chart
 
@@ -254,17 +235,16 @@ def plot_series_volatility(hpi_series: BaseHousePriceIndex, smooth: bool = False
 
     base = (
         alt.Chart()
-        .mark_line(
-            size=4,
-        )
+        .mark_line(size=4)
         .encode(
             x=alt.X("period:Q", title="Time Period"),
             y=alt.Y("value:Q", scale=alt.Scale(zero=False), title="Volatility"),
+            tooltip=[
+                alt.Tooltip("period:Q", title="Time Period"),
+                alt.Tooltip("value:Q", format=".3f", title="Volatility"),
+            ],
         )
-        .properties(
-            height=300,
-            width=800,
-        )
+        .properties(height=300, width=800)
     )
 
     chart1 = (
@@ -290,6 +270,8 @@ def plot_series_revision(
     """Plot revision for a series of indices."""
     source = hpi_series.revision_smooth if smooth else hpi_series.revision
 
+    measure_title = "Mean" if measure == "mean" else "Median"
+
     base = (
         alt.Chart()
         .mark_bar(size=20)
@@ -297,30 +279,25 @@ def plot_series_revision(
             x=alt.X("period:Q", title="Time Period"),
             y=alt.Y(
                 f"{measure}:Q",
-                title=f"{'Mean' if measure == 'mean' else 'Median'} Revision",
+                title=f"{measure_title} Revision",
             ),
             color=alt.condition(
                 alt.datum[measure] > 0,
                 alt.value("steelblue"),
                 alt.value("orange"),
             ),
+            tooltip=[
+                alt.Tooltip("period:Q", title="Time Period"),
+                alt.Tooltip(f"{measure}:Q", format=".3f", title=f"{measure_title} Revision"),
+            ],
         )
-        .properties(
-            height=300,
-            width=800,
-        )
+        .properties(height=300, width=800)
     )
 
     line = (
         alt.Chart()
-        .mark_rule(
-            color="gray",
-            size=3,
-            strokeDash=[4, 4],
-        )
-        .encode(
-            y=alt.Y(f"mean({measure}):Q"),
-        )
+        .mark_rule(color="gray", size=3, strokeDash=[4, 4])
+        .encode(y=alt.Y(f"mean({measure}):Q"))
     )
 
     chart = alt.layer(base, line, data=source)

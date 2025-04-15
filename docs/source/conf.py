@@ -1,6 +1,7 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../.."))
 
 project = "hpiPy"
@@ -26,6 +27,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinxext.directives",
     "sphinxext_altair.altairplot",
 ]
 
@@ -50,8 +52,8 @@ html_theme_options = {
             "type": "fontawesome",
         }
     ],
-    "show_toc_level": 2,
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "show_toc_level": 1,
 }
 
 # Autosummary settings.

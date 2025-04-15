@@ -12,7 +12,7 @@ The package provides tools to evaluate index quality through predictive accuracy
 
 ## Quick Start
 
-To install hpipy from [PyPI](https://pypi.org/project/hpipy) using `pip`:
+To install hpiPy from [PyPI](https://pypi.org/project/hpipy) using `pip`:
 
 ```bash
 pip install hpipy
@@ -23,8 +23,10 @@ pip install hpipy
 A basic example of creating a house price index:
 
 ```python
+import altair as alt
 import pandas as pd
 from hpipy.price_index import RepeatTransactionIndex
+from hpipy.utils.plotting import plot_index
 
 # Load prepared data.
 df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
@@ -32,15 +34,19 @@ df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
 # Create an index.
 hpi = RepeatTransactionIndex.create_index(
     trans_data=df,
-    date="sale_date",
-    price="sale_price",
     prop_id="pinx",
     trans_id="sale_id",
+    price="sale_price",
+    date="sale_date",
+    periodicity="M",
     estimator="robust",
     log_dep=True,
     smooth=True,
-    periodicity="M",
 )
+
+# Visualize the index.
+with alt.renderers.enable("browser"):
+    plot_index(hpi, smooth=True).properties(width=600, title="Example Index").show()
 ```
 
 ## Documentation
@@ -69,4 +75,4 @@ pytest
 
 ## Acknowledgements
 
-Based on the [hpiR package](https://github.com/andykrause/hpiR).
+Based on the [hpiR](https://github.com/andykrause/hpiR) package.

@@ -1,7 +1,14 @@
-Hedonic Pricing Method
-======================
+Hedonic Pricing
+===============
 
 The hedonic pricing method creates house price indices by modeling property values as a function of their characteristics (e.g., size, location, age) and time period. This approach can use all transactions, not just repeat sales.
+
+.. note::
+
+    Background on basic model construction for hedonic pricing models can be found in:
+
+    Bourassa et al. (2006), "A Simple Alternative House Price Index Method", 
+    *Journal of Housing Economics*, 15(1), 80-97. DOI: `10.1016/j.jhe.2006.03.001 <https://doi.org/10.1016/j.jhe.2006.03.001>`_.
 
 Data Preparation
 ----------------
@@ -32,9 +39,9 @@ Here's how to prepare your data:
 
     # Prepare hedonic data.
     >>> trans_data = HedonicTransactionData(sales_hdata).create_transactions(
-    ...     price="sale_price",
-    ...     trans_id="sale_id",
     ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
     ... )
 
 Creating the Index
@@ -49,8 +56,8 @@ Once your data is prepared, you can create the hedonic price index:
     # Create the index.
     >>> hpi = HedonicIndex.create_index(
     ...     trans_data=trans_data,
-    ...     date="sale_date",
     ...     price="sale_price",
+    ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
     ...     estimator="robust",  # or "base", "weighted"
@@ -128,7 +135,12 @@ The hedonic method often benefits from careful feature engineering:
    .. code-block:: python
 
        # Create location-based features.
-       >>> df["lat_lon"] = df[["latitude", "longitude"]].round(2).astype(str).agg("_".join, axis=1)
+       >>> df["lat_lon"] = (
+       ...     df.loc[:, ["latitude", "longitude"]]
+       ...     .round(2)
+       ...     .astype(str)
+       ...     .agg("_".join, axis=1)
+       ... )
 
 Evaluating the Index
 --------------------
@@ -144,5 +156,26 @@ Evaluate the hedonic index using various metrics:
     >>> vol = volatility(hpi)
 
     # Visualize results.
-    >>> plot_index(hpi)
+    >>> plot_index(hpi).properties(title="Hedonic Index")
     alt.Chart(...)
+
+.. invisible-altair-plot::
+
+    import altair as alt
+    import pandas as pd
+    from hpipy.period_table import PeriodTable
+    from hpipy.price_index import HedonicIndex
+    from hpipy.price_model import HedonicModel
+    from hpipy.trans_data import HedonicTransactionData
+    from hpipy.utils.metrics import volatility
+    from hpipy.utils.plotting import plot_index
+    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
+    trans_data = HedonicTransactionData(sales_hdata).create_transactions(
+        prop_id="pinx", trans_id="sale_id", price="sale_price"
+    )
+    model = HedonicModel(trans_data).fit(
+        dep_var="price", ind_var=["tot_sf", "beds", "baths"], log_dep=True)
+    hpi = HedonicIndex.from_model(model)
+    vol = volatility(hpi)
+    chart = plot_index(hpi).properties(title="Hedonic Index", width=600)

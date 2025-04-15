@@ -11,4 +11,4 @@ except ImportError:
 
 from . import extensions, price_index, utils
 
-__all__ = ["price_index", "utils", "extensions"]
+__all__ = ["extensions", "price_index", "utils"]
