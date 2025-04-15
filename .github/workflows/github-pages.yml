@@ -29,8 +29,6 @@ jobs:
         run: |
           cd ./docs/
           make clean
-          mkdir -p data
-          cp ../data/* data/
           make html
         env:
           GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID }}
