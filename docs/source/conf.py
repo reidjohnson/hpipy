@@ -66,7 +66,6 @@ html_theme_options = {
             "type": "fontawesome",
         }
     ],
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "show_toc_level": 1,
 }
 
