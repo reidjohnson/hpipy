@@ -9,3 +9,12 @@ Price Model
 
    RepeatTransactionModel
    HedonicModel
+
+.. currentmodule:: hpipy.extensions
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: class.rst
+
+   RandomForestModel
+   NeuralNetworkModel
