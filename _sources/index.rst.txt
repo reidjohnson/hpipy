@@ -52,9 +52,9 @@ hpiPy
    :hidden:
 
    Installation <getting_started/installation>
-   Quick Start <quickstart>
+   Quick Start <getting_started/quickstart>
    User Guide <user_guide/index>
    API <api/index>
-   Release Notes <changes>
+   Release Notes <releases/changes>
 
 .. _GitHub: https://github.com/reidjohnson/hpipy
