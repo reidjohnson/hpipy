@@ -14,15 +14,15 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-    "altair>=5.5.0",
-    "captum>=0.8.0",
-    "h3>=4.2.1",
-    "numpy>=1.26.4; python_version < '3.13'",
-    "pandas>=2.2.3",
-    "quantile-forest>=1.4.0",
-    "scikit-learn>=1.6.1",
-    "scipy>=1.15.2",
-    "statsmodels>=0.14.4",
+    "altair~=5.5.0",
+    "captum~=0.8.0",
+    "h3~=4.2.1",
+    "numpy~=1.26.4; python_version < '3.13'",
+    "pandas~=2.2.3",
+    "quantile-forest~=1.4.0",
+    "scikit-learn~=1.6.1",
+    "scipy~=1.15.2",
+    "statsmodels~=0.14.4",
     "torch~=2.6.0",
 ]
 
