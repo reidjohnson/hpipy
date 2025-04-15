@@ -116,5 +116,5 @@ hpiPy supports several methods for creating house price indices:
 Next Steps
 ----------
 
-* Check out the :doc:`user_guide/index` for detailed information.
-* See the :doc:`api/index` reference for complete documentation.
+* Check out the :doc:`../user_guide/index` for detailed information.
+* See the :doc:`../api/index` reference for complete documentation.
