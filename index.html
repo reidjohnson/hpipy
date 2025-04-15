@@ -2,19 +2,19 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="./" >
+<html lang="en" data-content_root="./" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>hpiPy &#8212; hpiPy: House Price Indices in Python</title>
+    <title>hpiPy: House Price Indices in Python &#8212; hpiPy</title>
   
   
   
   <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   <!--
     this give us a css class that will be invisible only if js is disabled
@@ -51,16 +51,17 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <link rel="icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="getting_started/installation.html" />
+    <link rel="next" title="Getting Started" href="installation/installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.1" />
   </head>
   
   
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
 
   
   
@@ -117,9 +118,17 @@
   
   
   
+    
+    
+    
+    <img src="_static/hpipy-logo.svg" class="logo__image only-light" alt="hpiPy - Home"/>
+    <img src="_static/hpipy-logo.svg" class="logo__image only-dark pst-js-only" alt="hpiPy - Home"/>
   
-    <p class="title logo__title">hpiPy: House Price Indices in Python</p>
   
+</a></div>
+    
+      <div class="navbar-item"><a class="navbar-brand" href="#">
+<p class="title">hpiPy</p>
 </a></div>
     
   </div>
@@ -133,14 +142,14 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="getting_started/installation.html">
+  <a class="nav-link nav-internal" href="installation/installation.html">
     Installation
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="getting_started/quickstart.html">
+  <a class="nav-link nav-internal" href="quick_start/quick_start.html">
     Quick Start
   </a>
 </li>
@@ -254,14 +263,14 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="getting_started/installation.html">
+  <a class="nav-link nav-internal" href="installation/installation.html">
     Installation
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="getting_started/quickstart.html">
+  <a class="nav-link nav-internal" href="quick_start/quick_start.html">
     Quick Start
   </a>
 </li>
@@ -327,13 +336,6 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
 
 
@@ -353,11 +355,11 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="hpipy">
-<h1>hpiPy<a class="headerlink" href="#hpipy" title="Link to this heading">#</a></h1>
+  <section id="hpipy-house-price-indices-in-python">
+<h1>hpiPy: House Price Indices in Python<a class="headerlink" href="#hpipy-house-price-indices-in-python" title="Link to this heading">#</a></h1>
 <p><strong>Version</strong>: 0.1.1</p>
 <p class="lead"><strong>hpiPy</strong> simplifies and standardizes the creation of house price indices in Python.</p>
-<p class="lead">The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. It also includes a random forest–based method with partial dependence plots for post-model interpretability, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data.</p>
+<p class="lead">The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. It also includes a random forest–based method with partial dependence plots for post-model interpretability, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data. Based on <a class="reference external" href="https://github.com/andykrause/hpiR">hpiR</a>.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 sd-pt-0 sd-pb-2 sd-pl-3 sd-pr-5 startpage-grid docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -367,7 +369,7 @@
 Installation</div>
 <p class="sd-card-text">Installation instructions and quick setup guide to help you start creating house price indices.</p>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="getting_started/installation.html#installation"><span class="std std-ref">Installation</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="installation/installation.html#installation"><span class="std std-ref">Installation</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -376,7 +378,7 @@ Installation</div>
 Quick Start</div>
 <p class="sd-card-text">Practical examples demonstrating how to create and evaluate house price indices.</p>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="getting_started/quickstart.html#quickstart"><span class="std std-ref">Quick Start</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="quick_start/quick_start.html#quickstart"><span class="std std-ref">Quick Start</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -413,11 +415,11 @@ API</div>
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="getting_started/installation.html"
+       href="installation/installation.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Installation</p>
+        <p class="prev-next-title">Getting Started</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

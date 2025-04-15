@@ -127,16 +127,20 @@ The hedonic method often benefits from careful feature engineering:
    
    .. code-block:: python
 
+       >>> cat_cols = ["use_type", "area"]
+
        # One-hot encode categorical variables.
-       >>> df = pd.get_dummies(df, columns=["use_type", "area"])
+       >>> df = pd.get_dummies(df, columns=cat_cols)
 
 3. Spatial Features:
    
    .. code-block:: python
 
+       >>> lat_col, lon_col = "latitude", "longitude"
+
        # Create location-based features.
        >>> df["lat_lon"] = (
-       ...     df.loc[:, ["latitude", "longitude"]]
+       ...     df.loc[:, [lat_col, lon_col]]
        ...     .round(2)
        ...     .astype(str)
        ...     .agg("_".join, axis=1)

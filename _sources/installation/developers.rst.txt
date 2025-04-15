@@ -1,13 +1,7 @@
-.. _installation:
+.. _developers:
 
-Installation
-============
-
-hpiPy can be installed using pip:
-
-.. code-block:: bash
-
-   pip install hpipy
+Developer's Guide
+=================
 
 Development Installation
 ------------------------
@@ -42,17 +36,39 @@ For development installation, we recommend using `uv <https://github.com/astral-
 Dependencies
 ------------
 
-Core dependencies:
-
-* numpy
-* pandas
-* pytorch
-* scikit-learn
-* statsmodels
-
 Optional dependencies for development:
 
-* pytest
-* sphinx
 * black
 * flake8
+* isort
+* mypy
+* pytest
+* pytest-cov
+* sphinx
+
+Test and Coverage
+-----------------
+
+Ensure that `pytest` and `pytest-cov` are installed::
+
+  pip install pytest pytest-cov
+
+To test the code::
+
+  python -m pytest hpipy -v
+
+To test the code and produce a coverage report::
+
+  python -m pytest hpipy --cov-report html --cov=hpipy
+
+To test the documentation::
+
+  python -m pytest --doctest-glob="*.rst" --doctest-modules docs
+
+Documentation
+-------------
+
+To build the documentation, run::
+
+  pip install -r ./docs/sphinx_requirements.txt
+  sphinx-build -b html ./docs/source ./docs/_build
