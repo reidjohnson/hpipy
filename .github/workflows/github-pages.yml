@@ -31,7 +31,7 @@ jobs:
           make clean
           mkdir -p source/_static
           mkdir -p data
-          cp ../data/seattle_sales.csv data/
+          cp ../data/* data/
           make html
         env:
           GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID }}
