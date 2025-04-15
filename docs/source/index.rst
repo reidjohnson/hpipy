@@ -1,7 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
-hpiPy
-=====
+hpiPy: House Price Indices in Python
+====================================
 
 .. role:: raw-html(raw)
    :format: html
@@ -51,8 +51,8 @@ hpiPy
    :maxdepth: 1
    :hidden:
 
-   Installation <getting_started/installation>
-   Quick Start <getting_started/quickstart>
+   Installation <installation/installation>
+   Quick Start <quick_start/quick_start>
    User Guide <user_guide/index>
    API <api/index>
    Release Notes <releases/changes>

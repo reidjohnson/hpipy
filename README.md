@@ -1,4 +1,4 @@
-# hpiPy
+# hpiPy <a href="https://reidjohnson.github.io/hpipy/"><img align="right" src="https://reidjohnson.github.io/hpipy/_static/hpipy-logo.png" height="50"></img></a>
 
 [![PyPI - Version](https://img.shields.io/pypi/v/hpipy)](https://pypi.org/project/hpipy)
 [![License](https://img.shields.io/github/license/reidjohnson/hpipy)](https://github.com/reidjohnson/hpipy/blob/main/LICENSE)

@@ -40,10 +40,24 @@ html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 # Output file base name for HTML help builder.
-html_title = "hpiPy: House Price Indices in Python"
+html_title = "hpiPy"
 html_short_title = "hpiPy"
 
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = "_static/hpipy-logo.svg"
+
+# The name of an image file (relative to this directory) to use as a favicon of
+# the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "_static/favicon.ico"
+
 html_theme_options = {
+    "navbar_start": ["navbar-logo", "navbar-project"],
+    "navbar_center": ["navbar-nav"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "primary_sidebar_end": [],
+    "logo": {"image_dark": "_static/hpipy-logo.svg"},
     "icon_links": [
         {
             "name": "GitHub",
@@ -56,8 +70,16 @@ html_theme_options = {
     "show_toc_level": 1,
 }
 
-# Autosummary settings.
-autosummary_generate = True
+html_context = {"default_mode": "light"}
+
+# Custom sidebar templates, maps document names to template names.
+html_sidebars = {
+    "index": [],
+    "releases/changes": [],
+    "**": ["sidebar-nav-bs"],
+}
+
+# Autodoc settings.
 autodoc_typehints = "description"
 autodoc_member_order = "bysource"
 autodoc_default_options = {
@@ -69,6 +91,9 @@ autodoc_default_options = {
     "show-inheritance": True,
     "inherited-members": True,
 }
+
+# Autosummary settings.
+autosummary_generate = True
 
 # Intersphinx configuration.
 intersphinx_mapping = {
