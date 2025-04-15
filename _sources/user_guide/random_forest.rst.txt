@@ -66,9 +66,8 @@ Create a Random Forest-based index:
     ...     date="sale_date",
     ...     dep_var="price",
     ...     ind_var=["tot_sf", "beds", "baths"],
+    ...     log_dep=True,
     ...     n_estimators=100,
-    ...     min_samples_leaf=5,
-    ...     max_features="sqrt",
     ...     smooth=True,
     ...     random_seed=0,
     ... )
@@ -78,20 +77,17 @@ Parameters
 
 Key Random Forest parameters:
 
+dep_var : str
+    Dependent variable to model.
+
+ind_var : list
+    Independent variables to use in the model.
+
+log_dep : bool
+    Whether to use log of price as dependent variable (recommended).
+
 n_estimators : int
     Number of trees in the forest (default: 100).
-
-min_samples_leaf : int
-    Minimum samples required at leaf nodes (default: 5).
-
-max_features : str or int
-    Number of features to consider for splits ("sqrt", "log2", or int).
-
-smooth : bool
-    Whether to apply smoothing to the final index.
-
-bootstrap : bool
-    Whether to use bootstrap samples (default: True).
 
 Feature Importance
 ------------------
