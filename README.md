@@ -46,7 +46,7 @@ hpi = RepeatTransactionIndex.create_index(
 
 # Visualize the index.
 with alt.renderers.enable("browser"):
-    plot_index(hpi, smooth=True).properties(width=600, title="Example Index").show()
+    plot_index(hpi, smooth=True).properties(title="Example Index").show()
 ```
 
 ## Documentation
