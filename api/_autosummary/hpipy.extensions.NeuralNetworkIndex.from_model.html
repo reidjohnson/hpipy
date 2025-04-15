@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+    <script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,7 @@
     <link rel="prev" title="hpipy.extensions.NeuralNetworkIndex.create_series" href="hpipy.extensions.NeuralNetworkIndex.create_series.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.1" />
+  <meta name="docsearch:version" content="0.1.2" />
   </head>
   
   
@@ -508,6 +508,11 @@
 <li class="toctree-l2"><a class="reference internal" href="hpipy.utils.metrics.series_volatility.html">hpipy.utils.metrics.series_volatility</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="hpipy.datasets.load_ex_sales.html">hpipy.datasets.load_ex_sales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hpipy.datasets.load_seattle_sales.html">hpipy.datasets.load_seattle_sales</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -571,14 +576,21 @@
 <h1>hpipy.extensions.NeuralNetworkIndex.from_model<a class="headerlink" href="#hpipy-extensions-neuralnetworkindex-from-model" title="Link to this heading">#</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="hpipy.extensions.NeuralNetworkIndex.from_model">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NeuralNetworkIndex.</span></span><span class="sig-name descname"><span class="pre">from_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hpipy.extensions.NeuralNetworkIndex.from_model" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NeuralNetworkIndex.</span></span><span class="sig-name descname"><span class="pre">from_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hpipy.extensions.NeuralNetworkIndex.from_model" title="Link to this definition">#</a></dt>
 <dd><p>Create an index from a house price model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<em>BaseHousePriceModel</em>) – House price model object.</p></li>
-<li><p><strong>max_period</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – Maximum period for the index.
+<li><p><strong>trans_data</strong> (<em>Optional</em><em>[</em><em>TransactionData</em><em>]</em><em>, </em><em>optional</em>) – Transaction data
+object.
 Defaults to None.</p></li>
+<li><p><strong>max_period</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – Maximum period for the
+index.
+Defaults to None.</p></li>
+<li><p><strong>smooth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Smooth the index.
+Defaults to False.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

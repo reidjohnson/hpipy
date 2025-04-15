@@ -6,11 +6,12 @@ Volatility metrics measure the stability and smoothness of the index:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.metrics import volatility
     >>> from hpipy.utils.plotting import plot_index_volatility
 
-    >>> df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_seattle_sales()
 
     >>> hpi = RepeatTransactionIndex.create_index(
     ...    trans_data=df,
@@ -39,10 +40,11 @@ Volatility metrics measure the stability and smoothness of the index:
 .. invisible-altair-plot::
 
     import pandas as pd
+    from hpipy.datasets import load_seattle_sales
     from hpipy.price_index import RepeatTransactionIndex
     from hpipy.utils.metrics import volatility
     from hpipy.utils.plotting import plot_index_volatility
-    df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
+    df = load_seattle_sales()
     hpi = RepeatTransactionIndex.create_index(
        trans_data=df,
        prop_id="pinx",

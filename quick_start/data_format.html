@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+    <script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,7 @@
     <link rel="prev" title="Quick Start" href="quick_start.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.1" />
+  <meta name="docsearch:version" content="0.1.2" />
   </head>
   
   
@@ -412,7 +412,8 @@
 </ul>
 <p>Example data structure:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/ex_sales.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sale_date&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_ex_sales</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">load_ex_sales</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 <span class="go">           pinx      sale_id  sale_price  sale_date</span>
 <span class="go">0  ..0007600046   2011..2621      308900 2011-02-22</span>

@@ -28,11 +28,12 @@ Example setup:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load and prepare data.
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_ex_sales()
     
     # Create period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
@@ -117,17 +118,18 @@ Evaluate the random forest index using various metrics:
     >>> vol = volatility(hpi)
 
     # Visualize results.
-    >>> plot_index(hpi).properties(title="Random Forest Index")
-    alt.Chart(...)
+    >>> plot_index(hpi, smooth=True).properties(title="Random Forest Index")
+    alt.LayerChart(...)
 
 .. invisible-altair-plot::
 
     import pandas as pd
+    from hpipy.datasets import load_ex_sales
     from hpipy.extensions import RandomForestIndex
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import HedonicTransactionData
     from hpipy.utils.plotting import plot_index
-    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price"
@@ -146,4 +148,4 @@ Evaluate the random forest index using various metrics:
         smooth=True,
         random_seed=0,
     )
-    chart = plot_index(hpi).properties(title="Random Forest Index", width=600)
+    chart = plot_index(hpi, smooth=True).properties(title="Random Forest Index", width=600)

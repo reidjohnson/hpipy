@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+    <script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.1" />
+  <meta name="docsearch:version" content="0.1.2" />
   </head>
   
   
@@ -491,13 +491,26 @@
         <span class="k">return</span> <span class="n">index</span><span class="p">,</span> <span class="n">is_imputed</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span> <span class="n">max_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_model</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span>
+        <span class="n">trans_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an index from a house price model.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            model (BaseHousePriceModel): House price model object.</span>
-<span class="sd">            max_period (Optional[int], optional): Maximum period for the index.</span>
+<span class="sd">            trans_data (Optional[TransactionData], optional): Transaction data</span>
+<span class="sd">                object.</span>
 <span class="sd">                Defaults to None.</span>
+<span class="sd">            max_period (Optional[int], optional): Maximum period for the</span>
+<span class="sd">                index.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            smooth (bool, optional): Smooth the index.</span>
+<span class="sd">                Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_period</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">max_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
@@ -541,11 +554,29 @@
             <span class="n">value</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
             <span class="n">imputed</span><span class="o">=</span><span class="n">is_imputed</span><span class="p">[:</span><span class="n">max_period</span><span class="p">],</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">BaseHousePriceIndex</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Converting model results to index failed.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;smooth_order&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">smooth_order</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">smooth_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;smooth_order&quot;</span><span class="p">]</span>
+
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">smooth_index</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">smooth_order</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Smoothing index failed.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">trans_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">trans_data</span>
+
         <span class="k">assert</span> <span class="n">instance</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">instance</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">instance</span><span class="o">.</span><span class="n">periods</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">instance</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">instance</span><span class="o">.</span><span class="n">imputed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
         <span class="k">return</span> <span class="n">instance</span>
 
     <span class="nd">@staticmethod</span>
@@ -668,23 +699,13 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Estimating model failed.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Convert to an index.</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_period</span><span class="o">=</span><span class="n">max_period</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">BaseHousePriceIndex</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Converting model results to index failed.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;smooth_order&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">smooth_order</span> <span class="o">=</span> <span class="mi">3</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">smooth_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;smooth_order&quot;</span><span class="p">]</span>
-
-            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">smooth_index</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">smooth_order</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Smoothing index failed.&quot;</span><span class="p">)</span>
-
-        <span class="n">index</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">trans_data</span>
-        <span class="n">index</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">,</span>
+            <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
+            <span class="n">max_period</span><span class="o">=</span><span class="n">max_period</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">index</span>
 
@@ -750,8 +771,13 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">TransactionData</span><span class="p">):</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">trans_df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">trans_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_ids</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span>
             <span class="n">model_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">index_i</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span><span class="n">model_i</span><span class="p">,</span> <span class="n">max_period</span><span class="o">=</span><span class="n">time_range</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="n">index_i</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">index_i</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span>
+                    <span class="n">model_i</span><span class="p">,</span>
+                    <span class="n">trans_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                    <span class="n">max_period</span><span class="o">=</span><span class="n">time_range</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">is_hpis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index_i</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hpis</span> <span class="o">=</span> <span class="n">is_hpis</span>
@@ -848,9 +874,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RepeatTransactionIndex</span><span class="p">(</span><span class="n">BaseHousePriceIndex</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Repeat transaction house price index.</span>
 
-<span class="sd">    This class implements the repeat transaction methodology for constructing house price indices.</span>
-<span class="sd">    It uses pairs of transactions for the same property to estimate price changes over time,</span>
-<span class="sd">    controlling for property-specific characteristics that remain constant between sales.</span>
+<span class="sd">    This class implements the repeat transaction methodology for constructing</span>
+<span class="sd">    house price indices. It uses pairs of transactions for the same property</span>
+<span class="sd">    to estimate price changes over time, controlling for property-specific</span>
+<span class="sd">    characteristics that remain constant between sales.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -971,9 +998,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">HedonicIndex</span><span class="p">(</span><span class="n">BaseHousePriceIndex</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hedonic house price index.</span>
 
-<span class="sd">    This class implements the hedonic methodology for constructing house price indices.</span>
-<span class="sd">    It uses property characteristics to control for quality differences between properties</span>
-<span class="sd">    and estimates the pure price change over time.</span>
+<span class="sd">    This class implements the hedonic methodology for constructing house price</span>
+<span class="sd">    indices. It uses property characteristics to control for quality</span>
+<span class="sd">    differences between properties and estimates the pure price change over</span>
+<span class="sd">    time.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

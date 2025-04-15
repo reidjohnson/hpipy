@@ -1,0 +1,28 @@
+﻿hpipy.datasets.load\_ex\_sales
+==============================
+
+.. currentmodule:: hpipy.datasets
+
+.. autoclass:: load_ex_sales
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

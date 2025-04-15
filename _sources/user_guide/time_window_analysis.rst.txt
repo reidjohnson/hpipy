@@ -6,10 +6,11 @@ Analyze metrics over different time windows:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.metrics import accuracy, volatility
 
-    >>> df = pd.read_csv("data/seattle_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_seattle_sales()
 
     >>> hpi = RepeatTransactionIndex.create_index(
     ...    trans_data=df,

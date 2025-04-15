@@ -25,11 +25,12 @@ Here's how to prepare your data:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
     # Load your sales data.
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_ex_sales()
 
     # Create a period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
@@ -104,7 +105,7 @@ For more control over the hedonic model:
     ... )
 
     # Create the index.
-    >>> hpi = HedonicIndex.from_model(model)
+    >>> hpi = HedonicIndex.from_model(model, trans_data=trans_data, smooth=True)
 
 Feature Engineering
 -------------------
@@ -153,33 +154,34 @@ Evaluate the hedonic index using various metrics:
 
 .. code-block:: python
 
-    >>> from hpipy.utils.metrics import volatility
+    >>> from hpipy.utils.metrics import accuracy,volatility
     >>> from hpipy.utils.plotting import plot_index
 
     # Calculate metrics.
     >>> vol = volatility(hpi)
 
     # Visualize results.
-    >>> plot_index(hpi).properties(title="Hedonic Index")
-    alt.Chart(...)
+    >>> plot_index(hpi, smooth=True).properties(title="Hedonic Index")
+    alt.LayerChart(...)
 
 .. invisible-altair-plot::
 
     import altair as alt
     import pandas as pd
+    from hpipy.datasets import load_ex_sales
     from hpipy.period_table import PeriodTable
     from hpipy.price_index import HedonicIndex
     from hpipy.price_model import HedonicModel
     from hpipy.trans_data import HedonicTransactionData
     from hpipy.utils.metrics import volatility
     from hpipy.utils.plotting import plot_index
-    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price"
     )
     model = HedonicModel(trans_data).fit(
-        dep_var="price", ind_var=["tot_sf", "beds", "baths"], log_dep=True)
-    hpi = HedonicIndex.from_model(model)
-    vol = volatility(hpi)
-    chart = plot_index(hpi).properties(title="Hedonic Index", width=600)
+        dep_var="price", ind_var=["tot_sf", "beds", "baths"], log_dep=True
+    )
+    hpi = HedonicIndex.from_model(model, trans_data=trans_data, smooth=True)
+    chart = plot_index(hpi, smooth=True).properties(title="Hedonic Index", width=600)

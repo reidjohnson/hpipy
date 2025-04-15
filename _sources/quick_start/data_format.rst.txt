@@ -15,7 +15,8 @@ Example data structure:
 .. code-block:: python
 
     >>> import pandas as pd
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> from hpipy.datasets import load_ex_sales
+    >>> df = load_ex_sales()
     >>> df.iloc[:, :4].head()
                pinx      sale_id  sale_price  sale_date
     0  ..0007600046   2011..2621      308900 2011-02-22

@@ -24,11 +24,12 @@ Here's how to prepare your data:
 .. code-block:: python
 
     >>> import pandas as pd
+    >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import RepeatTransactionData
 
     # Load your sales data
-    >>> df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    >>> df = load_ex_sales()
 
     # Create a period table (converts dates to periods)
     >>> sales_hdata = PeriodTable(df).create_period_table(
@@ -106,7 +107,9 @@ For more control over the index creation process, you can use the lower-level AP
     ... ).fit()
 
     # Create the index.
-    >>> hpi_from_model = RepeatTransactionIndex.from_model(model)
+    >>> hpi = RepeatTransactionIndex.from_model(
+    ...     model, trans_data=trans_data, smooth=True
+    ... )
 
 Evaluating the Index
 --------------------
@@ -125,29 +128,23 @@ You can evaluate the index quality using various metrics:
     >>> vol = volatility(hpi)
 
     # Plot the index.
-    >>> plot_index(hpi).properties(title="Repeat Sales Index")
-    alt.Chart(...)
+    >>> plot_index(hpi, smooth=True).properties(title="Repeat Sales Index")
+    alt.LayerChart(...)
 
 .. invisible-altair-plot::
 
     import pandas as pd
+    from hpipy.datasets import load_ex_sales
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import RepeatTransactionData
     from hpipy.price_index import RepeatTransactionIndex
+    from hpipy.price_model import RepeatTransactionModel
     from hpipy.utils.plotting import plot_index
-    df = pd.read_csv("data/ex_sales.csv", parse_dates=["sale_date"])
+    df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = RepeatTransactionData(sales_hdata).create_transactions(
         prop_id="pinx", trans_id="sale_id", price="sale_price", min_period_dist=12
     )
-    hpi = RepeatTransactionIndex.create_index(
-        trans_data=trans_data,
-        prop_id="pinx",
-        trans_id="sale_id",
-        price="sale_price",
-        date="sale_date",
-        estimator="robust",
-        log_dep=True,
-        smooth=True,
-    )
-    chart = plot_index(hpi).properties(title="Repeat Sales Index", width=600)
+    model = RepeatTransactionModel(trans_data, log_dep=True).fit()
+    hpi = RepeatTransactionIndex.from_model(model, trans_data=trans_data, smooth=True)
+    chart = plot_index(hpi, smooth=True).properties(title="Repeat Sales Index", width=600)
