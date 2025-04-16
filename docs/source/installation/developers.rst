@@ -31,7 +31,7 @@ For development installation, we recommend using `uv <https://github.com/astral-
 
    .. code-block:: bash
 
-      pytest
+      uv run pytest
 
 Dependencies
 ------------
@@ -52,24 +52,24 @@ Test and Coverage
 
 Ensure that `pytest` and `pytest-cov` are installed::
 
-  pip install pytest pytest-cov
+  uv run pip install pytest pytest-cov
 
 To test the code::
 
-  python -m pytest hpipy -v
+  uv run pytest hpipy -v
 
 To test the code and produce a coverage report::
 
-  python -m pytest hpipy --cov-report html --cov=hpipy
+  uv run pytest hpipy --cov-report html --cov=hpipy
 
 To test the documentation::
 
-  python -m pytest --doctest-glob="*.rst" --doctest-modules docs
+  uv run pytest --doctest-glob="*.rst" --doctest-modules docs
 
 Documentation
 -------------
 
 To build the documentation, run::
 
-  pip install -r ./docs/sphinx_requirements.txt
-  sphinx-build -b html ./docs/source ./docs/_build
+  uv pip install -r ./docs/sphinx_requirements.txt
+  uv run sphinx-build -b html ./docs/source ./docs/_build
