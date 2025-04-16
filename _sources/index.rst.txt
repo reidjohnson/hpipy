@@ -11,7 +11,7 @@ hpiPy: House Price Indices in Python
 .. rst-class:: lead
 
    **hpiPy** simplifies and standardizes the creation of house price indices in Python.
-   
+
    The package provides tools to evaluate index quality through predictive accuracy, volatility, and revision metrics—enabling meaningful comparisons across different methods and estimators. It focuses on the most widely used approaches: repeat sales and hedonic pricing models, with support for base, robust, and weighted estimators where applicable. It also includes a random forest–based method paired with partial dependence plots to derive index components, as well as a neural network approach that separates property-specific and market-level effects to jointly estimate quality and index components from property-level data. Based on `hpiR <https://github.com/andykrause/hpiR>`_.
 
 .. grid:: 1 1 2 2
