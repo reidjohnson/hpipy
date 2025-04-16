@@ -27,7 +27,20 @@ For development installation, we recommend using `uv <https://github.com/astral-
 
       uv pip install --requirements pyproject.toml --extra dev
 
-4. Run the test suite to verify the installation:
+4. Install and configure pre-commit hooks:
+
+   .. code-block:: bash
+
+      uv pip install pre-commit
+      pre-commit install
+
+   You can run the hooks manually on all files with:
+
+   .. code-block:: bash
+
+      pre-commit run --all-files
+
+5. Run the test suite to verify the installation:
 
    .. code-block:: bash
 
