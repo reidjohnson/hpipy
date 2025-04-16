@@ -13,12 +13,9 @@ repos:
   rev: 6.0.1
   hooks:
   - id: isort
-    name: isort (python)
-  - id: isort
-    name: isort (cython)
-    types: [cython]
-- repo: https://github.com/MarcoGorelli/cython-lint
-  rev: v0.16.2
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 1.9.1
   hooks:
-  - id: cython-lint
-  - id: double-quote-cython-strings
+  - id: nbqa-black
+  - id: nbqa-isort
+  - id: nbqa-pyupgrade
