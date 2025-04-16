@@ -85,16 +85,16 @@ The main parameters for random forest index creation are:
 .. admonition:: Parameters
    :class: hint
 
-   **dep_var** : str  
+   **dep_var** : str
        Dependent variable to model.
 
-   **ind_var** : list  
+   **ind_var** : list
        Independent variables to use in the model.
 
-   **log_dep** : bool  
+   **log_dep** : bool
        Whether to use log of price as dependent variable (recommended).
 
-   **n_estimators** : int  
+   **n_estimators** : int
        Number of trees in the forest (default: 100).
 
 Feature Importance
@@ -123,7 +123,7 @@ Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/sta
     ... )
     >>> df_pdp = pd.DataFrame({k: v[0] for k, v in predictions.items()})
 
-    >>> alt.Chart(df_pdp).mark_line().encode(
+    >>> alt.Chart(df_pdp).mark_line(size=4).encode(
     ...    x=alt.X("grid_values:Q", title="Transaction Period"),
     ...    y=alt.Y(
     ...        "average:Q", scale=alt.Scale(zero=False), title="Partial Dependence"
@@ -144,10 +144,12 @@ Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/sta
     from hpipy.extensions import RandomForestIndex
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import HedonicTransactionData
+
     df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(
-        prop_id="pinx", trans_id="sale_id", price="sale_price")
+        prop_id="pinx", trans_id="sale_id", price="sale_price"
+    )
     hpi = RandomForestIndex.create_index(
         trans_data=trans_data,
         prop_id="pinx",
@@ -163,14 +165,19 @@ Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/sta
     )
     predictions = partial_dependence(hpi.model.model_obj, hpi.model.X, features=["trans_period"])
     df_pdp = pd.DataFrame({k: v[0] for k, v in predictions.items()})
-    chart = alt.Chart(df_pdp).mark_line().encode(
-        x=alt.X("grid_values", title="Transaction Period"),
-        y=alt.Y("average", scale=alt.Scale(zero=False), title="Partial Dependence"),
-        tooltip=[
-            alt.Tooltip("grid_values", title="Transaction Period"),
-            alt.Tooltip("average", format=".3f", title="Partial Dependence"),
-        ],
-    ).properties(width=600)
+    chart = (
+        alt.Chart(df_pdp)
+        .mark_line(size=4)
+        .encode(
+            x=alt.X("grid_values", title="Transaction Period"),
+            y=alt.Y("average", scale=alt.Scale(zero=False), title="Partial Dependence"),
+            tooltip=[
+                alt.Tooltip("grid_values", title="Transaction Period"),
+                alt.Tooltip("average", format=".3f", title="Partial Dependence"),
+            ],
+        )
+        .properties(width=600)
+    )
 
 Evaluating the Index
 --------------------
@@ -191,12 +198,12 @@ Evaluate the random forest index using various metrics:
 
 .. invisible-altair-plot::
 
-    import pandas as pd
     from hpipy.datasets import load_ex_sales
     from hpipy.extensions import RandomForestIndex
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import HedonicTransactionData
     from hpipy.utils.plotting import plot_index
+
     df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(

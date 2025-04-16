@@ -23,7 +23,6 @@ Here's how to prepare your data:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import RepeatTransactionData
@@ -74,14 +73,14 @@ The main parameters for repeat sales index creation are:
 .. admonition:: Parameters
    :class: hint
 
-   **estimator** : str  
-       The type of estimator to use:  
-       
-       * "base": Standard OLS estimation  
-       * "robust": Robust regression (less sensitive to outliers)  
+   **estimator** : str
+       The type of estimator to use:
+
+       * "base": Standard OLS estimation
+       * "robust": Robust regression (less sensitive to outliers)
        * "weighted": Weighted regression based on time between sales
 
-   **log_dep** : bool  
+   **log_dep** : bool
        Whether to use log price differences (recommended).
 
 Advanced Usage
@@ -128,13 +127,13 @@ You can evaluate the index quality using various metrics:
 
 .. invisible-altair-plot::
 
-    import pandas as pd
     from hpipy.datasets import load_ex_sales
     from hpipy.period_table import PeriodTable
     from hpipy.trans_data import RepeatTransactionData
     from hpipy.price_index import RepeatTransactionIndex
     from hpipy.price_model import RepeatTransactionModel
     from hpipy.utils.plotting import plot_index
+
     df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = RepeatTransactionData(sales_hdata).create_transactions(

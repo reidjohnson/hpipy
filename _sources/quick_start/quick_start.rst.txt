@@ -12,7 +12,6 @@ Here's a simple example of creating a house price index using repeat sales data:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.plotting import plot_index
@@ -39,10 +38,10 @@ Here's a simple example of creating a house price index using repeat sales data:
 
 .. invisible-altair-plot::
 
-    import pandas as pd
     from hpipy.datasets import load_seattle_sales
     from hpipy.price_index import RepeatTransactionIndex
     from hpipy.utils.plotting import plot_index
+
     df = load_seattle_sales()
     hpi = RepeatTransactionIndex.create_index(
         trans_data=df,

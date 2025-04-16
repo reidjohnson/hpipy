@@ -405,25 +405,25 @@
 <h1>Available Methods<a class="headerlink" href="#available-methods" title="Link to this heading">#</a></h1>
 <p>hpiPy supports several methods for creating house price indices:</p>
 <ol class="arabic">
-<li><p>Repeat Transaction Method</p>
+<li><p><a class="reference internal" href="../user_guide/repeat_sales.html"><span class="doc">Repeat Sales</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_index</span><span class="w"> </span><span class="kn">import</span> <span class="n">RepeatTransactionIndex</span>
 <span class="n">hpi</span> <span class="o">=</span> <span class="n">RepeatTransactionIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
-<li><p>Hedonic Price Method</p>
+<li><p><a class="reference internal" href="../user_guide/hedonic_pricing.html"><span class="doc">Hedonic Pricing</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_index</span><span class="w"> </span><span class="kn">import</span> <span class="n">HedonicPriceIndex</span>
 <span class="n">hpi</span> <span class="o">=</span> <span class="n">HedonicPriceIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
-<li><p>Random Forest Method</p>
+<li><p><a class="reference internal" href="../user_guide/random_forest.html"><span class="doc">Interpretable Random Forest</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestIndex</span>
 <span class="n">hpi</span> <span class="o">=</span> <span class="n">RandomForestIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
-<li><p>Neural Network Method</p>
+<li><p><a class="reference internal" href="../user_guide/neural_network.html"><span class="doc">Bifurcated Neural Network</span></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkIndex</span>
 <span class="n">hpi</span> <span class="o">=</span> <span class="n">NeuralNetworkIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>

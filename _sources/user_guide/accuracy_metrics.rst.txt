@@ -5,7 +5,6 @@ Accuracy metrics measure how well the index predicts actual property values:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.metrics import accuracy
@@ -14,15 +13,15 @@ Accuracy metrics measure how well the index predicts actual property values:
     >>> df = load_seattle_sales()
 
     >>> hpi = RepeatTransactionIndex.create_index(
-    ...    trans_data=df,
-    ...    prop_id="pinx",
-    ...    trans_id="sale_id",
-    ...    price="sale_price",
-    ...    date="sale_date",
-    ...    periodicity="M",
-    ...    estimator="robust",
-    ...    log_dep=True,
-    ...    smooth=True,
+    ...     trans_data=df,
+    ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
+    ...     date="sale_date",
+    ...     periodicity="M",
+    ...     estimator="robust",
+    ...     log_dep=True,
+    ...     smooth=True,
     ... )
 
     >>> acc = accuracy(hpi)
@@ -42,27 +41,29 @@ Accuracy metrics measure how well the index predicts actual property values:
 .. invisible-altair-plot::
 
     import altair as alt
-    import pandas as pd
     from hpipy.datasets import load_seattle_sales
     from hpipy.price_index import RepeatTransactionIndex
     from hpipy.utils.metrics import accuracy
     from hpipy.utils.plotting import plot_index_accuracy
+
     df = load_seattle_sales()
     hpi = RepeatTransactionIndex.create_index(
-       trans_data=df,
-       prop_id="pinx",
-       trans_id="sale_id",
-       price="sale_price",
-       date="sale_date",
-       periodicity="M",
-       estimator="robust",
-       log_dep=True,
-       smooth=True,
+        trans_data=df,
+        prop_id="pinx",
+        trans_id="sale_id",
+        price="sale_price",
+        date="sale_date",
+        periodicity="M",
+        estimator="robust",
+        log_dep=True,
+        smooth=True,
     )
     acc = accuracy(hpi)
-    spec = plot_index_accuracy(acc).properties(
-        title={"text": "Accuracy Metrics", "anchor": "middle"}
-    ).to_dict()
+    spec = (
+        plot_index_accuracy(acc)
+        .properties(title={"text": "Accuracy Metrics", "anchor": "middle"})
+        .to_dict()
+    )
     for vrow in spec.get("vconcat", []):
         for hchart in vrow.get("hconcat", []):
             hchart.pop("width", None)

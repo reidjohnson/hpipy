@@ -5,31 +5,30 @@ Compare different index methods:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.extensions import NeuralNetworkIndex, RandomForestIndex
     >>> from hpipy.price_index import HedonicIndex, RepeatTransactionIndex
-    >>> from hpipy.utils.metrics import accuracy, volatility
+    >>> from hpipy.utils.metrics import volatility
 
     >>> df = load_ex_sales()
 
     >>> index_kwargs = {
-    ...    "trans_data": df,
-    ...    "prop_id": "pinx",
-    ...    "trans_id": "sale_id",
-    ...    "price": "sale_price",
-    ...    "date": "sale_date",
-    ...    "periodicity": "M",
+    ...     "trans_data": df,
+    ...     "prop_id": "pinx",
+    ...     "trans_id": "sale_id",
+    ...     "price": "sale_price",
+    ...     "date": "sale_date",
+    ...     "periodicity": "M",
     ... }
     >>> rt_kwargs = {
-    ...    **index_kwargs,
-    ...    "estimator": "robust",
-    ...    "log_dep": True,
+    ...     **index_kwargs,
+    ...     "estimator": "robust",
+    ...     "log_dep": True,
     ... }
     >>> hed_kwargs = {
-    ...    **index_kwargs,
-    ...    "dep_var": "price",
-    ...    "ind_var": ["tot_sf", "beds", "baths"],
+    ...     **index_kwargs,
+    ...     "dep_var": "price",
+    ...     "ind_var": ["tot_sf", "beds", "baths"],
     ... }
 
     >>> rt_hpi = RepeatTransactionIndex.create_index(**rt_kwargs)

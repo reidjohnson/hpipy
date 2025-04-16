@@ -5,7 +5,6 @@ Analyze metrics over different time windows:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
     >>> from hpipy.utils.metrics import accuracy, volatility
@@ -13,15 +12,15 @@ Analyze metrics over different time windows:
     >>> df = load_seattle_sales()
 
     >>> hpi = RepeatTransactionIndex.create_index(
-    ...    trans_data=df,
-    ...    prop_id="pinx",
-    ...    trans_id="sale_id",
-    ...    price="sale_price",
-    ...    date="sale_date",
-    ...    periodicity="M",
-    ...    estimator="robust",
-    ...    log_dep=True,
-    ...    smooth=True,
+    ...     trans_data=df,
+    ...     prop_id="pinx",
+    ...     trans_id="sale_id",
+    ...     price="sale_price",
+    ...     date="sale_date",
+    ...     periodicity="M",
+    ...     estimator="robust",
+    ...     log_dep=True,
+    ...     smooth=True,
     ... )
 
     >>> rolling_acc = accuracy(hpi, window=12)
