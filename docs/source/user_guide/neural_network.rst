@@ -1,50 +1,100 @@
-Neural Network
-==============
+Bifurcated Neural Network
+=========================
 
-The Neural Network method in hpiPy provides a deep learning approach to house price index creation, capable of learning complex patterns and separating property-specific effects from market-level trends.
+The neural network method offers a deep learning–based approach to constructing house price indices. It automatically learns complex, nonlinear relationships between property features and sale prices, enabling it to separate individual property effects from broader market trends. While it requires large volumes of sales and property data, it is particularly powerful at scale and can produce accurate, fine-grained, and timely indices without relying on repeat sales.
+
+.. note::
+
+    Background on model construction for the neural network method can be found in:
+
+    Krause and Johnson (2024), "A Multi-Criteria Evaluation of House Price Indexes". `https://github.com/andykrause/hpi_research/tree/master/papers/hpi_comp <https://github.com/andykrause/hpi_research/tree/master/papers/hpi_comp>`_.
 
 Overview
 --------
 
-The Neural Network method:
+The neural network method:
 
 1. Separates property-specific and market-level effects
 2. Learns non-linear relationships automatically
 3. Can handle high-dimensional feature spaces
 4. Supports both local and global market patterns
 
-The Neural Network supports two distinct approaches for extracting the house price index.
+The neural network method supports two distinct approaches for extracting the house price index:
 
-Residual Approach
-~~~~~~~~~~~~~~~~~
+.. list-table::
+   :header-rows: 1
+   :widths: 20 40 40
 
-The residual approach extracts the index directly from the market pathway of the neural network. It works by:
+   * -
+     - Residual Approach
+     - Attributional Approach
+   * - Description
+     - Extracts the index directly from the market pathway by isolating temporal market effects.
+     - Uses explainability techniques (e.g., SHAP )to attribute prediction components to market-level factors.
+   * - Steps
+     - 1. Train on full feature set
+       2. Zero out non-market (i.e., property-specific) feautures
+       3. Extract residual market effects
+       4. Convert to index
+     - 1. Train on full feature set
+       2. Apply explainability techniques to assign feature attributions
+       3. Extract market-level attributions
+       4. Convert to index
+   * - Benefits
+     - * Explicit separation of effects
+       * Structural interpretation
+       * Default in `hpiPy`
+     - * Granular effect decomposition
+       * Feature-level interpretability
+   * - Drawbacks
+     - * Less flexible than attributional
+     - * Relies on post-hoc attributions
 
-1. Training the network on the full feature set
-2. During index extraction, zeroing out all non-temporal features
-3. Examining the network's output to capture the "residual" market trend
-4. Computing the index from these isolated temporal effects
+**Attributional Approach**
 
-This approach is:
+The attributional approach decomposes the logarithm of a property's value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by macroeconomic conditions and the characteristics of the property itself (`ref <ref-lusk_>`_):
 
-* More computationally efficient
-* Direct in its interpretation
-* The default approach in hpiPy
+.. math::
 
-Attributional Approach
-~~~~~~~~~~~~~~~~~~~~~~
+    \log V_{it} = \log P_t + \log Q_i + \varepsilon_{it}
 
-The attributional approach derives the index through explainability analysis of both market and time components. It:
+where:
 
-1. Trains the network on the full feature set
-2. Uses attribution techniques to decompose predictions
-3. Quantifies how much price change is due to temporal vs. market factors
-4. Computes the index from the attributed temporal components
+- :math:`V_{it}` is the observed transaction price (or value) of property *i* at time *t*.
+- :math:`P_t` is the market-level price index at time *t*, common to all properties.
+- :math:`Q_i` is the time-invariant quality or quantity of property *i* (e.g., structural/locational attributes).
+- :math:`\varepsilon_{it}` is a residual term capturing idiosyncratic noise or omitted effects.
 
-This approach offers:
+This model is conceptually similar to hedonic or repeat-sales approaches, where market effects and property characteristics are disentangled.
 
-* Higher computational complexity
-* More granular decomposition of effects
+**Residual Approach**
+
+The residual approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (`ref <ref-deeplift_>`_):
+
+.. math::
+
+    \hat{V}_i = f(x_i)
+
+.. math::
+
+    \Delta \hat{V}_i = \hat{V}_i - \hat{V}_i^{\text{ref}} = \sum_{j} C_j
+
+.. math::
+
+    C_j = m_j \cdot \Delta x_{ij}
+
+where:
+
+- :math:`\hat{V}_i = f(x_i)` is the model’s predicted value for property *i*.
+- :math:`x_i` is the feature vector describing property *i* (e.g., square footage, year built, etc.).
+- :math:`\hat{V}_i^{\text{ref}} = f(x_i^{\text{ref}})` is the prediction for a baseline (e.g., average, median, or zeroed) property.
+- :math:`\Delta \hat{V}_i` is the total difference in predicted value from the baseline.
+- :math:`C_j` is the contribution of feature :math:`j`, computed as the product of the feature’s difference from baseline, :math:`\Delta x_{ij} = x_{ij} - x_{j}^{\text{ref}}`, and its multiplier :math:`m_j`, which represents the sensitivity of the output to that feature.
+
+This approach allows for interpretability of complex nonlinear models by expressing the prediction in terms of feature-level contributions.
+
+.. _ref-lusk: https://lusk.usc.edu/research/working-papers/revisiting-past-revision-repeat-sales-and-hedonic-indexes-house-prices
+.. _ref-deeplift: https://arxiv.org/abs/1704.02685
 
 Data Preparation
 ----------------
@@ -65,7 +115,7 @@ Example setup:
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
-    # Load and prepare data.
+    # Load sales data.
     >>> df = load_ex_sales()
     
     # Create period table.
@@ -84,7 +134,7 @@ Example setup:
 Creating the Index
 ------------------
 
-Create a Neural Network-based index using either approach:
+Create a neural network-based index using either approach:
 
 .. code-block:: python
 
@@ -108,92 +158,69 @@ Create a Neural Network-based index using either approach:
     ...     "random_seed": 0,
     ... }
 
-    # Create index using residual approach (default)
+    # Create index using residual approach (default).
     >>> hpi_residual = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
     ...     estimator="residual",  # default
     ...     **kwargs,
     ... )
 
-    # Create index using attributional approach
+    # Create index using attributional approach.
     >>> hpi_attributional = NeuralNetworkIndex.create_index(
     ...     trans_data=trans_data,
     ...     estimator="attributional",
     ...     **kwargs,
     ... )
 
-Network Architecture
---------------------
-
-The neural network consists of:
-
-1. Property Characteristics Network
-
-  * Processes property features
-  * Learns property-specific value components
-  * Handles both continuous and categorical inputs
-  * Uses embeddings for categorical features
-
-2. Time Effect Network
-
-  * Captures temporal market trends
-  * Generates the house price index
-  * Processes temporal features
-  * Learns market-level patterns
-
-3. Combined Output
-
-  * Merges property and time effects
-  * Produces final price predictions
-  * Balances feature importance
-  * Enables index extraction
-
 Parameters
 ----------
 
-Key neural network parameters:
+The main parameters for neural network index creation are:
 
-dep_var : str
-    Dependent variable to model.
+.. admonition:: Parameters
+   :class: hint
 
-ind_var : list
-    Independent variables to use in the model.
+   **dep_var** : str  
+       Dependent variable to model.
 
-estimator : str
-    Estimator type. Choose between:
+   **ind_var** : list  
+       Independent variables to use in the model.
 
-    * "residual": Extracts index from market pathway (default)
-    * "attributional": Derives index through explainability analysis
+   **estimator** : str  
+       Estimator type. Choose between:
+       
+       * "residual": Extracts index from market pathway (default)  
+       * "attributional": Derives index through explainability analysis
 
-feature_dict : dict
-    Feature dictionary specifying how different variables should be processed:
+   **feature_dict** : dict  
+       Feature dictionary specifying how different variables should be processed:
 
-    * numerics: Standard numeric features
-    * log_numerics: Features to be log-transformed
-    * categoricals: Categorical features for embedding
-    * ordinals: Ordinal features
-    * hpi: Temporal features for index generation
+       * numerics: Standard numeric features  
+       * log_numerics: Features to be log-transformed  
+       * categoricals: Categorical features for embedding  
+       * ordinals: Ordinal features  
+       * hpi: Temporal features for index generation
 
-num_models : int
-    Number of models to train in ensemble.
+   **num_models** : int  
+       Number of models to train in ensemble.
 
-num_epochs : int
-    Number of training epochs.
+   **num_epochs** : int  
+       Number of training epochs.
 
-batch_size : int
-    Batch size for training.
+   **batch_size** : int  
+       Batch size for training.
 
-hidden_dims : list
-    List of integers specifying the number of neurons in each hidden layer.
+   **hidden_dims** : list  
+       List of integers specifying the number of neurons in each hidden layer.
 
-emb_size : int
-    Embedding size for categorical features.
+   **emb_size** : int  
+       Embedding size for categorical features.
 
-dropout_rate : float
-    Dropout rate for regularization (0 to 1).
+   **dropout_rate** : float  
+       Dropout rate for regularization (0 to 1).
 
-learning_rate : float
-    Learning rate for optimization.
+   **learning_rate** : float  
+       Learning rate for optimization.
 
 Evaluating the Index
 --------------------
@@ -210,7 +237,7 @@ Evaluate the neural network index using various metrics:
     >>> vol_residual = volatility(hpi_residual)
     >>> vol_attributional = volatility(hpi_attributional)
 
-    # Visualize results.
+    # Visualize the index.
     >>> alt.layer(
     ...     (
     ...         plot_index(hpi_residual)

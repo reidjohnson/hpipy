@@ -1,3 +1,6 @@
+import uuid
+
+from docutils import nodes
 from sphinx.util.docutils import SphinxDirective
 
 
@@ -6,7 +9,6 @@ class InvisibleAltairPlot(SphinxDirective):
 
     def run(self):
         import altair as alt
-        from docutils import nodes
 
         code = "\n".join(self.content)
         ns = {}
@@ -16,25 +18,29 @@ class InvisibleAltairPlot(SphinxDirective):
         if not isinstance(chart, alt.TopLevelMixin):
             raise ValueError("Expected a variable named 'chart' with an Altair chart object.")
 
-        chart_id = f"vega-spec-{id(chart)}"
+        chart_id = f"vega-spec-{uuid.uuid4().hex}"
         spec = chart.to_json(indent=None)
 
         html = f"""
-        <div class="altair-chart">
+        <div class="altair-chart" id="container-{chart_id}">
             <script type="application/json" id="{chart_id}">
                 {spec}
             </script>
             <script>
-                const el = document.getElementById("{chart_id}");
-                const spec = JSON.parse(el.textContent);
-                vegaEmbed(el.parentElement, spec, {{
-                    actions: {{
-                        export: true,
-                        source: true,
-                        editor: true,
-                        compiled: false
+                (function() {{
+                    const el = document.getElementById("{chart_id}");
+                    if (el) {{
+                        const spec = JSON.parse(el.textContent);
+                        vegaEmbed(el.parentElement, spec, {{
+                            actions: {{
+                                export: true,
+                                source: true,
+                                editor: true,
+                                compiled: false
+                            }}
+                        }}).catch(console.error);
                     }}
-                }});
+                }})();
             </script>
         </div>
         """
