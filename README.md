@@ -24,7 +24,6 @@ A basic example of creating a house price index:
 
 ```python
 import altair as alt
-import pandas as pd
 from hpipy.datasets import load_seattle_sales
 from hpipy.price_index import RepeatTransactionIndex
 from hpipy.utils.plotting import plot_index
