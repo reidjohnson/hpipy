@@ -7,7 +7,7 @@ The hedonic pricing method constructs house price indices by modeling sale price
 
     Background on basic model construction for hedonic pricing models can be found in:
 
-    Bourassa et al. (2006), "A Simple Alternative House Price Index Method", 
+    Bourassa et al. (2006), "A Simple Alternative House Price Index Method",
     *Journal of Housing Economics*, 15(1), 80-97. DOI: `10.1016/j.jhe.2006.03.001 <https://doi.org/10.1016/j.jhe.2006.03.001>`_.
 
 Data Preparation
@@ -116,7 +116,7 @@ Feature Engineering
 The hedonic method often benefits from careful feature engineering:
 
 1. Numeric Transformations:
-   
+
    .. code-block:: python
 
        >>> import numpy as np
@@ -128,7 +128,7 @@ The hedonic method often benefits from careful feature engineering:
        >>> df["price_per_sqft"] = df["sale_price"] / df["tot_sf"]
 
 2. Categorical Features:
-   
+
    .. code-block:: python
 
        >>> import pandas as pd
@@ -139,7 +139,7 @@ The hedonic method often benefits from careful feature engineering:
        >>> df = pd.get_dummies(df, columns=cat_cols)
 
 3. Spatial Features:
-   
+
    .. code-block:: python
 
        >>> lat_col, lon_col = "latitude", "longitude"

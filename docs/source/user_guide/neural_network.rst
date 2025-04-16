@@ -116,7 +116,7 @@ Example setup:
 
     # Load sales data.
     >>> df = load_ex_sales()
-    
+
     # Create period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
     ...     "sale_date",
