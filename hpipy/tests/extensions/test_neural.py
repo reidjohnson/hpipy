@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -38,7 +40,7 @@ def test_nn_create_trans(seattle_dataset: pd.DataFrame, estimator: str) -> None:
 
 
 @pytest.fixture
-def device():
+def device() -> torch.device:
     """Return default device for testing."""
     return torch.device("cpu")
 
@@ -47,7 +49,7 @@ class TestMonotonicDense:
     """Test suite for MonotonicDense layer."""
 
     @pytest.fixture
-    def layer_params(self):
+    def layer_params(self) -> dict[str, Any]:
         """Return default layer parameters for testing."""
         return {
             "in_features": 3,
@@ -57,23 +59,29 @@ class TestMonotonicDense:
             "activation_weights": [0.4, 0.4, 0.2],
         }
 
-    def test_initialization(self, layer_params, device):
+    def test_initialization(self, layer_params: dict[str, Any], device: torch.device) -> None:
         """Test layer initialization with various parameters."""
         layer = MonotonicDense(**layer_params, device=device)
         assert layer.in_features == layer_params["in_features"]
         assert layer.out_features == layer_params["out_features"]
         assert isinstance(layer.activation, nn.ReLU)
-        assert torch.allclose(
-            layer.monotonicity_indicator,
-            torch.tensor(layer_params["monotonicity_indicator"], device=device),
-        )
+
+        if layer.monotonicity_indicator is not None:
+            assert torch.allclose(
+                layer.monotonicity_indicator,
+                torch.tensor(layer_params["monotonicity_indicator"], device=device),
+            )
 
         # Test activation weights normalization.
         expected_weights = torch.tensor(layer_params["activation_weights"], device=device)
         expected_weights = expected_weights / expected_weights.sum()
         assert torch.allclose(layer.activation_weights, expected_weights)
 
-    def test_invalid_activation_weights(self, layer_params, device):
+    def test_invalid_activation_weights(
+        self,
+        layer_params: dict[str, Any],
+        device: torch.device,
+    ) -> None:
         """Test that invalid activation weights raise appropriate errors."""
         with pytest.raises(ValueError):
             invalid_params = layer_params.copy()
@@ -85,7 +93,7 @@ class TestMonotonicDense:
             invalid_params["activation_weights"] = [-1, 1, 1]  # negative values
             MonotonicDense(**invalid_params, device=device)
 
-    def test_forward_pass(self, layer_params, device):
+    def test_forward_pass(self, layer_params: dict[str, Any], device: torch.device) -> None:
         """Test forward pass with different monotonicity settings."""
         layer = MonotonicDense(**layer_params, device=device)
         x = torch.randn(4, layer_params["in_features"], device=device)
@@ -94,7 +102,7 @@ class TestMonotonicDense:
         assert output.shape == (4, layer_params["out_features"])
         assert not torch.isnan(output).any()
 
-    def test_monotonicity_constraints(self, device):
+    def test_monotonicity_constraints(self, device: torch.device) -> None:
         """Test that monotonicity constraints are properly enforced."""
         # Test increasing monotonicity.
         layer = MonotonicDense(
@@ -119,14 +127,14 @@ class TestOrdinalEmbedding:
     """Test suite for OrdinalEmbedding layer."""
 
     @pytest.fixture
-    def layer_params(self):
+    def layer_params(self) -> dict[str, Any]:
         """Return default layer parameters for testing."""
         return {
             "num_embeddings": 5,
             "embedding_dim": 3,
         }
 
-    def test_initialization(self, layer_params, device):
+    def test_initialization(self, layer_params: dict[str, Any], device: torch.device) -> None:
         """Test layer initialization."""
         layer = OrdinalEmbedding(**layer_params, device=device)
         assert layer.num_embeddings == layer_params["num_embeddings"]
@@ -137,7 +145,7 @@ class TestOrdinalEmbedding:
         )
         assert layer.null_weight.shape == (layer_params["embedding_dim"],)
 
-    def test_forward_pass(self, layer_params, device):
+    def test_forward_pass(self, layer_params: dict[str, Any], device: torch.device) -> None:
         """Test forward pass with various inputs."""
         layer = OrdinalEmbedding(**layer_params, device=device)
 
@@ -153,7 +161,7 @@ class TestOrdinalEmbedding:
         assert output_null.shape == (3, layer_params["embedding_dim"])
         assert torch.allclose(output_null[0], output_null[1])
 
-    def test_ordinal_encoding(self, layer_params, device):
+    def test_ordinal_encoding(self, device: torch.device) -> None:
         """Test that ordinal encoding is correct."""
         x = torch.tensor([1, 3, 2, 0, 4], device=device)
 
@@ -174,7 +182,7 @@ class TestOrdinalEmbedding:
 
         assert torch.allclose(actual_encoding, expected_encoding.float())
 
-    def test_parameter_shapes(self, layer_params, device):
+    def test_parameter_shapes(self, layer_params: dict[str, Any], device: torch.device) -> None:
         """Test that parameter shapes are correct after initialization."""
         layer = OrdinalEmbedding(**layer_params, device=device)
 
@@ -188,7 +196,7 @@ class TestOrdinalEmbedding:
 
 @pytest.mark.parametrize("batch_size", [4, 8])
 @pytest.mark.parametrize("feature_dim", [2, 10])
-def test_mixup_shape(batch_size, feature_dim):
+def test_mixup_shape(batch_size: int, feature_dim: int) -> None:
     """Test mixup output shapes."""
     X = torch.randn(batch_size, feature_dim)
     y = torch.randn(batch_size)
@@ -201,7 +209,7 @@ def test_mixup_shape(batch_size, feature_dim):
     assert lam.shape == (batch_size, 1)
 
 
-def test_mixup_lambda_range():
+def test_mixup_lambda_range() -> None:
     """Test mixup lambda values are in [0, 1]."""
     batch_size, feature_dim = 16, 4
     X = torch.randn(batch_size, feature_dim)
@@ -212,7 +220,7 @@ def test_mixup_lambda_range():
     assert torch.all(lam >= 0) and torch.all(lam <= 1)
 
 
-def test_mixup_deterministic():
+def test_mixup_deterministic() -> None:
     """Test mixup with fixed seed for reproducibility."""
     batch_size, feature_dim = 4, 2
     X = torch.randn(batch_size, feature_dim)
@@ -229,7 +237,7 @@ def test_mixup_deterministic():
 
 
 @pytest.mark.parametrize("batch_size", [4, 8])
-def test_quantile_loss_shape(batch_size):
+def test_quantile_loss_shape(batch_size: int) -> None:
     """Test quantile loss output shape."""
     y_true = torch.randn(batch_size)
     y_pred = torch.randn(batch_size)
@@ -240,7 +248,7 @@ def test_quantile_loss_shape(batch_size):
 
 
 @pytest.mark.parametrize("quantile", [0.1, 0.5, 0.9])
-def test_quantile_loss_values(quantile):
+def test_quantile_loss_values(quantile: float) -> None:
     """Test quantile loss computation for different quantiles."""
     y_true = torch.tensor([1.0, 2.0, 3.0])
     y_pred = torch.tensor([1.5, 1.5, 1.5])
@@ -251,7 +259,7 @@ def test_quantile_loss_values(quantile):
     assert torch.all(loss >= 0)
 
 
-def test_quantile_loss_zero():
+def test_quantile_loss_zero() -> None:
     """Test quantile loss is zero when prediction equals true value."""
     y_true = torch.tensor([1.0, 2.0, 3.0])
     y_pred = torch.tensor([1.0, 2.0, 3.0])
@@ -261,7 +269,7 @@ def test_quantile_loss_zero():
     assert torch.all(loss == 0)
 
 
-def test_prepare_dataframe():
+def test_prepare_dataframe() -> None:
     """Test prepare_dataframe function."""
     test_data = pd.DataFrame(
         {
@@ -302,7 +310,7 @@ def test_prepare_dataframe():
     )
 
 
-def test_prepare_tensor():
+def test_prepare_tensor() -> None:
     """Test prepare_tensor function."""
     test_tensor = torch.tensor(
         [

@@ -43,14 +43,16 @@ class BaseHousePriceIndex(ABC):
 
     @staticmethod
     def coef_to_index(
-        coef_df: pd.DataFrame, log_dep: bool, base_price: int = 1
+        coef_df: pd.DataFrame,
+        log_dep: bool,
+        base_price: Union[int, float] = 1,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Convert coefficients to an index.
 
         Args:
             coef_df (pd.DataFrame): Coefficients.
             log_dep (bool): Log dependent variable.
-            base_price (int, optional): Base price.
+            base_price (Union[int, float], optional): Base price.
                 Defaults to 1.
         """
         coef_df.loc[coef_df["coefficient"].abs() < 1e-15, "coefficient"] = 0
@@ -147,10 +149,10 @@ class BaseHousePriceIndex(ABC):
         coef_cols = ["time", "coefficient"]
         if len(coef_df.columns) > 2:
             partition_cols = [col for col in coef_df.columns if col not in coef_cols]
-            index = []
-            is_imputed = []
             unique_df = coef_df[partition_cols].drop_duplicates()
-            for _, row in unique_df.iterrows():
+            index = np.empty(len(unique_df))
+            is_imputed = np.empty(len(unique_df))
+            for idx, row in unique_df.iterrows():
                 coef_df_i = coef_df.merge(row.to_frame().T, on=partition_cols, how="inner")
                 index_i, is_imputed_i = cls.coef_to_index(
                     coef_df_i, log_dep, base_price=model.base_price
@@ -158,8 +160,8 @@ class BaseHousePriceIndex(ABC):
                 index_i_df = pd.DataFrame({"index": index_i})
                 for col in partition_cols:
                     index_i_df[col] = row[col]
-                index.append(index_i_df)
-                is_imputed.append(is_imputed_i)
+                index[idx] = index_i_df
+                is_imputed[idx] = is_imputed_i
         else:
             index, is_imputed = cls.coef_to_index(coef_df, log_dep, base_price=model.base_price)
 

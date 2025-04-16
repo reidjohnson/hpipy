@@ -186,6 +186,7 @@ class OrdinalEmbedding(nn.Module):
                 **factory_kwargs,  # type: ignore
             )
         )
+        self.bias: torch.Tensor | None
         self.register_parameter("bias", None)
         self.null_weight = nn.Parameter(
             torch.empty(self.embedding_dim, **factory_kwargs)  # type: ignore

@@ -30,6 +30,7 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
+import torch
 from dateutil.relativedelta import relativedelta
 
 from hpipy.extensions.neural.neural_avm.data_pipeline import DataPipeline
@@ -45,6 +46,12 @@ from hpipy.extensions.neural.neural_avm.data_transformers import (
 from hpipy.extensions.neural.neural_avm.model_fnn import NeuralAVM
 from hpipy.price_index import HedonicIndex
 from hpipy.price_model import BaseHousePriceModel
+
+
+class NeuralAVMWithCoef(NeuralAVM):
+    """NeuralAVM with coefficients."""
+
+    coef_: np.ndarray
 
 
 class NeuralNetworkIndex(HedonicIndex):
@@ -64,7 +71,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         X: Union[pd.DataFrame, pd.Series],
         y: pd.Series,
         **kwargs: Any,
-    ) -> NeuralAVM:
+    ) -> NeuralAVMWithCoef:
         """Create a neural network house price model."""
         return self._model_with_coefficients(X, y, **kwargs)
 
@@ -75,9 +82,9 @@ class NeuralNetworkModel(BaseHousePriceModel):
         estimator: str,
         partition_cols: Optional[list] = None,
         **kwargs: Any,
-    ) -> NeuralAVM:
+    ) -> NeuralAVMWithCoef:
         """Fit model and populate coefficients to produce index."""
-        model = NeuralAVM(**kwargs["init"]).fit(X, y, **kwargs["fit"])
+        model = NeuralAVMWithCoef(**kwargs["init"]).fit(X, y, **kwargs["fit"])
         periods = sorted(self.hpi_df["trans_period"].unique())
         if partition_cols is None:
             if estimator == "residual":
@@ -113,7 +120,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
 
     def _create_explainer_input_data(
         self,
-        model: NeuralAVM,
+        model: NeuralAVMWithCoef,
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
@@ -136,7 +143,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         # Deduplicate.
         inputs = model.prepare_model_input(X_input)
         for key in inputs:
-            inputs[key] = inputs[key].numpy().squeeze()[-len(X_input) :]
+            inputs[key] = torch.from_numpy(inputs[key].numpy().squeeze()[-len(X_input) :])
         input_df = pd.DataFrame(inputs).drop_duplicates()
         explain_df = explain_df.loc[input_df.index].reset_index(drop=True)
         X_input = data_pipeline.predict_transform(explain_df, override_date=False, return_y=False)
@@ -188,7 +195,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
 
     def _model_residual(
         self,
-        model: NeuralAVM,
+        model: NeuralAVMWithCoef,
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
@@ -196,7 +203,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         quantile: float = 0.5,
         partition_cols: Optional[list] = None,
         **kwargs: Any,
-    ) -> NeuralAVM:
+    ) -> NeuralAVMWithCoef:
         """Generate explanation from index-pathway output component."""
         input_features = [date]
         if partition_cols is not None:
@@ -232,7 +239,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
 
     def _model_attributional(
         self,
-        model: NeuralAVM,
+        model: NeuralAVMWithCoef,
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
@@ -240,7 +247,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         quantile: float = 0.5,
         partition_cols: Optional[list] = None,
         **kwargs: Any,
-    ) -> NeuralAVM:
+    ) -> NeuralAVMWithCoef:
         """Generate explanation from attribution of property estimate."""
         num_background = 1
         input_features = [date]

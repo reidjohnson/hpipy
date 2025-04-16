@@ -6,12 +6,34 @@ build-backend = "setuptools.build_meta"
 name = "hpipy"
 dynamic = ["version"]
 description = "House Price Indices with Python"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+
 authors = [
     { name = "Reid Johnson", email = "reid.johnson@gmail.com" }
 ]
-license = "Apache-2.0"
-readme = "README.md"
-requires-python = ">=3.10"
+maintainers = [
+    { name = "Reid Johnson", email = "reid.johnson@gmail.com" }
+]
+
+keywords = ["house prices", "real estate", "index", "machine learning", "regression"]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+]
 
 dependencies = [
     "altair~=5.5.0",
@@ -34,7 +56,14 @@ dev = [
     "mypy>=1.15.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
+    "types-python-dateutil>=2.9.0.post0",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/reidjohnson/hpipy"
+"Repository" = "https://github.com/reidjohnson/hpipy"
+"Documentation" = "https://reidjohnson.github.io/hpipy"
+"Bug Tracker" = "https://github.com/reidjohnson/hpipy/issues"
 
 [tool.setuptools]
 packages = { find = { where = ["."], include = ["hpipy*"] } }
@@ -44,6 +73,13 @@ version = { file = "hpipy/version.txt" }
 
 [tool.setuptools.package-data]
 "hpipy.datasets.data" = ["*.csv"]
+
+[tool.coverage.run]
+source = ["hpipy"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
 
 [tool.black]
 line-length = 99

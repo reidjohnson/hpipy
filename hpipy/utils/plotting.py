@@ -266,7 +266,7 @@ def plot_series_revision(
     hpi_series: BaseHousePriceIndex,
     measure: str = "median",
     smooth: bool = False,
-) -> alt.Chart:
+) -> alt.LayerChart:
     """Plot revision for a series of indices."""
     source = hpi_series.revision_smooth if smooth else hpi_series.revision
 

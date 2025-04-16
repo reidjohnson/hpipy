@@ -10,7 +10,7 @@ from hpipy.utils.stineman_interpolation import (
 )
 
 
-def test_stineman_slope_basic():
+def test_stineman_slope_basic() -> None:
     """Test basic functionality of stineman_slope."""
     x = np.array([1.0, 2.0, 3.0])
     y = np.array([1.0, 4.0, 9.0])  # y = x^2
@@ -21,7 +21,7 @@ def test_stineman_slope_basic():
     np.testing.assert_allclose(slopes, [2.0, 4.0, 6.0], rtol=0.3)
 
 
-def test_stineman_slope_two_points():
+def test_stineman_slope_two_points() -> None:
     """Test stineman_slope with only two points."""
     x = np.array([1.0, 2.0])
     y = np.array([1.0, 2.0])  # linear function
@@ -30,7 +30,7 @@ def test_stineman_slope_two_points():
     np.testing.assert_allclose(slopes, [1.0, 1.0])
 
 
-def test_stineman_slope_with_scaling():
+def test_stineman_slope_with_scaling() -> None:
     """Test stineman_slope with scaling option."""
     x = np.array([1.0, 2.0, 3.0]) * 1000  # large x values
     y = np.array([1.0, 4.0, 9.0]) * 0.001  # small y values
@@ -39,7 +39,7 @@ def test_stineman_slope_with_scaling():
     assert np.all(np.isfinite(slopes))
 
 
-def test_parabola_slope_two_points():
+def test_parabola_slope_two_points() -> None:
     """Test parabola_slope with only two points."""
     x = np.array([1.0, 2.0])
     y = np.array([1.0, 2.0])
@@ -48,7 +48,7 @@ def test_parabola_slope_two_points():
     np.testing.assert_allclose(slopes, [1.0, 1.0])
 
 
-def test_calculate_stineman_interpolant_basic():
+def test_calculate_stineman_interpolant_basic() -> None:
     """Test basic functionality of calculate_stineman_interpolant."""
     x = np.array([1.0, 2.0, 3.0])
     y = np.array([1.0, 4.0, 9.0])  # y = x^2
@@ -60,7 +60,7 @@ def test_calculate_stineman_interpolant_basic():
     np.testing.assert_allclose(yout, xout**2, rtol=0.2)
 
 
-def test_calculate_stineman_interpolant_with_slopes():
+def test_calculate_stineman_interpolant_with_slopes() -> None:
     """Test calculate_stineman_interpolant with provided slopes."""
     x = np.array([1.0, 2.0, 3.0])
     y = np.array([1.0, 4.0, 9.0])
@@ -71,7 +71,7 @@ def test_calculate_stineman_interpolant_with_slopes():
     assert np.all(np.isfinite(yout))
 
 
-def test_calculate_stineman_interpolant_errors():
+def test_calculate_stineman_interpolant_errors() -> None:
     """Test error handling in calculate_stineman_interpolant."""
     x = np.array([1.0, 2.0, 3.0])
     y = np.array([1.0, 4.0, 9.0])
@@ -90,7 +90,7 @@ def test_calculate_stineman_interpolant_errors():
         calculate_stineman_interpolant(x, np.array([1.0, np.nan, 9.0]), xout)
 
 
-def test_fill_missing_locf():
+def test_fill_missing_locf() -> None:
     """Test Last Observation Carried Forward."""
     x = np.array([1.0, np.nan, np.nan, 4.0, np.nan])
     filled = fill_missing(x, option="locf")
@@ -98,7 +98,7 @@ def test_fill_missing_locf():
     np.testing.assert_array_equal(filled, expected)
 
 
-def test_fill_missing_nocb():
+def test_fill_missing_nocb() -> None:
     """Test Next Observation Carried Backward."""
     x = np.array([np.nan, 2.0, np.nan, 4.0, np.nan])
     filled = fill_missing(x, option="nocb")
@@ -106,7 +106,7 @@ def test_fill_missing_nocb():
     np.testing.assert_array_equal(filled, expected)
 
 
-def test_interpolate_stineman_basic():
+def test_interpolate_stineman_basic() -> None:
     """Test basic functionality of interpolate_stineman."""
     x = np.array([1.0, np.nan, 3.0, np.nan, 5.0])
     interpolated = interpolate_stineman(x)
@@ -116,7 +116,7 @@ def test_interpolate_stineman_basic():
     np.testing.assert_allclose(interpolated[::2], [1.0, 3.0, 5.0])
 
 
-def test_interpolate_stineman_no_nans():
+def test_interpolate_stineman_no_nans() -> None:
     """Test interpolate_stineman with no missing values."""
     x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     interpolated = interpolate_stineman(x)

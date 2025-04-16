@@ -17,8 +17,8 @@ class Batch(NamedTuple):
 
 
 def collate_fn(
-    batch: Union[Tuple[np.ndarray, np.ndarray], np.ndarray],
-    preprocess_fn: Callable[..., dict[str, np.ndarray]],
+    batch: list[Tuple[np.ndarray, np.ndarray]],
+    preprocess_fn: Callable[[pd.DataFrame], dict[str, np.ndarray]],
     columns: list[str],
 ) -> Batch:
     """Collate a list of batch inputs.

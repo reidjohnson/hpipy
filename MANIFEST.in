@@ -1,5 +1,6 @@
 include *.rst
 recursive-include docs *
 include README.md
+include LICENSE
 include hpipy/version.txt
 recursive-include hpipy/datasets/data *.csv
