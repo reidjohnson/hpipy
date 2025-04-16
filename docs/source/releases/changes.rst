@@ -10,6 +10,8 @@ Version 0.1.3 (released April 16, 2025)
 * Update build process
 * Update documentation
 
+**Full Changelog**: https://github.com/reidjohnson/hpipy/compare/v0.1.2...v0.1.3
+
 Version 0.1.2 (released April 15, 2025)
 ---------------------------------------
 
