@@ -19,14 +19,19 @@ jobs:
           with:
             python-version: '3.13'
 
-        - name: Install dependencies
+        - name: Install uv
+          run: pip install uv
+
+        - name: Create virtual environment
+          run: uv venv
+          shell: bash
+
+        - name: Install build tools
           run: |
-            python -m pip install --upgrade pip
-            pip install setuptools wheel twine build
+            uv pip install setuptools wheel twine build
 
         - name: Build source and wheel distributions
-          run: |
-            python -m build --sdist --wheel
+          run: uv run python -m build --sdist --wheel
 
         - name: Upload artifact
           uses: actions/upload-artifact@v4

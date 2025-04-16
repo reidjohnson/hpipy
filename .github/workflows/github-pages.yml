@@ -18,18 +18,23 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Install uv
+        run: pip install uv
+
+      - name: Create virtual environment
+        run: uv venv
+        shell: bash
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade setuptools
-          pip install -r ./docs/sphinx_requirements.txt
-          pip install --verbose --editable .
+          uv pip install -e .[dev]
+          uv pip install -r ./docs/sphinx_requirements.txt
 
       - name: Build documents
         run: |
-          cd ./docs/
-          make clean
-          make html
+          cd ./docs
+          uv run make clean
+          uv run make html
         env:
           GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID }}
 
@@ -39,3 +44,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./docs/_build/html/
+

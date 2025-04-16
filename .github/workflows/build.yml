@@ -17,35 +17,42 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: pyproject.toml
           allow-prereleases: true
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Create virtual environment
+        run: uv venv
+        shell: bash
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install black flake8 isort pytest pytest-cov
-          pip install -r ./docs/sphinx_requirements.txt
-          pip install --verbose --editable .
+          uv pip install -e .[dev]
+          uv pip install -r ./docs/sphinx_requirements.txt
 
       - name: Check Python formatting with black
         run: |
-          black --diff --color .
-          black --check .
+          uv run black --diff --color .
+          uv run black --check .
 
       - name: Check import order with isort
         run: |
-          isort --profile=black --check .
+          uv run isort --profile=black --check .
 
-      - name: Lint with flake8
+       - name: Lint with flake8
         run: |
-          flake8 . --count --show-source --statistics || exit 1
-          flake8 . --count --exit-zero --statistics
+          uv run flake8 . --exclude=.venv --count --show-source --statistics || exit 1
+          uv run flake8 . --exclude=.venv --count --exit-zero --statistics
+
+      - name: Type check with mypy
+        run: |
+          uv run mypy hpipy
 
       - name: Test with pytest
         run: |
-          python -m pytest --doctest-glob="*.rst" --doctest-modules docs
-          python -m pytest --pyargs hpipy --cov=hpipy
+          uv run pytest --doctest-glob="*.rst" --doctest-modules docs
+          uv run pytest --pyargs hpipy --cov=hpipy
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
