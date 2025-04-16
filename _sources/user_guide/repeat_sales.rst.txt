@@ -1,7 +1,7 @@
 Repeat Sales
 ============
 
-The repeat sales method is one of the most widely used approaches for creating house price indices. It uses pairs of sales of the same property to estimate price changes over time.
+The repeat sales method estimates house price indices by analyzing changes in the sale price of the same property over time. By comparing repeated transactions of individual homes, it controls for unobserved property characteristics. It is widely used in practice and offers a simple and interpretable approach to index construction. However, it relies on a limited subset of the data and may be less effective in markets with low turnover or significant property changes between sales.
 
 .. note::
 
@@ -28,7 +28,7 @@ Here's how to prepare your data:
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import RepeatTransactionData
 
-    # Load your sales data
+    # Load sales data.
     >>> df = load_ex_sales()
 
     # Create a period table (converts dates to periods)
@@ -71,15 +71,18 @@ Parameters
 
 The main parameters for repeat sales index creation are:
 
-estimator : str
-    The type of estimator to use:
+.. admonition:: Parameters
+   :class: hint
 
-    * "base": Standard OLS estimation.
-    * "robust": Robust regression (less sensitive to outliers).
-    * "weighted": Weighted regression based on time between sales.
+   **estimator** : str  
+       The type of estimator to use:  
+       
+       * "base": Standard OLS estimation  
+       * "robust": Robust regression (less sensitive to outliers)  
+       * "weighted": Weighted regression based on time between sales
 
-log_dep : bool
-    Whether to use log price differences (recommended).
+   **log_dep** : bool  
+       Whether to use log price differences (recommended).
 
 Advanced Usage
 --------------
@@ -119,7 +122,7 @@ You can evaluate the index quality using various metrics:
     # Calculate volatility.
     >>> vol = volatility(hpi)
 
-    # Plot the index.
+    # Visualize the index.
     >>> plot_index(hpi, smooth=True).properties(title="Repeat Sales Index")
     alt.LayerChart(...)
 

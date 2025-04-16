@@ -388,11 +388,11 @@
 
 <div class="viewcode-block" id="load_ex_sales">
 <a class="viewcode-back" href="../../../api/_autosummary/hpipy.datasets.load_ex_sales.html#hpipy.datasets.load_ex_sales">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_ex_sales</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_ex_sales</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load example home sales dataset.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pandas.DataFrame: A DataFrame with house saless.</span>
+<span class="sd">        pandas.DataFrame: A DataFrame with house sales.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="s2">&quot;hpipy.datasets.data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;ex_sales.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sale_date&quot;</span><span class="p">])</span></div>
@@ -401,7 +401,7 @@
 
 <div class="viewcode-block" id="load_seattle_sales">
 <a class="viewcode-back" href="../../../api/_autosummary/hpipy.datasets.load_seattle_sales.html#hpipy.datasets.load_seattle_sales">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_seattle_sales</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_seattle_sales</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load Seattle home sales dataset.</span>
 
 <span class="sd">    Returns:</span>

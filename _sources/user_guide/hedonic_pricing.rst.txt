@@ -1,7 +1,7 @@
 Hedonic Pricing
 ===============
 
-The hedonic pricing method creates house price indices by modeling property values as a function of their characteristics (e.g., size, location, age) and time period. This approach can use all transactions, not just repeat sales.
+The hedonic pricing method constructs house price indices by modeling sale prices as a function of observable property characteristics (such as size, location, and age) and time. This approach uses all available transactions and can produce robust indices when the model is well-specified. It offers transparency and flexibility, making it a common baseline method for house price analysis.
 
 .. note::
 
@@ -29,7 +29,7 @@ Here's how to prepare your data:
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
 
-    # Load your sales data.
+    # Load sales data.
     >>> df = load_ex_sales()
 
     # Create a period table.
@@ -69,23 +69,26 @@ Once your data is prepared, you can create the hedonic price index:
 Parameters
 ----------
 
-Key parameters for hedonic index creation:
+The main parameters for hedonic index creation are:
 
-estimator : str
-    The type of estimator to use:
+.. admonition:: Parameters
+   :class: hint
 
-    * "base": Standard OLS estimation.
-    * "robust": Robust regression (less sensitive to outliers).
-    * "weighted": Weighted regression.
+   **estimator** : str  
+       The type of estimator to use:  
+       
+       * "base": Standard OLS estimation  
+       * "robust": Robust regression (less sensitive to outliers)  
+       * "weighted": Weighted regression
 
-dep_var : str
-    Dependent variable to model.
+   **dep_var** : str  
+       Dependent variable to model.
 
-ind_var : list
-    Independent variables to use in the model.
+   **ind_var** : list  
+       Independent variables to use in the model.
 
-log_dep : bool
-    Whether to use log of price as dependent variable (recommended).
+   **log_dep** : bool  
+       Whether to use log of price as dependent variable (recommended).
 
 Advanced Usage
 --------------
@@ -161,7 +164,7 @@ Evaluate the hedonic index using various metrics:
     # Calculate metrics.
     >>> vol = volatility(hpi)
 
-    # Visualize results.
+    # Visualize the index.
     >>> plot_index(hpi, smooth=True).properties(title="Hedonic Index")
     alt.LayerChart(...)
 

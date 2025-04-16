@@ -26,13 +26,13 @@ Use one of the following methods to build house price indices:
 
       Model house price indices as a function of house features like size, location, and age.
 
-   .. grid-item-card:: 🌲 Random Forest
+   .. grid-item-card:: 🌲 Interpretable Random Forest
       :link: random_forest
       :link-type: doc
 
       Use an ensemble of decision trees to learn complex, non-linear price patterns.
 
-   .. grid-item-card:: 🧠 Neural Network
+   .. grid-item-card:: 🧠 Bifurcated Neural Network
       :link: neural_network
       :link-type: doc
 

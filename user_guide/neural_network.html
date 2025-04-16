@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Neural Network &#8212; hpiPy</title>
+    <title>Bifurcated Neural Network &#8212; hpiPy</title>
   
   
   
@@ -50,12 +50,13 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/neural_network';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Accuracy Metrics" href="accuracy_metrics.html" />
-    <link rel="prev" title="Random Forest" href="random_forest.html" />
+    <link rel="prev" title="Interpretable Random Forest" href="random_forest.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.2" />
@@ -346,8 +347,8 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="repeat_sales.html">Repeat Sales</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hedonic_pricing.html">Hedonic Pricing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Random Forest</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Neural Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="random_forest.html">Interpretable Random Forest</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Bifurcated Neural Network</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Comparison</span></p>
 <ul class="nav bd-sidenav">
@@ -392,7 +393,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Neural Network</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Bifurcated Neural Network</span></li>
   </ul>
 </nav>
 </div>
@@ -409,50 +410,112 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="neural-network">
-<h1>Neural Network<a class="headerlink" href="#neural-network" title="Link to this heading">#</a></h1>
-<p>The Neural Network method in hpiPy provides a deep learning approach to house price index creation, capable of learning complex patterns and separating property-specific effects from market-level trends.</p>
+  <section id="bifurcated-neural-network">
+<h1>Bifurcated Neural Network<a class="headerlink" href="#bifurcated-neural-network" title="Link to this heading">#</a></h1>
+<p>The neural network method offers a deep learning–based approach to constructing house price indices. It automatically learns complex, nonlinear relationships between property features and sale prices, enabling it to separate individual property effects from broader market trends. While it requires large volumes of sales and property data, it is particularly powerful at scale and can produce accurate, fine-grained, and timely indices without relying on repeat sales.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Background on model construction for the neural network method can be found in:</p>
+<p>Krause and Johnson (2024), “A Multi-Criteria Evaluation of House Price Indexes”. <a class="github reference external" href="https://github.com/andykrause/hpi_research/tree/master/papers/hpi_comp">andykrause/hpi_research</a>.</p>
+</div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>The Neural Network method:</p>
+<p>The neural network method:</p>
 <ol class="arabic simple">
 <li><p>Separates property-specific and market-level effects</p></li>
 <li><p>Learns non-linear relationships automatically</p></li>
 <li><p>Can handle high-dimensional feature spaces</p></li>
 <li><p>Supports both local and global market patterns</p></li>
 </ol>
-<p>The Neural Network supports two distinct approaches for extracting the house price index.</p>
-<section id="residual-approach">
-<h3>Residual Approach<a class="headerlink" href="#residual-approach" title="Link to this heading">#</a></h3>
-<p>The residual approach extracts the index directly from the market pathway of the neural network. It works by:</p>
-<ol class="arabic simple">
-<li><p>Training the network on the full feature set</p></li>
-<li><p>During index extraction, zeroing out all non-temporal features</p></li>
-<li><p>Examining the network’s output to capture the “residual” market trend</p></li>
-<li><p>Computing the index from these isolated temporal effects</p></li>
+<p>The neural network method supports two distinct approaches for extracting the house price index:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Residual Approach</p></th>
+<th class="head"><p>Attributional Approach</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Extracts the index directly from the market pathway by isolating temporal market effects.</p></td>
+<td><p>Uses explainability techniques (e.g., SHAP )to attribute prediction components to market-level factors.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Steps</p></td>
+<td><ol class="arabic simple">
+<li><p>Train on full feature set</p></li>
+<li><p>Zero out non-market (i.e., property-specific) feautures</p></li>
+<li><p>Extract residual market effects</p></li>
+<li><p>Convert to index</p></li>
 </ol>
-<p>This approach is:</p>
-<ul class="simple">
-<li><p>More computationally efficient</p></li>
-<li><p>Direct in its interpretation</p></li>
-<li><p>The default approach in hpiPy</p></li>
-</ul>
-</section>
-<section id="attributional-approach">
-<h3>Attributional Approach<a class="headerlink" href="#attributional-approach" title="Link to this heading">#</a></h3>
-<p>The attributional approach derives the index through explainability analysis of both market and time components. It:</p>
-<ol class="arabic simple">
-<li><p>Trains the network on the full feature set</p></li>
-<li><p>Uses attribution techniques to decompose predictions</p></li>
-<li><p>Quantifies how much price change is due to temporal vs. market factors</p></li>
-<li><p>Computes the index from the attributed temporal components</p></li>
+</td>
+<td><ol class="arabic simple">
+<li><p>Train on full feature set</p></li>
+<li><p>Apply explainability techniques to assign feature attributions</p></li>
+<li><p>Extract market-level attributions</p></li>
+<li><p>Convert to index</p></li>
 </ol>
-<p>This approach offers:</p>
-<ul class="simple">
-<li><p>Higher computational complexity</p></li>
-<li><p>More granular decomposition of effects</p></li>
+</td>
+</tr>
+<tr class="row-even"><td><p>Benefits</p></td>
+<td><ul class="simple">
+<li><p>Explicit separation of effects</p></li>
+<li><p>Structural interpretation</p></li>
+<li><p>Default in <cite>hpiPy</cite></p></li>
 </ul>
-</section>
+</td>
+<td><ul class="simple">
+<li><p>Granular effect decomposition</p></li>
+<li><p>Feature-level interpretability</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Drawbacks</p></td>
+<td><ul class="simple">
+<li><p>Less flexible than attributional</p></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li><p>Relies on post-hoc attributions</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Attributional Approach</strong></p>
+<p>The attributional approach decomposes the logarithm of a property’s value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by macroeconomic conditions and the characteristics of the property itself (<a class="reference external" href="https://lusk.usc.edu/research/working-papers/revisiting-past-revision-repeat-sales-and-hedonic-indexes-house-prices">ref</a>):</p>
+<div class="math notranslate nohighlight">
+\[\log V_{it} = \log P_t + \log Q_i + \varepsilon_{it}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(V_{it}\)</span> is the observed transaction price (or value) of property <em>i</em> at time <em>t</em>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_t\)</span> is the market-level price index at time <em>t</em>, common to all properties.</p></li>
+<li><p><span class="math notranslate nohighlight">\(Q_i\)</span> is the time-invariant quality or quantity of property <em>i</em> (e.g., structural/locational attributes).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\varepsilon_{it}\)</span> is a residual term capturing idiosyncratic noise or omitted effects.</p></li>
+</ul>
+<p>This model is conceptually similar to hedonic or repeat-sales approaches, where market effects and property characteristics are disentangled.</p>
+<p><strong>Residual Approach</strong></p>
+<p>The residual approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (<a class="reference external" href="https://arxiv.org/abs/1704.02685">ref</a>):</p>
+<div class="math notranslate nohighlight">
+\[\hat{V}_i = f(x_i)\]</div>
+<div class="math notranslate nohighlight">
+\[\Delta \hat{V}_i = \hat{V}_i - \hat{V}_i^{\text{ref}} = \sum_{j} C_j\]</div>
+<div class="math notranslate nohighlight">
+\[C_j = m_j \cdot \Delta x_{ij}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\hat{V}_i = f(x_i)\)</span> is the model’s predicted value for property <em>i</em>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(x_i\)</span> is the feature vector describing property <em>i</em> (e.g., square footage, year built, etc.).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat{V}_i^{\text{ref}} = f(x_i^{\text{ref}})\)</span> is the prediction for a baseline (e.g., average, median, or zeroed) property.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Delta \hat{V}_i\)</span> is the total difference in predicted value from the baseline.</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_j\)</span> is the contribution of feature <span class="math notranslate nohighlight">\(j\)</span>, computed as the product of the feature’s difference from baseline, <span class="math notranslate nohighlight">\(\Delta x_{ij} = x_{ij} - x_{j}^{\text{ref}}\)</span>, and its multiplier <span class="math notranslate nohighlight">\(m_j\)</span>, which represents the sensitivity of the output to that feature.</p></li>
+</ul>
+<p>This approach allows for interpretability of complex nonlinear models by expressing the prediction in terms of feature-level contributions.</p>
 </section>
 <section id="data-preparation">
 <h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Link to this heading">#</a></h2>
@@ -469,7 +532,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.period_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeriodTable</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.trans_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">HedonicTransactionData</span>
 
-<span class="go"># Load and prepare data.</span>
+<span class="go"># Load sales data.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">load_ex_sales</span><span class="p">()</span>
 
 <span class="go"># Create period table.</span>
@@ -489,7 +552,7 @@
 </section>
 <section id="creating-the-index">
 <h2>Creating the Index<a class="headerlink" href="#creating-the-index" title="Link to this heading">#</a></h2>
-<p>Create a Neural Network-based index using either approach:</p>
+<p>Create a neural network-based index using either approach:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkIndex</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -510,14 +573,14 @@
 <span class="gp">... </span>    <span class="s2">&quot;random_seed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">}</span>
 
-<span class="go"># Create index using residual approach (default)</span>
+<span class="go"># Create index using residual approach (default).</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpi_residual</span> <span class="o">=</span> <span class="n">NeuralNetworkIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;residual&quot;</span><span class="p">,</span>  <span class="c1"># default</span>
 <span class="gp">... </span>    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 
-<span class="go"># Create index using attributional approach</span>
+<span class="go"># Create index using attributional approach.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpi_attributional</span> <span class="o">=</span> <span class="n">NeuralNetworkIndex</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;attributional&quot;</span><span class="p">,</span>
@@ -526,58 +589,23 @@
 </pre></div>
 </div>
 </section>
-<section id="network-architecture">
-<h2>Network Architecture<a class="headerlink" href="#network-architecture" title="Link to this heading">#</a></h2>
-<p>The neural network consists of:</p>
-<ol class="arabic simple">
-<li><p>Property Characteristics Network</p></li>
-</ol>
-<blockquote>
-<div><ul class="simple">
-<li><p>Processes property features</p></li>
-<li><p>Learns property-specific value components</p></li>
-<li><p>Handles both continuous and categorical inputs</p></li>
-<li><p>Uses embeddings for categorical features</p></li>
-</ul>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li><p>Time Effect Network</p></li>
-</ol>
-<blockquote>
-<div><ul class="simple">
-<li><p>Captures temporal market trends</p></li>
-<li><p>Generates the house price index</p></li>
-<li><p>Processes temporal features</p></li>
-<li><p>Learns market-level patterns</p></li>
-</ul>
-</div></blockquote>
-<ol class="arabic simple" start="3">
-<li><p>Combined Output</p></li>
-</ol>
-<blockquote>
-<div><ul class="simple">
-<li><p>Merges property and time effects</p></li>
-<li><p>Produces final price predictions</p></li>
-<li><p>Balances feature importance</p></li>
-<li><p>Enables index extraction</p></li>
-</ul>
-</div></blockquote>
-</section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
-<p>Key neural network parameters:</p>
+<p>The main parameters for neural network index creation are:</p>
+<div class="hint admonition">
+<p class="admonition-title">Parameters</p>
 <dl class="simple">
-<dt>dep_var<span class="classifier">str</span></dt><dd><p>Dependent variable to model.</p>
+<dt><strong>dep_var</strong><span class="classifier">str</span></dt><dd><p>Dependent variable to model.</p>
 </dd>
-<dt>ind_var<span class="classifier">list</span></dt><dd><p>Independent variables to use in the model.</p>
+<dt><strong>ind_var</strong><span class="classifier">list</span></dt><dd><p>Independent variables to use in the model.</p>
 </dd>
-<dt>estimator<span class="classifier">str</span></dt><dd><p>Estimator type. Choose between:</p>
+<dt><strong>estimator</strong><span class="classifier">str</span></dt><dd><p>Estimator type. Choose between:</p>
 <ul class="simple">
 <li><p>“residual”: Extracts index from market pathway (default)</p></li>
 <li><p>“attributional”: Derives index through explainability analysis</p></li>
 </ul>
 </dd>
-<dt>feature_dict<span class="classifier">dict</span></dt><dd><p>Feature dictionary specifying how different variables should be processed:</p>
+<dt><strong>feature_dict</strong><span class="classifier">dict</span></dt><dd><p>Feature dictionary specifying how different variables should be processed:</p>
 <ul class="simple">
 <li><p>numerics: Standard numeric features</p></li>
 <li><p>log_numerics: Features to be log-transformed</p></li>
@@ -586,21 +614,22 @@
 <li><p>hpi: Temporal features for index generation</p></li>
 </ul>
 </dd>
-<dt>num_models<span class="classifier">int</span></dt><dd><p>Number of models to train in ensemble.</p>
+<dt><strong>num_models</strong><span class="classifier">int</span></dt><dd><p>Number of models to train in ensemble.</p>
 </dd>
-<dt>num_epochs<span class="classifier">int</span></dt><dd><p>Number of training epochs.</p>
+<dt><strong>num_epochs</strong><span class="classifier">int</span></dt><dd><p>Number of training epochs.</p>
 </dd>
-<dt>batch_size<span class="classifier">int</span></dt><dd><p>Batch size for training.</p>
+<dt><strong>batch_size</strong><span class="classifier">int</span></dt><dd><p>Batch size for training.</p>
 </dd>
-<dt>hidden_dims<span class="classifier">list</span></dt><dd><p>List of integers specifying the number of neurons in each hidden layer.</p>
+<dt><strong>hidden_dims</strong><span class="classifier">list</span></dt><dd><p>List of integers specifying the number of neurons in each hidden layer.</p>
 </dd>
-<dt>emb_size<span class="classifier">int</span></dt><dd><p>Embedding size for categorical features.</p>
+<dt><strong>emb_size</strong><span class="classifier">int</span></dt><dd><p>Embedding size for categorical features.</p>
 </dd>
-<dt>dropout_rate<span class="classifier">float</span></dt><dd><p>Dropout rate for regularization (0 to 1).</p>
+<dt><strong>dropout_rate</strong><span class="classifier">float</span></dt><dd><p>Dropout rate for regularization (0 to 1).</p>
 </dd>
-<dt>learning_rate<span class="classifier">float</span></dt><dd><p>Learning rate for optimization.</p>
+<dt><strong>learning_rate</strong><span class="classifier">float</span></dt><dd><p>Learning rate for optimization.</p>
 </dd>
 </dl>
+</div>
 </section>
 <section id="evaluating-the-index">
 <h2>Evaluating the Index<a class="headerlink" href="#evaluating-the-index" title="Link to this heading">#</a></h2>
@@ -613,7 +642,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vol_residual</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi_residual</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vol_attributional</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi_attributional</span><span class="p">)</span>
 
-<span class="go"># Visualize results.</span>
+<span class="go"># Visualize the index.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="o">.</span><span class="n">layer</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="p">(</span>
 <span class="gp">... </span>        <span class="n">plot_index</span><span class="p">(</span><span class="n">hpi_residual</span><span class="p">)</span>
@@ -630,21 +659,25 @@
 </pre></div>
 </div>
 
-        <div class="altair-chart">
-            <script type="application/json" id="vega-spec-140282552755280">
+        <div class="altair-chart" id="container-vega-spec-0230a8fb8dc042d093522d4563f133d3">
+            <script type="application/json" id="vega-spec-0230a8fb8dc042d093522d4563f133d3">
                 {"$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 300}}, "datasets": {"data-e427ddbf9fdc917e225b73b0d6acf8ad": [{"x": "2010-01-31T00:00:00", "y": 100.0}, {"x": "2010-02-28T00:00:00", "y": 101.11377656654766}, {"x": "2010-03-31T00:00:00", "y": 103.57204511280426}, {"x": "2010-04-30T00:00:00", "y": 105.57391933306745}, {"x": "2010-05-31T00:00:00", "y": 105.04351700128886}, {"x": "2010-06-30T00:00:00", "y": 106.05953157317008}, {"x": "2010-07-31T00:00:00", "y": 106.96630737189605}, {"x": "2010-08-31T00:00:00", "y": 106.66091027512321}, {"x": "2010-09-30T00:00:00", "y": 104.37142471989888}, {"x": "2010-10-31T00:00:00", "y": 101.67214770528601}, {"x": "2010-11-30T00:00:00", "y": 100.16230797690504}, {"x": "2010-12-31T00:00:00", "y": 98.58374295747414}, {"x": "2011-01-31T00:00:00", "y": 97.87288442669406}, {"x": "2011-02-28T00:00:00", "y": 99.41007736995049}, {"x": "2011-03-31T00:00:00", "y": 102.090825099123}, {"x": "2011-04-30T00:00:00", "y": 104.13443128509057}, {"x": "2011-05-31T00:00:00", "y": 104.70339933073876}, {"x": "2011-06-30T00:00:00", "y": 105.44331233519371}, {"x": "2011-07-31T00:00:00", "y": 106.13117074233533}, {"x": "2011-08-31T00:00:00", "y": 106.24512268477339}, {"x": "2011-09-30T00:00:00", "y": 105.46015876997699}, {"x": "2011-10-31T00:00:00", "y": 104.63098194974111}, {"x": "2011-11-30T00:00:00", "y": 104.43467520597018}, {"x": "2011-12-31T00:00:00", "y": 101.9888669869117}, {"x": "2012-01-31T00:00:00", "y": 101.12385633516725}, {"x": "2012-02-29T00:00:00", "y": 101.74854924723891}, {"x": "2012-03-31T00:00:00", "y": 103.96063108766155}, {"x": "2012-04-30T00:00:00", "y": 105.42502086554197}, {"x": "2012-05-31T00:00:00", "y": 106.6105472307994}, {"x": "2012-06-30T00:00:00", "y": 108.23467161907794}, {"x": "2012-07-31T00:00:00", "y": 108.75296925175692}, {"x": "2012-08-31T00:00:00", "y": 109.35008599942842}, {"x": "2012-09-30T00:00:00", "y": 110.44598269565384}, {"x": "2012-10-31T00:00:00", "y": 112.88359061257279}, {"x": "2012-11-30T00:00:00", "y": 113.21602949063659}, {"x": "2012-12-31T00:00:00", "y": 113.30589548983193}, {"x": "2013-01-31T00:00:00", "y": 112.97988099408805}, {"x": "2013-02-28T00:00:00", "y": 113.82546720203494}, {"x": "2013-03-31T00:00:00", "y": 116.83269188814921}, {"x": "2013-04-30T00:00:00", "y": 117.97245276653878}, {"x": "2013-05-31T00:00:00", "y": 118.25318760951693}, {"x": "2013-06-30T00:00:00", "y": 119.55886200375735}, {"x": "2013-07-31T00:00:00", "y": 118.69094944536094}, {"x": "2013-08-31T00:00:00", "y": 116.26417671236726}, {"x": "2013-09-30T00:00:00", "y": 117.67656248703655}, {"x": "2013-10-31T00:00:00", "y": 118.64195703080304}, {"x": "2013-11-30T00:00:00", "y": 118.87650391110847}, {"x": "2013-12-31T00:00:00", "y": 118.01793594881845}, {"x": "2014-01-31T00:00:00", "y": 117.68239718355488}, {"x": "2014-02-28T00:00:00", "y": 119.3949810789204}, {"x": "2014-03-31T00:00:00", "y": 122.84752274918989}, {"x": "2014-04-30T00:00:00", "y": 126.73281683445856}, {"x": "2014-05-31T00:00:00", "y": 128.69571964058767}, {"x": "2014-06-30T00:00:00", "y": 129.61726324159818}, {"x": "2014-07-31T00:00:00", "y": 127.98027376356632}, {"x": "2014-08-31T00:00:00", "y": 125.96658108499939}, {"x": "2014-09-30T00:00:00", "y": 125.69308062670252}, {"x": "2014-10-31T00:00:00", "y": 127.41192156297781}, {"x": "2014-11-30T00:00:00", "y": 129.3674788016518}, {"x": "2014-12-31T00:00:00", "y": 129.67208809961295}, {"x": "2015-01-31T00:00:00", "y": 129.50607744091175}, {"x": "2015-02-28T00:00:00", "y": 131.15484794996254}, {"x": "2015-03-31T00:00:00", "y": 135.87720642398634}, {"x": "2015-04-30T00:00:00", "y": 140.12214980885364}, {"x": "2015-05-31T00:00:00", "y": 142.78873574260408}, {"x": "2015-06-30T00:00:00", "y": 142.13835057440124}, {"x": "2015-07-31T00:00:00", "y": 141.6817481521126}, {"x": "2015-08-31T00:00:00", "y": 139.69455127075057}, {"x": "2015-09-30T00:00:00", "y": 140.00585650778757}, {"x": "2015-10-31T00:00:00", "y": 138.8356675014487}, {"x": "2015-11-30T00:00:00", "y": 140.42338256069687}, {"x": "2015-12-31T00:00:00", "y": 142.69136701544966}, {"x": "2016-01-31T00:00:00", "y": 146.56561560879416}, {"x": "2016-02-29T00:00:00", "y": 150.1004957615696}, {"x": "2016-03-31T00:00:00", "y": 154.49175013311265}, {"x": "2016-04-30T00:00:00", "y": 158.66336138536178}, {"x": "2016-05-31T00:00:00", "y": 159.0861122912981}, {"x": "2016-06-30T00:00:00", "y": 159.95912845244732}, {"x": "2016-07-31T00:00:00", "y": 159.95787330605575}, {"x": "2016-08-31T00:00:00", "y": 158.10261936764303}, {"x": "2016-09-30T00:00:00", "y": 154.92113859790774}, {"x": "2016-10-31T00:00:00", "y": 152.89994105504914}, {"x": "2016-11-30T00:00:00", "y": 151.78868281307197}, {"x": "2016-12-31T00:00:00", "y": 153.54859559558415}], "data-f216ef8f58eb4b300778a961170bf1ff": [{"x": "2010-01-31T00:00:00", "y": 100.0}, {"x": "2010-02-28T00:00:00", "y": 101.11577606201172}, {"x": "2010-03-31T00:00:00", "y": 103.14917755126953}, {"x": "2010-04-30T00:00:00", "y": 104.90165710449219}, {"x": "2010-05-31T00:00:00", "y": 105.2017593383789}, {"x": "2010-06-30T00:00:00", "y": 106.25953674316406}, {"x": "2010-07-31T00:00:00", "y": 107.5995101928711}, {"x": "2010-08-31T00:00:00", "y": 107.19157409667969}, {"x": "2010-09-30T00:00:00", "y": 104.60629272460938}, {"x": "2010-10-31T00:00:00", "y": 102.57657623291016}, {"x": "2010-11-30T00:00:00", "y": 101.29777526855469}, {"x": "2010-12-31T00:00:00", "y": 99.20533752441406}, {"x": "2011-01-31T00:00:00", "y": 98.02603149414062}, {"x": "2011-02-28T00:00:00", "y": 99.11982727050781}, {"x": "2011-03-31T00:00:00", "y": 101.6297836303711}, {"x": "2011-04-30T00:00:00", "y": 103.26612091064453}, {"x": "2011-05-31T00:00:00", "y": 104.11100769042969}, {"x": "2011-06-30T00:00:00", "y": 105.41040802001953}, {"x": "2011-07-31T00:00:00", "y": 107.15921783447266}, {"x": "2011-08-31T00:00:00", "y": 107.0790786743164}, {"x": "2011-09-30T00:00:00", "y": 105.77288818359375}, {"x": "2011-10-31T00:00:00", "y": 104.66638946533203}, {"x": "2011-11-30T00:00:00", "y": 103.90669250488281}, {"x": "2011-12-31T00:00:00", "y": 101.760498046875}, {"x": "2012-01-31T00:00:00", "y": 100.73494720458984}, {"x": "2012-02-29T00:00:00", "y": 100.85082244873047}, {"x": "2012-03-31T00:00:00", "y": 102.52027893066406}, {"x": "2012-04-30T00:00:00", "y": 103.61830139160156}, {"x": "2012-05-31T00:00:00", "y": 104.95982360839844}, {"x": "2012-06-30T00:00:00", "y": 107.53801727294922}, {"x": "2012-07-31T00:00:00", "y": 109.54373931884766}, {"x": "2012-08-31T00:00:00", "y": 109.81898498535156}, {"x": "2012-09-30T00:00:00", "y": 110.30220794677734}, {"x": "2012-10-31T00:00:00", "y": 111.85050964355469}, {"x": "2012-11-30T00:00:00", "y": 112.61775207519531}, {"x": "2012-12-31T00:00:00", "y": 112.08180236816406}, {"x": "2013-01-31T00:00:00", "y": 111.01847839355469}, {"x": "2013-02-28T00:00:00", "y": 111.43492126464844}, {"x": "2013-03-31T00:00:00", "y": 113.44181060791016}, {"x": "2013-04-30T00:00:00", "y": 114.65172576904297}, {"x": "2013-05-31T00:00:00", "y": 116.05479431152344}, {"x": "2013-06-30T00:00:00", "y": 118.13674926757812}, {"x": "2013-07-31T00:00:00", "y": 118.50788879394531}, {"x": "2013-08-31T00:00:00", "y": 117.70137786865234}, {"x": "2013-09-30T00:00:00", "y": 117.5676498413086}, {"x": "2013-10-31T00:00:00", "y": 118.39881134033203}, {"x": "2013-11-30T00:00:00", "y": 117.92361450195312}, {"x": "2013-12-31T00:00:00", "y": 116.40260314941406}, {"x": "2014-01-31T00:00:00", "y": 115.6055679321289}, {"x": "2014-02-28T00:00:00", "y": 116.67802429199219}, {"x": "2014-03-31T00:00:00", "y": 119.54356384277344}, {"x": "2014-04-30T00:00:00", "y": 123.50485229492188}, {"x": "2014-05-31T00:00:00", "y": 126.115966796875}, {"x": "2014-06-30T00:00:00", "y": 128.058837890625}, {"x": "2014-07-31T00:00:00", "y": 127.71847534179688}, {"x": "2014-08-31T00:00:00", "y": 126.65155792236328}, {"x": "2014-09-30T00:00:00", "y": 126.32081604003906}, {"x": "2014-10-31T00:00:00", "y": 126.90291595458984}, {"x": "2014-11-30T00:00:00", "y": 127.65316009521484}, {"x": "2014-12-31T00:00:00", "y": 127.87422180175781}, {"x": "2015-01-31T00:00:00", "y": 127.47377014160156}, {"x": "2015-02-28T00:00:00", "y": 127.96137237548828}, {"x": "2015-03-31T00:00:00", "y": 131.3028564453125}, {"x": "2015-04-30T00:00:00", "y": 136.12796020507812}, {"x": "2015-05-31T00:00:00", "y": 139.74964904785156}, {"x": "2015-06-30T00:00:00", "y": 140.66793823242188}, {"x": "2015-07-31T00:00:00", "y": 140.98789978027344}, {"x": "2015-08-31T00:00:00", "y": 140.4516143798828}, {"x": "2015-09-30T00:00:00", "y": 139.7002410888672}, {"x": "2015-10-31T00:00:00", "y": 138.7366485595703}, {"x": "2015-11-30T00:00:00", "y": 138.4795379638672}, {"x": "2015-12-31T00:00:00", "y": 139.79246520996094}, {"x": "2016-01-31T00:00:00", "y": 142.42849731445312}, {"x": "2016-02-29T00:00:00", "y": 145.8159942626953}, {"x": "2016-03-31T00:00:00", "y": 149.69126892089844}, {"x": "2016-04-30T00:00:00", "y": 153.427001953125}, {"x": "2016-05-31T00:00:00", "y": 155.65541076660156}, {"x": "2016-06-30T00:00:00", "y": 157.1763458251953}, {"x": "2016-07-31T00:00:00", "y": 157.60140991210938}, {"x": "2016-08-31T00:00:00", "y": 156.1924285888672}, {"x": "2016-09-30T00:00:00", "y": 154.04360961914062}, {"x": "2016-10-31T00:00:00", "y": 151.6687469482422}, {"x": "2016-11-30T00:00:00", "y": 150.4679718017578}, {"x": "2016-12-31T00:00:00", "y": 151.87557983398438}]}, "height": 300, "layer": [{"data": {"name": "data-f216ef8f58eb4b300778a961170bf1ff"}, "encoding": {"color": {"field": "method", "title": "Method", "type": "nominal"}, "tooltip": [{"field": "x", "title": "Time Period", "type": "temporal"}, {"field": "y", "format": ".3f", "title": "Index Value", "type": "quantitative"}], "x": {"axis": {"format": "%Y", "labelAngle": 0, "title": "Time Period", "values": ["2010-01-31T00:00:00.000000000", "2011-01-31T00:00:00.000000000", "2012-01-31T00:00:00.000000000", "2013-01-31T00:00:00.000000000", "2014-01-31T00:00:00.000000000", "2015-01-31T00:00:00.000000000", "2016-01-31T00:00:00.000000000"]}, "field": "x", "type": "temporal"}, "y": {"field": "y", "scale": {"zero": false}, "title": "Index Value", "type": "quantitative"}}, "mark": {"size": 4, "type": "line"}, "transform": [{"as": "method", "calculate": "'Residual'"}]}, {"data": {"name": "data-e427ddbf9fdc917e225b73b0d6acf8ad"}, "encoding": {"color": {"field": "method", "title": "Method", "type": "nominal"}, "tooltip": [{"field": "x", "title": "Time Period", "type": "temporal"}, {"field": "y", "format": ".3f", "title": "Index Value", "type": "quantitative"}], "x": {"axis": {"format": "%Y", "labelAngle": 0, "title": "Time Period", "values": ["2010-01-31T00:00:00.000000000", "2011-01-31T00:00:00.000000000", "2012-01-31T00:00:00.000000000", "2013-01-31T00:00:00.000000000", "2014-01-31T00:00:00.000000000", "2015-01-31T00:00:00.000000000", "2016-01-31T00:00:00.000000000"]}, "field": "x", "type": "temporal"}, "y": {"field": "y", "scale": {"zero": false}, "title": "Index Value", "type": "quantitative"}}, "mark": {"size": 4, "type": "line"}, "transform": [{"as": "method", "calculate": "'Attributional'"}]}], "title": "Neural Network Index", "width": 525}
             </script>
             <script>
-                const el = document.getElementById("vega-spec-140282552755280");
-                const spec = JSON.parse(el.textContent);
-                vegaEmbed(el.parentElement, spec, {
-                    actions: {
-                        export: true,
-                        source: true,
-                        editor: true,
-                        compiled: false
+                (function() {
+                    const el = document.getElementById("vega-spec-0230a8fb8dc042d093522d4563f133d3");
+                    if (el) {
+                        const spec = JSON.parse(el.textContent);
+                        vegaEmbed(el.parentElement, spec, {
+                            actions: {
+                                export: true,
+                                source: true,
+                                editor: true,
+                                compiled: false
+                            }
+                        }).catch(console.error);
                     }
-                });
+                })();
             </script>
         </div>
         </section>
@@ -666,7 +699,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Random Forest</p>
+        <p class="prev-next-title">Interpretable Random Forest</p>
       </div>
     </a>
     <a class="right-next"
@@ -697,14 +730,9 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-approach">Residual Approach</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attributional-approach">Attributional Approach</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preparation">Data Preparation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-index">Creating the Index</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-architecture">Network Architecture</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-index">Evaluating the Index</a></li>
 </ul>

@@ -426,14 +426,16 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">coef_to_index</span><span class="p">(</span>
-        <span class="n">coef_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">base_price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">coef_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">base_price</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert coefficients to an index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            coef_df (pd.DataFrame): Coefficients.</span>
 <span class="sd">            log_dep (bool): Log dependent variable.</span>
-<span class="sd">            base_price (int, optional): Base price.</span>
+<span class="sd">            base_price (Union[int, float], optional): Base price.</span>
 <span class="sd">                Defaults to 1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coef_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-15</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -530,10 +532,10 @@
         <span class="n">coef_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coef_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">partition_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">coef_cols</span><span class="p">]</span>
-            <span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">is_imputed</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">unique_df</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="n">partition_cols</span><span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">unique_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_df</span><span class="p">))</span>
+            <span class="n">is_imputed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_df</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">unique_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
                 <span class="n">coef_df_i</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">partition_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
                 <span class="n">index_i</span><span class="p">,</span> <span class="n">is_imputed_i</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">coef_to_index</span><span class="p">(</span>
                     <span class="n">coef_df_i</span><span class="p">,</span> <span class="n">log_dep</span><span class="p">,</span> <span class="n">base_price</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">base_price</span>
@@ -541,8 +543,8 @@
                 <span class="n">index_i_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">index_i</span><span class="p">})</span>
                 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">partition_cols</span><span class="p">:</span>
                     <span class="n">index_i_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
-                <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index_i_df</span><span class="p">)</span>
-                <span class="n">is_imputed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_imputed_i</span><span class="p">)</span>
+                <span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_i_df</span>
+                <span class="n">is_imputed</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_imputed_i</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">index</span><span class="p">,</span> <span class="n">is_imputed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">coef_to_index</span><span class="p">(</span><span class="n">coef_df</span><span class="p">,</span> <span class="n">log_dep</span><span class="p">,</span> <span class="n">base_price</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">base_price</span><span class="p">)</span>
 

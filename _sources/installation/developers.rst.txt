@@ -45,6 +45,7 @@ Optional dependencies for development:
 * pytest
 * pytest-cov
 * sphinx
+* types-python-dateutil
 
 Test and Coverage
 -----------------
