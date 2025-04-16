@@ -40,7 +40,7 @@ jobs:
         run: |
           uv run isort --profile=black --check .
 
-       - name: Lint with flake8
+      - name: Lint with flake8
         run: |
           uv run flake8 . --exclude=.venv --count --show-source --statistics || exit 1
           uv run flake8 . --exclude=.venv --count --exit-zero --statistics
