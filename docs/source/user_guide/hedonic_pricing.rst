@@ -24,7 +24,6 @@ Here's how to prepare your data:
 
 .. code-block:: python
 
-    >>> import pandas as pd
     >>> from hpipy.datasets import load_ex_sales
     >>> from hpipy.period_table import PeriodTable
     >>> from hpipy.trans_data import HedonicTransactionData
@@ -74,20 +73,20 @@ The main parameters for hedonic index creation are:
 .. admonition:: Parameters
    :class: hint
 
-   **estimator** : str  
-       The type of estimator to use:  
-       
-       * "base": Standard OLS estimation  
-       * "robust": Robust regression (less sensitive to outliers)  
+   **estimator** : str
+       The type of estimator to use:
+
+       * "base": Standard OLS estimation
+       * "robust": Robust regression (less sensitive to outliers)
        * "weighted": Weighted regression
 
-   **dep_var** : str  
+   **dep_var** : str
        Dependent variable to model.
 
-   **ind_var** : list  
+   **ind_var** : list
        Independent variables to use in the model.
 
-   **log_dep** : bool  
+   **log_dep** : bool
        Whether to use log of price as dependent variable (recommended).
 
 Advanced Usage
@@ -132,6 +131,8 @@ The hedonic method often benefits from careful feature engineering:
    
    .. code-block:: python
 
+       >>> import pandas as pd
+
        >>> cat_cols = ["use_type", "area"]
 
        # One-hot encode categorical variables.
@@ -158,7 +159,7 @@ Evaluate the hedonic index using various metrics:
 
 .. code-block:: python
 
-    >>> from hpipy.utils.metrics import accuracy,volatility
+    >>> from hpipy.utils.metrics import volatility
     >>> from hpipy.utils.plotting import plot_index
 
     # Calculate metrics.
@@ -170,15 +171,13 @@ Evaluate the hedonic index using various metrics:
 
 .. invisible-altair-plot::
 
-    import altair as alt
-    import pandas as pd
     from hpipy.datasets import load_ex_sales
     from hpipy.period_table import PeriodTable
     from hpipy.price_index import HedonicIndex
     from hpipy.price_model import HedonicModel
     from hpipy.trans_data import HedonicTransactionData
-    from hpipy.utils.metrics import volatility
     from hpipy.utils.plotting import plot_index
+
     df = load_ex_sales()
     sales_hdata = PeriodTable(df).create_period_table("sale_date", periodicity="monthly")
     trans_data = HedonicTransactionData(sales_hdata).create_transactions(

@@ -54,6 +54,9 @@ jobs:
           uv run pytest --doctest-glob="*.rst" --doctest-modules docs
           uv run pytest --pyargs hpipy --cov=hpipy
 
+      - name: Generate coverage report
+        run: uv run coverage xml
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:

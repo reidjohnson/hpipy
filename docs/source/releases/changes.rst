@@ -3,6 +3,13 @@
 Release Notes
 =============
 
+Version 0.1.3 (released April 16, 2025)
+---------------------------------------
+
+* Fix mypy errors
+* Update build process
+* Update documentation
+
 Version 0.1.2 (released April 15, 2025)
 ---------------------------------------
 
