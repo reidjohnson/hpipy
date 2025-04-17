@@ -72,7 +72,7 @@ uv pip install --requirements pyproject.toml --extra dev
 3. Run the test suite:
 
 ```bash
-pytest
+uv run pytest
 ```
 
 ## Acknowledgements
