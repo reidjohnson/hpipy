@@ -21,7 +21,7 @@ temporal information from the neural network's learned representations.
 
 import copy
 import logging
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -68,22 +68,44 @@ class NeuralNetworkModel(BaseHousePriceModel):
 
     def _create_model(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         **kwargs: Any,
     ) -> NeuralAVMWithCoef:
-        """Create a neural network house price model."""
+        """Create a neural network house price model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): Input data.
+            y (pd.Series): Target data.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            NeuralAVMWithCoef: Neural network house price model.
+
+        """
         return self._model_with_coefficients(X, y, **kwargs)
 
     def _model_with_coefficients(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         estimator: str,
-        partition_cols: Optional[list] = None,
+        partition_cols: list | None = None,
         **kwargs: Any,
     ) -> NeuralAVMWithCoef:
-        """Fit model and populate coefficients to produce index."""
+        """Fit model and populate coefficients to produce index.
+
+        Args:
+            X (pd.DataFrame | pd.Series): Input data.
+            y (pd.Series): Target data.
+            estimator (str): Estimator type.
+            partition_cols (list | None, optional): Partition columns.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            NeuralAVMWithCoef: Neural network house price model.
+
+        """
         model = NeuralAVMWithCoef(**kwargs["init"]).fit(X, y, **kwargs["fit"])
         periods = sorted(self.hpi_df["trans_period"].unique())
         if partition_cols is None:
@@ -96,25 +118,24 @@ class NeuralNetworkModel(BaseHousePriceModel):
             model_df = pd.DataFrame({"time": periods, "coefficient": model.coef_})
             model.coef_ = model_df
             return model
-        else:
-            input_df = copy.deepcopy(kwargs["predict"]["input_df"])
-            coef = []
-            unique_df = input_df[partition_cols].drop_duplicates()
-            for _, row in unique_df.iterrows():
-                input_df_i = input_df.merge(row.to_frame().T, on=partition_cols, how="inner")
-                kwargs["predict"]["input_df"] = input_df_i
-                if estimator == "residual":
-                    model_i = self._model_residual(model, **kwargs["predict"])
-                elif estimator == "attributional":
-                    model_i = self._model_attributional(model, **kwargs["predict"])
-                else:
-                    raise ValueError
-                model_i_df = pd.DataFrame({"time": periods, "coefficient": model_i.coef_})
-                for col in partition_cols:
-                    model_i_df[col] = row[col][0]
-                coef.append(model_i_df)
-            model.coef_ = pd.concat(coef) if len(coef) > 1 else coef[0]
-            return model
+        input_df = copy.deepcopy(kwargs["predict"]["input_df"])
+        coef = []
+        unique_df = input_df[partition_cols].drop_duplicates()
+        for _, row in unique_df.iterrows():
+            input_df_i = input_df.merge(row.to_frame().T, on=partition_cols, how="inner")
+            kwargs["predict"]["input_df"] = input_df_i
+            if estimator == "residual":
+                model_i = self._model_residual(model, **kwargs["predict"])
+            elif estimator == "attributional":
+                model_i = self._model_attributional(model, **kwargs["predict"])
+            else:
+                raise ValueError
+            model_i_df = pd.DataFrame({"time": periods, "coefficient": model_i.coef_})
+            for col in partition_cols:
+                model_i_df[col] = row[col][0]
+            coef.append(model_i_df)
+        model.coef_ = pd.concat(coef) if len(coef) > 1 else coef[0]
+        return model
 
     def _create_explainer_input_data(
         self,
@@ -122,11 +143,22 @@ class NeuralNetworkModel(BaseHousePriceModel):
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """Create explainer input for each date in the period table range."""
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """Create explainer input for each date in the period table range.
+
+        Args:
+            model (NeuralAVMWithCoef): Neural network house price model.
+            input_df (pd.DataFrame): Input data.
+            date (str): Date column name.
+            data_pipeline (DataPipeline): Data pipeline.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame]: Explainable input data and
+                transformed input data.
+
+        """
         min_pred_datetime = self.period_table["start_date"].min()
         max_pred_datetime = self.period_table["end_date"].max()
-
         total_days = (max_pred_datetime - min_pred_datetime).days
 
         dfs = []
@@ -169,25 +201,29 @@ class NeuralNetworkModel(BaseHousePriceModel):
 
         # Normalize coefficients by baseline value.
         base_coef = coef_df["yhat"].iloc[0]
-        coefs = coef_df["yhat"] - base_coef
-
-        return coefs
+        return coef_df["yhat"] - base_coef
 
     @staticmethod
     def _model_inputs_to_features(
         data_pipeline: DataPipeline,
-        inputs: Union[str, list[str]],
+        inputs: str | list[str],
     ) -> list[str]:
-        """Get transformed feature names for input feature columns."""
-        if not isinstance(inputs, list):
-            features = [inputs]
-        else:
-            features = inputs
+        """Get transformed feature names for input feature columns.
+
+        Args:
+            data_pipeline (DataPipeline): The data pipeline.
+            inputs (str | list[str]): The input feature columns.
+
+        Returns:
+            list[str]: The transformed feature names.
+
+        """
+        features = [inputs] if not isinstance(inputs, list) else inputs
         if data_pipeline.feature_preprocessors_ is not None:
             for feature in inputs:
                 for fp in data_pipeline.feature_preprocessors_:
                     if feature in list(fp.input_cols.values()):
-                        new_features = list(set([f["name"] for f in fp.output_cols]))
+                        new_features = list({f["name"] for f in fp.output_cols})
                         features.remove(feature)
                         features.extend(new_features)
         return features
@@ -198,12 +234,27 @@ class NeuralNetworkModel(BaseHousePriceModel):
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
-        min_pred_epoch: Optional[int],
+        min_pred_epoch: int | None,
         quantile: float = 0.5,
-        partition_cols: Optional[list] = None,
+        partition_cols: list | None = None,
         **kwargs: Any,
     ) -> NeuralAVMWithCoef:
-        """Generate explanation from index-pathway output component."""
+        """Generate explanation from index-pathway output component.
+
+        Args:
+            model (NeuralAVMWithCoef): Neural network house price model.
+            input_df (pd.DataFrame): Input data.
+            date (str): Date column name.
+            data_pipeline (DataPipeline): Data pipeline.
+            min_pred_epoch (int | None): Minimum prediction epoch.
+            quantile (float, optional): Quantile to estimate.
+            partition_cols (list | None, optional): Partition columns.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            NeuralAVMWithCoef: Neural network house price model.
+
+        """
         input_features = [date]
         if partition_cols is not None:
             input_features += partition_cols
@@ -244,12 +295,27 @@ class NeuralNetworkModel(BaseHousePriceModel):
         input_df: pd.DataFrame,
         date: str,
         data_pipeline: DataPipeline,
-        min_pred_epoch: Optional[int],
+        min_pred_epoch: int | None,
         quantile: float = 0.5,
-        partition_cols: Optional[list] = None,
+        partition_cols: list | None = None,
         **kwargs: Any,
     ) -> NeuralAVMWithCoef:
-        """Generate explanation from attribution of property estimate."""
+        """Generate explanation from attribution of property estimate.
+
+        Args:
+            model (NeuralAVMWithCoef): Neural network house price model.
+            input_df (pd.DataFrame): Input data.
+            date (str): Date column name.
+            data_pipeline (DataPipeline): Data pipeline.
+            min_pred_epoch (int | None): Minimum prediction epoch.
+            quantile (float, optional): Quantile to estimate.
+            partition_cols (list | None, optional): Partition columns.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            NeuralAVMWithCoef: Neural network house price model.
+
+        """
         num_background = 1
         input_features = [date]
         if partition_cols is not None:
@@ -263,7 +329,9 @@ class NeuralNetworkModel(BaseHousePriceModel):
         )
 
         X_baseline = data_pipeline.predict_transform(
-            input_df.iloc[:num_background, :], override_date=False, return_y=False
+            input_df.iloc[:num_background, :],
+            override_date=False,
+            return_y=False,
         )
 
         features = self._model_inputs_to_features(data_pipeline, input_features)
@@ -272,11 +340,15 @@ class NeuralNetworkModel(BaseHousePriceModel):
         X_baseline[list(set(X_baseline.columns).difference(features))] = 0  # type: ignore
 
         df_attrs = model.explain(
-            X_input, X_baseline, quantile=quantile, min_epoch=min_pred_epoch, **kwargs
+            X_input,
+            X_baseline,
+            quantile=quantile,
+            min_epoch=min_pred_epoch,
+            **kwargs,
         )
 
         coef_df = (
-            df_attrs.loc[:, features + ["_quantile"]]
+            df_attrs.loc[:, [*features, "_quantile"]]
             .pipe(lambda x: pd.concat([explain_df[date], x], axis=1))
             .set_index(date)
             .sum(axis=1)
@@ -296,29 +368,46 @@ class NeuralNetworkModel(BaseHousePriceModel):
         feature_dict: dict[str, list[str]],
         preprocess_time: bool,
         preprocess_geo: bool,
-        geo_resolutions: Union[int, list[int]],
-    ) -> Tuple[DataPipeline, FeatureTransformer]:
+        geo_resolutions: int | list[int],
+    ) -> tuple[DataPipeline, FeatureTransformer]:
+        """Get data transformers.
+
+        Args:
+            X (pd.DataFrame): Input data.
+            dep_var (str): Dependent variable.
+            date (str): Date column name.
+            feature_dict (dict[str, list[str]]): Feature dictionary.
+            preprocess_time (bool): Preprocess time.
+            preprocess_geo (bool): Preprocess geospatial.
+            geo_resolutions (int | list[int]): Geospatial resolutions.
+
+        Returns:
+            tuple[DataPipeline, FeatureTransformer]: Data pipeline and feature
+                transformer.
+
+        """
         # Check data.
         if np.any(self.hpi_df["price"] <= 0) or (self.hpi_df["price"].isnull().sum() > 0):
-            raise ValueError("Your 'price' field includes invalid values.")
+            msg = "Your 'price' field includes invalid values."
+            raise ValueError(msg)
 
         min_train_datetime = X[date].min()
         max_train_datetime = X[date].max()
 
         feature_preprocessors: list[BaseFeaturePreprocessor] = []
         if preprocess_geo:
-            if set(["latitude", "longitude"]).issubset(set(X.columns)):
+            if {"latitude", "longitude"}.issubset(set(X.columns)):
                 feature_preprocessors += [
                     GeospatialPreprocessor(
                         resolutions=geo_resolutions,
                         latitude_col="latitude",
                         longitude_col="longitude",
-                    )
+                    ),
                 ]
             else:
                 logging.warning(
                     "Cannot preprocess geospatial features because 'latitude' and/or 'longitude' "
-                    "columns are missing. Skipping geospatial preprocessing."
+                    "columns are missing. Skipping geospatial preprocessing.",
                 )
         if preprocess_time:
             if date in list(X.columns):
@@ -332,7 +421,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
             else:
                 logging.warning(
                     "Cannot preprocess temporal features because 'date' column is missing. "
-                    "Skipping temporal preprocessing."
+                    "Skipping temporal preprocessing.",
                 )
 
         feature_transformer = FeatureTransformer(feature_dict)
@@ -355,18 +444,18 @@ class NeuralNetworkModel(BaseHousePriceModel):
         date: str,
         estimator: str = "residual",
         log_dep: bool = True,
-        feature_dict: Optional[dict[str, list[str]]] = None,
+        feature_dict: dict[str, list[str]] | None = None,
         num_models: int = 5,
         num_epochs: int = 20,
         batch_size: int = 1024,
-        hidden_dims: Optional[Union[int, list[int]]] = None,
+        hidden_dims: int | list[int] | None = None,
         emb_size: int = 5,
         dropout_rate: float = 0.1,
         learning_rate: float = 1e-3,
         do_mixup: bool = False,
         preprocess_time: bool = True,
         preprocess_geo: bool = True,
-        geo_resolutions: Optional[Union[int, list[int]]] = None,
+        geo_resolutions: int | list[int] | None = None,
         min_pred_epoch: int = 16,
         quantile: float = 0.5,
         random_seed: int = 0,
@@ -402,7 +491,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
                 Defaults to "residual".
             log_dep (bool, optional): Log transform the dependent variable.
                 Defaults to True.
-            feature_dict (Optional[dict[str, list[str]]], optional): Feature
+            feature_dict (dict[str, list[str]] | None, optional): Feature
                 dictionary.
                 Defaults to None.
             num_models (int, optional): Number of models in the ensemble.
@@ -411,7 +500,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
                 Defaults to 20.
             batch_size (int, optional): Batch size for training.
                 Defaults to 1024.
-            hidden_dims (Optional[Union[int, list[int]]], optional): Hidden
+            hidden_dims (int | list[int] | None, optional): Hidden
                 layer sizes.
                 If None, defaults to [128, 32].
             emb_size (int, optional): Output size for each embedding.
@@ -428,7 +517,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
             preprocess_geo (bool, optional): Preprocess geospatial features
                 from latitude and longitude columns.
                 Defaults to True.
-            geo_resolutions (Optional[Union[int, list[int]]], optional):
+            geo_resolutions (int | list[int] | None, optional):
                 Geospatial (H3) cell resolutions.
                 If None, defaults to [6, 7].
             min_pred_epoch (int, optional): Minimum prediction epoch.
@@ -439,6 +528,10 @@ class NeuralNetworkModel(BaseHousePriceModel):
                 Defaults to 0.
             verbose (bool, optional): Verbose output.
                 Defaults to False.
+
+        Returns:
+            Self: Fitted model.
+
         """
         if not log_dep:
             raise NotImplementedError
@@ -456,7 +549,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         elif not isinstance(geo_resolutions, list):
             geo_resolutions = [geo_resolutions]
 
-        X = self.hpi_df[ind_var + ["trans_period", date]].reset_index(drop=True)
+        X = self.hpi_df[[*ind_var, "trans_period", date]].reset_index(drop=True)
         y = self.hpi_df[dep_var].reset_index(drop=True)
 
         data_pipeline, feature_transformer = self._get_data_transformers(
@@ -485,7 +578,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         if estimator not in ["residual", "attributional"]:
             logging.warning(
                 "Provided estimator type is not supported. Allowed estimators are: "
-                "'residual' and 'attributional'. Defaulting to 'residual'."
+                "'residual' and 'attributional'. Defaulting to 'residual'.",
             )
             estimator = "residual"
 

@@ -14,6 +14,7 @@ from hpipy.trans_data import HedonicTransactionData, RepeatTransactionData
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
+    """Test repeat transaction model."""
     repeat_trans_data = RepeatTransactionData(seattle_dataset).create_transactions(
         prop_id="pinx",
         trans_id="sale_id",
@@ -43,12 +44,14 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
     assert rt_model.params["estimator"] == "robust"
 
     rt_model = RepeatTransactionModel(repeat_trans_data).fit(
-        hpi_data=repeat_trans_data, estimator="weighted"
+        hpi_data=repeat_trans_data,
+        estimator="weighted",
     )
     assert rt_model.params["estimator"] == "weighted"
 
     rt_model = RepeatTransactionModel(repeat_trans_data).fit(
-        hpi_data=repeat_trans_data, estimator="x"
+        hpi_data=repeat_trans_data,
+        estimator="x",
     )
     assert rt_model.params["estimator"] == "base"
 
@@ -56,7 +59,7 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
     repeat_trans_data200.trans_df = repeat_trans_data200.trans_df[0:199]
     time_matrix200 = TimeMatrixMixin().create_time_matrix(repeat_trans_data200.trans_df)
     price_diff_l200 = np.log(repeat_trans_data200.trans_df["price_2"]) - np.log(
-        repeat_trans_data200.trans_df["price_1"]
+        repeat_trans_data200.trans_df["price_1"],
     )
     price_diff200 = (
         repeat_trans_data200.trans_df["price_2"] - repeat_trans_data200.trans_df["price_1"]
@@ -101,11 +104,13 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
     rt_model_base = RepeatTransactionModel(repeat_trans_data).fit(estimator="base", log_dep=True)
 
     rt_model_robust = RepeatTransactionModel(repeat_trans_data).fit(
-        estimator="robust", log_dep=True
+        estimator="robust",
+        log_dep=True,
     )
 
     rt_model_wgt = RepeatTransactionModel(repeat_trans_data).fit(
-        estimator="weighted", log_dep=False
+        estimator="weighted",
+        log_dep=False,
     )
 
     np.random.seed(0)
@@ -131,7 +136,7 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
         np.not_equal(
             rt_model_wgt.coefficients["coefficient"],
             rt_model_wwgt.coefficients["coefficient"],
-        )
+        ),
     )
 
     # Check base price.
@@ -147,6 +152,7 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_hed_model(seattle_dataset: pd.DataFrame) -> None:
+    """Test hedonic model."""
     hedonic_trans_data = HedonicTransactionData(seattle_dataset).create_transactions(
         prop_id="pinx",
         trans_id="sale_id",

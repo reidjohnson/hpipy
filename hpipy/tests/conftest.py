@@ -11,7 +11,6 @@ class MyTestDataset:
 
     def __init__(self) -> None:
         """Initialize toy dataset class."""
-        pass
 
     @property
     def dataset(self) -> pd.DataFrame:
@@ -30,7 +29,6 @@ class SeattleDataset:
 
     def __init__(self) -> None:
         """Initialize Seattle dataset class."""
-        pass
 
     @property
     def dataset(self) -> pd.DataFrame:

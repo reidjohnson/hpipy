@@ -36,7 +36,10 @@ def plot_index(
             x=alt.X(
                 "x:T",
                 axis=alt.Axis(
-                    format="%Y", labelAngle=0, title="Time Period", values=dates[::12].values
+                    format="%Y",
+                    labelAngle=0,
+                    title="Time Period",
+                    values=dates[::12].values,
                 ),
             ),
             y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Index Value"),
@@ -87,9 +90,7 @@ def plot_index(
         )
         base += smooth
 
-    chart = base.properties(height=300, width=800)
-
-    return chart
+    return base.properties(height=300, width=800)
 
 
 def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
@@ -182,9 +183,7 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.Chart:
         .properties(height=150, width=375)
     )
 
-    chart = (bar1 | bar2) & (density1 | density2)
-
-    return chart
+    return (bar1 | bar2) & (density1 | density2)
 
 
 def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.Chart:
@@ -195,7 +194,7 @@ def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.Chart:
             "y": volatility_df["roll"],
             "mean": volatility_df["mean"],
             "median": volatility_df["median"],
-        }
+        },
     )
 
     base = (
@@ -214,9 +213,7 @@ def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.Chart:
     mean = base.mark_line(color="gray", size=3, strokeDash=[4, 4]).encode(y=alt.Y("mean:Q"))
     median = base.mark_line(color="gray", size=3, strokeDash=[2, 4]).encode(y=alt.Y("median:Q"))
 
-    chart = (base + mean + median).properties(height=300, width=800)
-
-    return chart
+    return (base + mean + median).properties(height=300, width=800)
 
 
 def plot_series_volatility(hpi_series: BaseHousePriceIndex, smooth: bool = False) -> alt.Chart:
@@ -230,7 +227,7 @@ def plot_series_volatility(hpi_series: BaseHousePriceIndex, smooth: bool = False
             "index": pd.concat(index),
             "period": pd.concat(periods),
             "value": pd.concat(values),
-        }
+        },
     )
 
     base = (
@@ -257,9 +254,7 @@ def plot_series_volatility(hpi_series: BaseHousePriceIndex, smooth: bool = False
         .encode()
         .properties(data=source[source["index"] == source["index"].max()])
     )
-    chart = (chart1 + chart2).resolve_scale(color="independent")
-
-    return chart
+    return (chart1 + chart2).resolve_scale(color="independent")
 
 
 def plot_series_revision(
@@ -300,6 +295,4 @@ def plot_series_revision(
         .encode(y=alt.Y(f"mean({measure}):Q"))
     )
 
-    chart = alt.layer(base, line, data=source)
-
-    return chart
+    return alt.layer(base, line, data=source)

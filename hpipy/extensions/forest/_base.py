@@ -1,7 +1,7 @@
 """Random forest HPI extensions."""
 
 import logging
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -32,26 +32,50 @@ class RandomForestModel(BaseHousePriceModel):
 
     def _create_model(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         **kwargs: Any,
-    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
-        """Create a random forest house price model."""
+    ) -> RandomForestRegressor | RandomForestQuantileRegressor:
+        """Create a random forest house price model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): Independent variables.
+            y (pd.Series): Dependent variable.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.
+
+        """
         return self._model_with_coefficients(X, y, **kwargs)
 
     def _model_with_coefficients(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         estimator: str,
         n_estimators: int,
         random_seed: int,
         **kwargs: Any,
-    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
-        """Fit model and populate coefficients to produce index."""
+    ) -> RandomForestRegressor | RandomForestQuantileRegressor:
+        """Fit model and populate coefficients to produce index.
+
+        Args:
+            X (pd.DataFrame | pd.Series): Independent variables.
+            y (pd.Series): Dependent variable.
+            estimator (str): Estimator type.
+            n_estimators (int): Number of estimators.
+            random_seed (int): Random seed.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.
+
+        """
         # Fit the model.
         model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_seed).fit(
-            X, y
+            X,
+            y,
         )
         # model = RangerForestRegressor(
         #    n_estimators=n_estimators,
@@ -64,14 +88,28 @@ class RandomForestModel(BaseHousePriceModel):
 
     def _model_pdp(
         self,
-        model: Union[RandomForestRegressor, RandomForestQuantileRegressor],
-        X: Union[pd.DataFrame, pd.Series],
+        model: RandomForestRegressor | RandomForestQuantileRegressor,
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         log_dep: bool = False,
         random_seed: int = 0,
         **kwargs: Any,
-    ) -> Union[RandomForestRegressor, RandomForestQuantileRegressor]:
-        """Generate explanation from partial dependence plot (PDP) values."""
+    ) -> RandomForestRegressor | RandomForestQuantileRegressor:
+        """Generate explanation from partial dependence plot (PDP) values.
+
+        Args:
+            model (RandomForestRegressor | RandomForestQuantileRegressor): Random forest model.
+            X (pd.DataFrame | pd.Series): Independent variables.
+            y (pd.Series): Dependent variable.
+            log_dep (bool, optional): Log transform the dependent variable.
+                Defaults to False.
+            random_seed (int): Random seed.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.
+
+        """
         # Get simulation dataframe.
         sim_X, _ = self._create_sim_df(X, y, random_seed=random_seed, **kwargs)
 
@@ -98,10 +136,7 @@ class RandomForestModel(BaseHousePriceModel):
         base_yhat = pdp_df["yhat"].iloc[0]
 
         # Add coefficients.
-        if log_dep:
-            coefs = pdp_df["yhat"] - base_yhat
-        else:
-            coefs = pdp_df["yhat"] / base_yhat
+        coefs = pdp_df["yhat"] - base_yhat if log_dep else pdp_df["yhat"] / base_yhat
 
         model.coef_ = coefs
 
@@ -109,15 +144,28 @@ class RandomForestModel(BaseHousePriceModel):
 
     def _create_sim_df(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         random_seed: int,
-        sim_ids: Optional[int] = None,
-        sim_count: Optional[int] = None,
-        sim_per: Optional[float] = None,
+        sim_ids: int | None = None,
+        sim_count: int | None = None,
+        sim_per: float | None = None,
         **kwargs: Any,
-    ) -> Tuple[Union[pd.DataFrame, pd.Series], pd.Series]:
-        """Create simulation data."""
+    ) -> tuple[pd.DataFrame | pd.Series, pd.Series]:
+        """Create simulation data.
+
+        Args:
+            X (pd.DataFrame | pd.Series): Independent variables.
+            y (pd.Series): Dependent variable.
+            random_seed (int): Random seed.
+            sim_ids (int | None, optional): Simulation IDs.
+            sim_count (int | None, optional): Simulation count.
+            sim_per (float | None, optional): Simulation percentage.
+
+        Returns:
+            tuple[pd.DataFrame | pd.Series, pd.Series]: Simulation data.
+
+        """
         # If no filters.
         if sim_ids is None and sim_count is None and sim_per is None:
             return X, y
@@ -128,10 +176,7 @@ class RandomForestModel(BaseHousePriceModel):
 
         # If a sim percentage is provided.
         if sim_count is None:
-            if sim_per is not None:
-                sim_count = int(np.floor(sim_per * len(X)))
-            else:
-                sim_count = len(X)
+            sim_count = int(np.floor(sim_per * len(X))) if sim_per is not None else len(X)
 
         # Take sample.
         np.random.seed(random_seed)
@@ -143,8 +188,8 @@ class RandomForestModel(BaseHousePriceModel):
 
     def fit(
         self,
-        dep_var: Optional[str] = None,
-        ind_var: Optional[list[str]] = None,
+        dep_var: str | None = None,
+        ind_var: list[str] | None = None,
         estimator: str = "pdp",
         log_dep: bool = True,
         n_estimators: int = 100,
@@ -154,9 +199,9 @@ class RandomForestModel(BaseHousePriceModel):
         """Fit the random forest model and generate index coefficients.
 
         Args:
-            dep_var (Optional[str], optional): Dependent variable.
+            dep_var (str | None, optional): Dependent variable.
                 Defaults to None.
-            ind_var (Optional[list[str]], optional): Independent variable(s).
+            ind_var (list[str] | None, optional): Independent variable(s).
                 Defaults to None.
             estimator (str, optional): Estimator type.
                 Defaults to "pdp".
@@ -166,11 +211,16 @@ class RandomForestModel(BaseHousePriceModel):
                 Defaults to 100.
             random_seed (int, optional): Random seed to use.
                 Defaults to 0.
+
+        Returns:
+            Self: Fitted model.
+
         """
         hpi_df = self.hpi_df.copy()
 
         if dep_var is None or ind_var is None:
-            raise ValueError("'dep_var' and 'ind_var' must be supplied.")
+            msg = "'dep_var' and 'ind_var' must be supplied."
+            raise ValueError(msg)
 
         # oh_enc = OneHotEncoder(drop="first")
         # oh_enc.fit(hpi_df[["trans_period"]])
@@ -185,7 +235,7 @@ class RandomForestModel(BaseHousePriceModel):
                 hpi_df[var] = hpi_df[var].astype("category")
                 hpi_df[var] = hpi_df[var].cat.codes
 
-        X = hpi_df[ind_var + ["trans_period"]].reset_index(drop=True)
+        X = hpi_df[[*ind_var, "trans_period"]].reset_index(drop=True)
         y = np.log(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
 
         # Extract base period mean price.
@@ -195,13 +245,14 @@ class RandomForestModel(BaseHousePriceModel):
         if estimator not in ["pdp"]:
             logging.warning(
                 "Provided estimator type is not supported. Allowed estimators are: "
-                "'pdp'. Defaulting to 'pdp'."
+                "'pdp'. Defaulting to 'pdp'.",
             )
             estimator = "pdp"
 
         # Check log dep vs data.
-        if log_dep and np.any(hpi_df["price"] <= 0) or (hpi_df["price"].isnull().sum() > 0):
-            raise ValueError("Your 'price' field includes invalid values.")
+        if (log_dep and np.any(hpi_df["price"] <= 0)) or (hpi_df["price"].isnull().sum() > 0):
+            msg = "Your 'price' field includes invalid values."
+            raise ValueError(msg)
 
         model = self._create_model(
             X=X,
@@ -214,8 +265,9 @@ class RandomForestModel(BaseHousePriceModel):
         )
 
         # Check for successful model estimation.
-        if not isinstance(model, (RandomForestRegressor, RandomForestQuantileRegressor)):
-            raise ValueError("Model estimator was unsuccessful.")
+        if not isinstance(model, (RandomForestRegressor | RandomForestQuantileRegressor)):
+            msg = "Model estimator was unsuccessful."
+            raise ValueError(msg)
 
         # Period names.
         # p_names = [len(ind_var) + idx for idx in range(len(oh_enc.categories_[0]) - 1)]

@@ -83,7 +83,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Bad train period.
     with pytest.raises(ValueError):
-        _ = hed_index.create_series(train_period="x", max_period=50)  # type: ignore
+        _ = hed_index.create_series(train_period="x", max_period=50)
 
     # Bad train period.
     with pytest.raises(ValueError):
@@ -111,7 +111,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     rt_series = rt_index.create_series(train_period=24)
     rt_series = rt_series.smooth_series()
 
-    _ = volatility(hed_index.value, window=3)  # type: ignore
+    _ = volatility(hed_index.value, window=3)
 
     # HPI index object.
     _ = volatility(hed_index, window=3)
@@ -140,7 +140,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Non-sensical index.
     with pytest.raises(ValueError):
-        _ = volatility("abc", window=3)  # type: ignore
+        _ = volatility("abc", window=3)
 
     # Negative window.
     with pytest.raises(ValueError):
@@ -148,14 +148,14 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Char window.
     with pytest.raises(ValueError):
-        _ = volatility(hed_index, window="x")  # type: ignore
+        _ = volatility(hed_index, window="x")
 
     # NA window.
     with pytest.raises(ValueError):
-        _ = volatility(hed_index, window=None, smooth=True)  # type: ignore
+        _ = volatility(hed_index, window=None, smooth=True)
 
     # Standard input.
-    _ = volatility(hed_index.value, window=3, in_place=True)  # type: ignore
+    _ = volatility(hed_index.value, window=3, in_place=True)
 
     # Add it to the HPI index object.
     hed_index.index = volatility(hed_index, window=3, in_place=True)
@@ -164,10 +164,10 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     hed_index.index = volatility(hed_index, window=3, in_place=True, smooth=True)
 
     # Add it to the full HPI object (to the HPI index object).
-    hed_index = volatility(hed_index, window=3, in_place=True)  # type: ignore
+    hed_index = volatility(hed_index, window=3, in_place=True)
 
     # Add it to the full HPI object (to the hpiindex object) smooth.
-    hed_index = volatility(hed_index, window=3, in_place=True, smooth=True)  # type: ignore
+    hed_index = volatility(hed_index, window=3, in_place=True, smooth=True)
 
     # Add it to the full HPI object (to the hpiindex object) with new name.
     # hed_index = volatility(hed_index, window=3, in_place=True, in_place_name="xxx")
@@ -179,9 +179,9 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Bad HPI objects.
     with pytest.raises(ValueError):
-        accuracy("xxx")  # type: ignore
+        accuracy("xxx")
     with pytest.raises(ValueError):
-        accuracy(hed_index.data)  # type: ignore
+        accuracy(hed_index.data)
 
     # Disagreement between HPI object and prediction dataframe.
     # with pytest.raises(ValueError):
@@ -204,61 +204,71 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     # Bad data.
     with pytest.raises(ValueError):
         _ = insample_error(
-            hed_index.data.trans_df, hed_index, index=hed_index.value  # type: ignore
+            hed_index.data.trans_df,
+            hed_index,
+            index=hed_index.value,
         )
 
     # Bad index.
     with pytest.raises(ValueError):
-        _ = insample_error(hed_index.data.trans_df, hed_index, index=hed_index)  # type: ignore
+        _ = insample_error(hed_index.data.trans_df, hed_index, index=hed_index)
 
     # All data.
     with pytest.raises(ValueError):
         _ = insample_error(
-            hed_index.data.trans_df, hed_index, index=hed_index.value  # type: ignore
+            hed_index.data.trans_df,
+            hed_index,
+            index=hed_index.value,
         )
 
     # All data smooth.
     with pytest.raises(ValueError):
         _ = insample_error(
-            hed_index.data.trans_df, hed_index, index=hed_index.smooth  # type: ignore
+            hed_index.data.trans_df,
+            hed_index,
+            index=hed_index.smooth,
         )
 
     # Sparse data.
     with pytest.raises(ValueError):
         _ = insample_error(
-            hed_index.data.trans_df.iloc[:3], hed_index, index=hed_index.value  # type: ignore
+            hed_index.data.trans_df.iloc[:3],
+            hed_index,
+            index=hed_index.value,
         )
 
     # No data.
     with pytest.raises(ValueError):
         _ = insample_error(
-            hed_index.data.trans_df.iloc[:1], hed_index, index=hed_index.value  # type: ignore
+            hed_index.data.trans_df.iloc[:1],
+            hed_index,
+            index=hed_index.value,
         )
 
     # Bad HPI object.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data)  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index.data)
 
     # Bad prediction dataframe.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index)  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index)
 
     # Bad k.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, k="a")  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index.data, k="a")
 
     # Bad seed.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, seed="x")  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index.data, seed="x")
 
     # All data.
     with pytest.raises(ValueError):
-        rt_error = kfold_error(rt_index, pred_df=rt_index.data)  # type: ignore
+        rt_error = kfold_error(rt_index, pred_df=rt_index.data)
         assert len(rt_error.columns) == 6
 
     # All data - smooth.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, smooth=True)  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index.data, smooth=True)
 
     # Sparse data.
     # with pytest.raises(ValueError):
@@ -266,7 +276,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # No data.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0])  # type: ignore
+        _ = kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0])
 
     # Returns an error.
     # with pytest.raises(ValueError):
@@ -277,7 +287,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Returns an error.
     with pytest.raises(ValueError):
-        rt_index = accuracy(  # type: ignore
+        rt_index = accuracy(
             rt_index,
             test_type="rt",
             test_method="insample",
@@ -285,7 +295,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
             in_place=True,
             in_place_name="acc",
         )
-        assert rt_index.acc  # type: ignore
+        assert rt_index.acc
 
     # Returns an error.
     # with pytest.raises(ValueError):
@@ -294,7 +304,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Returns an error.
     with pytest.raises(ValueError):
-        rt_index = accuracy(  # type: ignore
+        rt_index = accuracy(
             hpi_obj=rt_index,
             test_type="rt",
             test_method="kfold",
@@ -302,11 +312,11 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
             in_place=True,
             in_place_name="errors",
         )
-        assert rt_index.errors  # type: ignore
+        assert rt_index.errors
 
     # Bad series.
     with pytest.raises(AttributeError):
-        _ = series_accuracy(rt_series.data, test_method="insample", test_type="rt")  # type: ignore
+        _ = series_accuracy(rt_series.data, test_method="insample", test_type="rt")
 
     # Bad test method.
     with pytest.raises(ValueError):
@@ -318,7 +328,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Bad prediction dataframe.
     with pytest.raises(ValueError):
-        _ = series_accuracy(hed_series, test_method="insample", test_type="rt")  # type: ignore
+        _ = series_accuracy(hed_series, test_method="insample", test_type="rt")
 
     # Smooth and in place.
     rt_series = series_accuracy(
@@ -326,13 +336,17 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
         test_method="insample",
         test_type="rt",
         smooth=True,
-        in_place=True,  # type: ignore
+        in_place=True,
     )
 
     # Smooth when no smooth existing.
     with pytest.raises(ValueError):
         _ = series_accuracy(
-            hed_series, test_method="insample", test_type="rt", smooth=True, pred_df=rt_series.data
+            hed_series,
+            test_method="insample",
+            test_type="rt",
+            smooth=True,
+            pred_df=rt_series.data,
         )
 
     # Smooth when no smooth existing.
@@ -346,7 +360,11 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
         )
 
     series_accuracy(
-        series_obj=rt_series, test_method="insample", test_type="rt", summarize=True, in_place=True
+        series_obj=rt_series,
+        test_method="insample",
+        test_type="rt",
+        summarize=True,
+        in_place=True,
     )
 
     _ = hed_index.data.create_forecast_periods(time_cut=33, train=True)
@@ -359,7 +377,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Bad data.
     with pytest.raises(AttributeError):
-        _ = hed_index.create_forecast_periods(time_cut=33, train=True)  # type: ignore
+        _ = hed_index.create_forecast_periods(time_cut=33, train=True)
 
     # Bad time cut.
     with pytest.raises(ValueError):
@@ -384,7 +402,9 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     # Smooth when not present.
     with pytest.raises(ValueError):
         _ = forecast_error(
-            hed_series, trans_data=rt_index.data, forecast_length="x"  # type: ignore
+            hed_series,
+            trans_data=rt_index.data,
+            forecast_length="x",
         )
 
     # All data.
@@ -407,7 +427,7 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     _ = forecast_error(rt_series, trans_data=trans_data, smooth=True)
 
     # Returns a series with accuracy: smooth and in place.
-    rt_series = series_accuracy(  # type: ignore
+    rt_series = series_accuracy(
         series_obj=rt_series,
         test_type="rt",
         test_method="forecast",
@@ -420,17 +440,17 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     _ = revision(series_obj=hed_series)
 
     # In place.
-    hed_series = revision(series_obj=hed_series, in_place=True)  # type: ignore
+    hed_series = revision(series_obj=hed_series, in_place=True)
 
     # With smooth.
     _ = revision(series_obj=rt_series, smooth=True)
 
     # With smooth in place.
-    rt_series = revision(series_obj=rt_series, smooth=True, in_place=True)  # type: ignore
+    rt_series = revision(series_obj=rt_series, smooth=True, in_place=True)
 
     # Bad series object.
     with pytest.raises(ValueError):
-        _ = revision(series_obj=hed_series.data)  # type: ignore
+        _ = revision(series_obj=hed_series.data)
 
     # Bad smooth = True.
     with pytest.raises(AttributeError):

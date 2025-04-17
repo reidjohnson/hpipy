@@ -1,7 +1,7 @@
 """Data pipeline functions."""
 
 import copy
-from typing import Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import pandas as pd
 
@@ -16,24 +16,25 @@ class DataPipeline:
         self,
         feature_dict: dict[str, list[str]],
         response_col: str,
-        feature_preprocessors: Optional[Sequence[BaseFeaturePreprocessor]] = None,
-        feature_transformer: Optional[FeatureTransformer] = None,
-        response_transformer: Optional[ResponseTransformer] = None,
-    ):
+        feature_preprocessors: Sequence[BaseFeaturePreprocessor] | None = None,
+        feature_transformer: FeatureTransformer | None = None,
+        response_transformer: ResponseTransformer | None = None,
+    ) -> None:
         """Initialize the data pipeline.
 
         Args:
             feature_dict (dict[str, list[str]]): Feature dictionary.
             response_col (str): Response column.
-            feature_preprocessors (Optional[list[BaseFeaturePreprocessor]],
+            feature_preprocessors (Sequence[BaseFeaturePreprocessor] | None,
                 optional): Feature preprocessors.
                 Defaults to None.
-            feature_transformer (Optional[FeatureTransformer], optional):
+            feature_transformer (FeatureTransformer | None, optional):
                 Feature transformer class.
                 Defaults to None.
-            response_transformer (Optional[ResponseTransformer], optional):
+            response_transformer (ResponseTransformer | None, optional):
                 Response transformer class.
                 Defaults to None.
+
         """
         self.feature_dict_ = feature_dict
         self.response_col_ = response_col
@@ -46,25 +47,27 @@ class DataPipeline:
     @staticmethod
     def _get_feature_list(feature_dict: dict[str, list[str]]) -> list[str]:
         """Get flattened feature list."""
-        features = [f for type in feature_dict.keys() for f in feature_dict[type]]
-        return sorted(list(set(features)))
+        features = [f for type in feature_dict for f in feature_dict[type]]
+        return sorted(set(features))
 
     def get_transformed_feature_dict(self) -> dict[str, list[str]]:
         """Get feature dictionary of transformed data.
 
         Returns:
             dict[str, list[str]]: Updated feature dictionary.
+
         """
         return self.feature_dict_trans
 
-    def train_transform(self, df_train: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
+    def train_transform(self, df_train: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
         """Transform and return training data.
 
         Args:
             df_train (pd.DataFrame): Input training data.
 
         Returns:
-            Tuple[pd.DataFrame, pd.Series]: Transformed training X and y data.
+            tuple[pd.DataFrame, pd.Series]: Transformed training X and y data.
+
         """
         df_train = df_train.copy(deep=True)
         feature_dict = copy.deepcopy(self.feature_dict_)
@@ -98,15 +101,15 @@ class DataPipeline:
     def predict_transform(
         self,
         df_predict: pd.DataFrame,
-        max_train_date: Optional[str] = None,
+        max_train_date: str | None = None,
         override_date: bool = True,
         return_y: bool = False,
-    ) -> Union[Tuple[pd.DataFrame, pd.Series], pd.DataFrame]:
+    ) -> tuple[pd.DataFrame, pd.Series] | pd.DataFrame:
         """Transform and return prediction data.
 
         Args:
             df_predict (pd.DataFrame): Input prediction data.
-            max_train_date (Optional[str], optional): Maximum training date.
+            max_train_date (str | None, optional): Maximum training date.
                 Defaults to None.
             override_date (bool, optional): Date override. If True, sets the
                 prediction date for all rows to the maximum training date.
@@ -115,13 +118,15 @@ class DataPipeline:
                 Defaults to False.
 
         Returns:
-            Union[Tuple[pd.DataFrame, pd.Series], pd.DataFrame]: Transformed
+            tuple[pd.DataFrame, pd.Series] | pd.DataFrame: Transformed
                 prediction X (and y) data.
+
         """
         df_predict = df_predict.copy(deep=True)
 
         if len(df_predict) == 0:
-            raise ValueError("The DataFrame is empty.")
+            msg = "The DataFrame is empty."
+            raise ValueError(msg)
 
         if override_date:
             if max_train_date is None:
@@ -145,6 +150,7 @@ class DataPipeline:
                 if self.response_transformer_ is not None:
                     y_predict = self.response_transformer_.transform(y_predict)
             else:
-                raise ValueError(f"Response column {self.response_col_} is missing.")
+                msg = f"Response column {self.response_col_} is missing."
+                raise ValueError(msg)
 
         return (X_predict, y_predict) if return_y else X_predict

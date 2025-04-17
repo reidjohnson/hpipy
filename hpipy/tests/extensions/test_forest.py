@@ -1,5 +1,4 @@
 import warnings
-from typing import Optional
 
 import pandas as pd
 import pytest
@@ -35,9 +34,9 @@ def test_rf_create_trans(seattle_dataset: pd.DataFrame, estimator: str, log_dep:
 def test_rf_create_trans_small(
     seattle_dataset: pd.DataFrame,
     log_dep: bool,
-    sim_ids: Optional[list[int]],
-    sim_count: Optional[int],
-    sim_per: Optional[float],
+    sim_ids: list[int] | None,
+    sim_count: int | None,
+    sim_per: float | None,
 ) -> None:
     """Test creation of random forest index with small dataset."""
     rf_index = RandomForestIndex().create_index(
@@ -66,7 +65,7 @@ def test_rf_create_trans_bad(seattle_dataset: pd.DataFrame) -> None:
         with pytest.raises(ValueError):
             _ = RandomForestIndex().create_index(
                 seattle_dataset.assign(
-                    sale_price=lambda x: x["sale_price"] - x["sale_price"].min() - 1
+                    sale_price=lambda x: x["sale_price"] - x["sale_price"].min() - 1,
                 ),
                 date="sale_date",
                 price="sale_price",
@@ -84,7 +83,7 @@ def test_rf_create_trans_bad(seattle_dataset: pd.DataFrame) -> None:
         with pytest.raises(ValueError):
             _ = RandomForestIndex().create_index(
                 seattle_dataset.assign(
-                    sale_price=lambda x: x["sale_price"] - x["sale_price"].min() - 1
+                    sale_price=lambda x: x["sale_price"] - x["sale_price"].min() - 1,
                 ),
                 date="sale_date",
                 price="sale_price",

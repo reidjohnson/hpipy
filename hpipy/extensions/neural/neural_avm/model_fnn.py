@@ -18,20 +18,23 @@ import random
 import shutil
 import time
 import warnings
+from collections.abc import Callable, Iterator
 from functools import partial
-from typing import Any, Callable, Iterator, Optional, Tuple, Union
+from typing import Any
 
 try:
     from typing import Self
 except ImportError:
     from typing_extensions import Self
 
+import itertools
+
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from captum.attr import DeepLift, DeepLiftShap
+from torch import nn
 from torch.utils.data import DataLoader
 
 from .data_loader import TabularDataset, collate_fn
@@ -68,6 +71,7 @@ class BaseNeuralAVM(nn.Module):
         [2] Runje, Davor, and Sharath M. Shankaranarayana. "Constrained
             Monotonic Neural Networks." International Conference on Machine
             Learning. PMLR, 2023.
+
     """
 
     def __init__(
@@ -88,6 +92,7 @@ class BaseNeuralAVM(nn.Module):
             emb_size (int): Output size for each embedding.
             dropout_rate (float): Dropout rate for training.
             learning_rate (float): Learning rate for training.
+
         """
         super().__init__()
 
@@ -124,19 +129,29 @@ class BaseNeuralAVM(nn.Module):
         init_dict: dict[str, np.ndarray],
         feature_dict: dict[str, list[str]],
         emb_size: int,
-    ) -> Tuple[int, int, dict[str, nn.Module]]:
-        """Define the input layer."""
+    ) -> tuple[int, int, dict[str, nn.Module]]:
+        """Define the input layer.
+
+        Args:
+            init_dict (dict[str, np.ndarray]): Initialization dictionary.
+            feature_dict (dict[str, list[str]]): Feature dictionary.
+            emb_size (int): Embedding size.
+
+        Returns:
+            tuple[int, int, dict[str, nn.Module]]: Input size, input size,
+                and embedding dictionary.
+
+        """
         input_size_prp = 0
         input_size_hpi = 0
-
         x_emb: dict[str, nn.Module] = {}
 
         for key in init_dict:
-            if key in feature_dict["nulls"]:
-                input_n_size = 1
-            elif key in feature_dict["numerics"]:
-                input_n_size = 1
-            elif key in feature_dict["log_numerics"]:
+            if (
+                key in feature_dict["nulls"]
+                or key in feature_dict["numerics"]
+                or key in feature_dict["log_numerics"]
+            ):
                 input_n_size = 1
             elif key in feature_dict["categoricals"]:
                 num_embeddings = int(init_dict[key].max() + 1)
@@ -163,16 +178,28 @@ class BaseNeuralAVM(nn.Module):
         input_size_hpi: int,
         hidden_dims: list[int],
         dropout_rate: float,
-    ) -> Tuple[list[nn.Module], list[nn.Module]]:
-        """Define the dense layers."""
+    ) -> tuple[list[nn.Module], list[nn.Module]]:
+        """Define the dense layers.
+
+        Args:
+            input_size_prp (int): Input size for property-level dense layers.
+            input_size_hpi (int): Input size for index-level dense layers.
+            hidden_dims (list[int]): List of hidden layer sizes.
+            dropout_rate (float): Dropout rate.
+
+        Returns:
+            tuple[list[nn.Module], list[nn.Module]]: Property-level and
+                index-level dense layers.
+
+        """
         # Apply monotonicity constraint to quantiles.
         # Quantiles are concatenated to the final layer input.
         monotonicity_indicator = ([0] * hidden_dims[-1]) + [1]
 
         # Define the property-level dense layers.
         dense_prp: list[nn.Module] = []
-        sizes_prp = [input_size_prp] + hidden_dims + [1]
-        for i, (n_in, n_out) in enumerate(zip(sizes_prp[:-1], sizes_prp[1:])):
+        sizes_prp = [input_size_prp, *hidden_dims, 1]
+        for i, (n_in, n_out) in enumerate(itertools.pairwise(sizes_prp)):
             if i == 0 and dropout_rate > 0:
                 # Use dropout to bias the learning to index-level layers.
                 dense_prp.append(nn.Dropout(dropout_rate if input_size_hpi > 0 else 0))
@@ -186,14 +213,14 @@ class BaseNeuralAVM(nn.Module):
                         n_out,
                         activation=None,
                         monotonicity_indicator=monotonicity_indicator,
-                    )
+                    ),
                 )
 
         # Define the index-level dense layers.
         dense_hpi: list[nn.Module] = []
         if input_size_hpi > 0:
-            sizes_hpi = [input_size_hpi] + hidden_dims + [1]
-            for i, (n_in, n_out) in enumerate(zip(sizes_hpi[:-1], sizes_hpi[1:])):
+            sizes_hpi = [input_size_hpi, *hidden_dims, 1]
+            for i, (n_in, n_out) in enumerate(itertools.pairwise(sizes_hpi)):
                 if i + 2 < len(sizes_hpi):
                     dense_hpi.append(nn.Linear(n_in, n_out))
                     dense_hpi.append(nn.ReLU())
@@ -204,7 +231,7 @@ class BaseNeuralAVM(nn.Module):
                             n_out,
                             activation=None,
                             monotonicity_indicator=monotonicity_indicator,
-                        )
+                        ),
                     )
 
         return dense_prp, dense_hpi
@@ -214,15 +241,36 @@ class BaseNeuralAVM(nn.Module):
         params: list[dict[str, Iterator[nn.Parameter]]],
         learning_rate: float,
     ) -> torch.optim.Optimizer:
-        """Initialize the optimizer."""
+        """Initialize the optimizer.
+
+        Args:
+            params (list[dict[str, Iterator[nn.Parameter]]]): Parameters to
+                optimize.
+            learning_rate (float): Learning rate.
+
+        Returns:
+            torch.optim.Optimizer: Optimizer.
+
+        """
         return torch.optim.Adam(params, lr=learning_rate)
 
     def _prepare_quantiles(
         self,
         x: torch.Tensor,
-        quantiles: Optional[Union[torch.Tensor, list[float]]] = None,
+        quantiles: torch.Tensor | list[float] | None = None,
     ) -> torch.Tensor:
-        """Check, scale, and concatenate quantiles with inputs."""
+        """Check, scale, and concatenate quantiles with inputs.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+            quantiles (torch.Tensor | list[float] | None, optional):
+                Quantiles.
+                Defaults to None.
+
+        Returns:
+            torch.Tensor: Concatenated tensor.
+
+        """
         if quantiles is None:
             quantiles = torch.Tensor([0.5])
         elif not isinstance(quantiles, torch.Tensor):
@@ -238,12 +286,19 @@ class BaseNeuralAVM(nn.Module):
     def _forward_inputs(
         self,
         x_dict: dict[str, torch.Tensor],
-        dropout_rate: Optional[float],
+        dropout_rate: float | None,
         training: bool,
     ) -> torch.Tensor:
         """Forward pass through the input layer.
 
-        Returns concatenated property and index pathways.
+        Args:
+            x_dict (dict[str, torch.Tensor]): Input dictionary.
+            dropout_rate (float | None): Dropout rate.
+            training (bool): Training flag.
+
+        Returns:
+            torch.Tensor: Concatenated property and index pathways tensor.
+
         """
         x_dict = {k: v.to(get_device()) for k, v in x_dict.items()}
 
@@ -252,16 +307,13 @@ class BaseNeuralAVM(nn.Module):
 
         for key in x_dict:
             x = x_dict[key]
-            if key in self.feature_dict["nulls"]:
+            if (
+                key in self.feature_dict["nulls"]
+                or key in self.feature_dict["numerics"]
+                or key in self.feature_dict["log_numerics"]
+            ):
                 xi = x.float()
-            elif key in self.feature_dict["numerics"]:
-                xi = x.float()
-            elif key in self.feature_dict["log_numerics"]:
-                xi = x.float()
-            elif key in self.feature_dict["categoricals"]:
-                xi = x.long()
-                xi = torch.flatten(self.x_emb[key](xi), 1, -1)
-            elif key in self.feature_dict["ordinals"]:
+            elif key in self.feature_dict["categoricals"] or key in self.feature_dict["ordinals"]:
                 xi = x.long()
                 xi = torch.flatten(self.x_emb[key](xi), 1, -1)
             else:
@@ -286,9 +338,22 @@ class BaseNeuralAVM(nn.Module):
         self,
         x_prp: torch.Tensor,
         x_hpi: torch.Tensor,
-        quantiles: Optional[Union[torch.Tensor, list[float]]] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Forward pass through the dense layers."""
+        quantiles: torch.Tensor | list[float] | None = None,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Forward pass through the dense layers.
+
+        Args:
+            x_prp (torch.Tensor): Property-level input tensor.
+            x_hpi (torch.Tensor): Index-level input tensor.
+            quantiles (torch.Tensor | list[float] | None, optional):
+                Quantiles.
+                Defaults to None.
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: Property and index pathways
+                tensors.
+
+        """
         # Property-level (log) effects.
         for i, layer in enumerate(self.dense_prp):
             if i + 1 == len(self.dense_prp):
@@ -308,23 +373,23 @@ class BaseNeuralAVM(nn.Module):
 
     def forward(
         self,
-        x: Union[dict[str, torch.Tensor], torch.Tensor],
+        x: dict[str, torch.Tensor] | torch.Tensor,
         _: Any = None,
-        quantiles: Optional[Union[torch.Tensor, list[float]]] = None,
-        dropout_rate: Optional[float] = None,
+        quantiles: torch.Tensor | list[float] | None = None,
+        dropout_rate: float | None = None,
         training: bool = False,
         return_hpi: bool = False,
-    ) -> Union[Tuple[torch.Tensor, torch.Tensor], torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor] | torch.Tensor:
         """Forward pass.
 
         Args:
-            x (Union[dict[str, torch.Tensor], torch.Tensor]): Inputs.
+            x (dict[str, torch.Tensor] | torch.Tensor): Inputs.
             _ (Any, optional): Hook for arguments to custom methods.
                 Defaults to None.
-            quantiles (Optional[Union[torch.Tensor, list[float]]], optional):
+            quantiles (torch.Tensor | list[float] | None, optional):
                 Quantiles to estimate.
                 Defaults to None
-            dropout_rate (Optional[float], optional): Dropout rate.
+            dropout_rate (float | None, optional): Dropout rate.
                 Defaults to None.
             training (bool, optional): Training Boolean.
                 Defaults to False.
@@ -332,7 +397,8 @@ class BaseNeuralAVM(nn.Module):
                 Defaults to False.
 
         Returns:
-            Estimated property value (and index component).
+            torch.Tensor: Estimated property value (and index component).
+
         """
         if isinstance(x, dict):
             x_in = self._forward_inputs(x, dropout_rate, training)
@@ -343,7 +409,8 @@ class BaseNeuralAVM(nn.Module):
             else:
                 x_in = x
         else:
-            raise ValueError(f"{type(x)}")
+            msg = f"{type(x)}"
+            raise ValueError(msg)
 
         # Separate the property and index pathway inputs.
         x_prp = x_in[:, : self.input_size_prp]
@@ -361,7 +428,7 @@ class BaseNeuralAVM(nn.Module):
         save_path: str,
         num_epochs: int,
         model_num: int = 0,
-        dropout_rate: Optional[float] = None,
+        dropout_rate: float | None = None,
         do_mixup: bool = False,
         loss_fn: Callable[..., torch.Tensor] = quantile_loss,
         verbose: bool = True,
@@ -374,7 +441,7 @@ class BaseNeuralAVM(nn.Module):
             num_epochs (int): Number of epochs to train.
             model_num (int): Model number, if in an ensemble.
                 Defaults to 0.
-            dropout_rate (Optional[float], optional): Dropout rate.
+            dropout_rate (float | None, optional): Dropout rate.
                 Defaults to None.
             do_mixup (bool, optional): Perform mixup augmentation.
                 Defaults to False.
@@ -382,6 +449,7 @@ class BaseNeuralAVM(nn.Module):
                 Defaults to quantile_loss function.
             verbose (bool, optional): Verbose output.
                 Defaults to True.
+
         """
         os.makedirs(save_path, exist_ok=True)
 
@@ -437,12 +505,11 @@ class BaseNeuralAVM(nn.Module):
                 self.optimizer.step()
 
             if verbose:
-                output = (
+                (
                     f"Epoch {epoch}/{num_epochs}"
                     f" - {int(time.time() - start):d}s"
                     f" - loss: {np.array(losses).mean():.5f}"
                 )
-                print(output)
 
             save_name = SAVE_FORMAT.format(model_num=model_num + 1, epoch=epoch)
             save_file = os.path.join(save_path, save_name)
@@ -452,20 +519,21 @@ class BaseNeuralAVM(nn.Module):
         self,
         X_dict: dict[str, torch.Tensor],
         _: Any = None,
-        quantiles: Optional[Union[float, list[float]]] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        quantiles: float | list[float] | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Predict with the model.
 
         Args:
             X_dict (dict[str, torch.Tensor]): Input dictionary.
             _ (Any, optional): Hook for arguments to custom methods.
                 Defaults to None.
-            quantiles (Optional[Union[float, list[float]]], optional):
+            quantiles (float | list[float] | None, optional):
                 Quantiles to predict.
                 If None, defaults to [0.25, 0.5, 0.75].
 
         Returns:
-            Predicted values and indices.
+            tuple[np.ndarray, np.ndarray]: Predicted values and indices.
+
         """
         if quantiles is None:
             quantiles = [0.25, 0.5, 0.75]
@@ -493,7 +561,7 @@ class NeuralAVM:
         num_models: int,
         init_dict: dict[str, np.ndarray],
         feature_dict: dict[str, list[str]],
-        hidden_dims: Optional[list[int]] = None,
+        hidden_dims: list[int] | None = None,
         emb_size: int = 5,
         dropout_rate: float = 0.1,
         learning_rate: float = 1e-3,
@@ -506,7 +574,7 @@ class NeuralAVM:
             num_models (int): Number of models in the ensemble.
             init_dict (dict[str, np.ndarray]): Initialization dictionary.
             feature_dict (dict[str, list[str]]): Feature dictionary.
-            hidden_dims (Optional[list[int]], optional): Hidden layer sizes.
+            hidden_dims (list[int] | None, optional): Hidden layer sizes.
                 If None, defaults to [128, 32].
             emb_size (int, optional): Output size for each embedding.
                 Defaults to 5.
@@ -518,6 +586,7 @@ class NeuralAVM:
                 Defaults to 0.
             verbose (bool, optional): Verbose output.
                 Defaults to True.
+
         """
         if hidden_dims is None:
             hidden_dims = [128, 32]
@@ -547,46 +616,46 @@ class NeuralAVM:
 
             if verbose and i == 0:
                 model_params = filter(lambda p: p.requires_grad, model.parameters())
-                params = sum([np.prod(p.size()) for p in model_params])
-                print(f"Number of Parameters: {params}")
-                print(model)
+                sum([np.prod(p.size()) for p in model_params])
 
             self.models.append(model)
 
     def prepare_model_input(
         self,
-        X: Union[pd.DataFrame, pd.Series, torch.Tensor],
+        X: pd.DataFrame | pd.Series | torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         """Prepare model input.
 
         Converts the input into a preprocessed dictionary of Torch Tensors.
 
         Args:
-            X (Union[pd.DataFrame, pd.Series, torch.Tensor]): Input data.
+            X (pd.DataFrame | pd.Series | torch.Tensor): Input data.
 
         Returns:
             dict[str, torch.Tensor]: Output dictionary.
+
         """
         return {k: torch.as_tensor(v) for k, v in self.preprocess_fn(X).items()}
 
     def _create_train_dataloader(
         self,
-        X_train: Union[pd.DataFrame, pd.Series],
+        X_train: pd.DataFrame | pd.Series,
         y_train: pd.Series,
         batch_size: int,
     ) -> DataLoader:
         """Create a training data loader.
 
         Args:
-            X_train (Union[pd.DataFrame, pd.Series]: Training feature data.
+            X_train (pd.DataFrame | pd.Series): Training feature data.
             y_train (pd.Series): Training response data.
             batch_size (int): Training batch size.
 
         Returns:
             DataLoader: Training data loader.
+
         """
         train_dataset = TabularDataset(X_train, y_train)
-        train_dataloader = DataLoader(
+        return DataLoader(
             train_dataset,
             batch_size=batch_size,
             shuffle=True,
@@ -597,31 +666,30 @@ class NeuralAVM:
             ),
             worker_init_fn=lambda id: np.random.seed(id),
         )
-        return train_dataloader
 
     def _create_predict_dataloader(self, _: Any) -> None:
         """Create a prediction data loader. Hook for custom function."""
-        return None
+        return
 
     def _create_explain_dataloader(self, _: Any) -> None:
         """Create an explanation data loader. Hook for custom function."""
-        return None
+        return
 
     def fit(
         self,
-        X_train: Union[pd.DataFrame, pd.Series],
+        X_train: pd.DataFrame | pd.Series,
         y_train: pd.Series,
         num_epochs: int,
         batch_size: int,
         save_path: str = SAVE_PATH,
         verbose: bool = True,
-        dataloader_kwargs: Optional[dict] = None,
+        dataloader_kwargs: dict | None = None,
         **kwargs: Any,
     ) -> Self:
         """Fit the model.
 
         Args:
-            X_train (Union[pd.DataFrame, pd.Series]): Training feature data.
+            X_train (pd.DataFrame | pd.Series): Training feature data.
             y_train (pd.Series): Training response data.
             num_epochs (int): Number of epochs to train.
             batch_size (int): Batch size for training.
@@ -629,9 +697,14 @@ class NeuralAVM:
                 Defaults to SAVE_PATH.
             verbose (bool, optional): Verbose output.
                 Defaults to True.
-            dataloader_kwargs (Optional[dict], optional): Data loader keyword
+            dataloader_kwargs (dict | None, optional): Data loader keyword
                 arguments.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Fitted model.
+
         """
         if os.path.exists(save_path) and os.path.isdir(save_path):
             shutil.rmtree(save_path)
@@ -642,12 +715,15 @@ class NeuralAVM:
         self.num_epochs = num_epochs
 
         train_dataloader = self._create_train_dataloader(
-            X_train, y_train, batch_size, **dataloader_kwargs
+            X_train,
+            y_train,
+            batch_size,
+            **dataloader_kwargs,
         )
 
         for model_num, model in enumerate(self.models):
             if verbose:
-                print(f"Training model {model_num + 1}...")
+                pass
             model.fit(
                 train_dataloader,
                 save_path,
@@ -663,32 +739,33 @@ class NeuralAVM:
 
     def predict(
         self,
-        X_predict: Union[pd.DataFrame, pd.Series],
-        quantiles: Optional[Union[float, list[float]]] = None,
-        min_epoch: Optional[int] = None,
-        max_epoch: Optional[int] = None,
+        X_predict: pd.DataFrame | pd.Series,
+        quantiles: float | list[float] | None = None,
+        min_epoch: int | None = None,
+        max_epoch: int | None = None,
         save_path: str = SAVE_PATH,
-        dataloader_kwargs: Optional[dict] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        dataloader_kwargs: dict | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Predict with the model.
 
         Args:
-            X_predict (Union[pd.DataFrame, pd.Series]): Prediction data.
-            quantiles (Optional[Union[float, list[float]]], optional):
+            X_predict (pd.DataFrame | pd.Series): Prediction data.
+            quantiles (float | list[float], optional):
                 Quantiles to estimate.
                 If None, defaults to [0.25, 0.5, 0.75].
-            min_epoch (Optional[int], optional): Minimum prediction epoch.
+            min_epoch (int | None, optional): Minimum prediction epoch.
                 If None, defaults to the final epoch.
-            max_epoch (Optional[int], optional): Maximum prediction epoch.
+            max_epoch (int | None, optional): Maximum prediction epoch.
                 If None, defaults to the final epoch.
             save_path (str, optional):
                 Defaults to SAVE_PATH.
-            dataloader_kwargs (Optional[dict], optional): Data loader keyword
+            dataloader_kwargs (dict | None, optional): Data loader keyword
                 arguments.
                 Defaults to None.
 
         Returns:
-            Predicted values and indices.
+            tuple[np.ndarray, np.ndarray]: Predicted values and indices.
+
         """
         if quantiles is None:
             quantiles = [0.25, 0.5, 0.75]
@@ -703,7 +780,7 @@ class NeuralAVM:
         if min_epoch > max_epoch:
             logging.warning(
                 f"`min_epoch` {min_epoch} is greater than `max_epoch` {max_epoch}. "
-                f"Setting `min_epoch` to {max_epoch}."
+                f"Setting `min_epoch` to {max_epoch}.",
             )
             min_epoch = max_epoch
 
@@ -711,9 +788,12 @@ class NeuralAVM:
             dataloader_kwargs = {}
 
         if not self._is_fitted:
-            raise NotFittedError(
+            msg = (
                 "The model is not fitted yet. Call `fit` with appropriate "
                 "arguments before using this model."
+            )
+            raise NotFittedError(
+                msg,
             )
 
         X_dict = self.prepare_model_input(X_predict)
@@ -736,33 +816,34 @@ class NeuralAVM:
 
     def explain(
         self,
-        X_explain: Union[pd.DataFrame, pd.Series],
-        X_baseline: Union[pd.DataFrame, pd.Series],
-        quantile: Optional[float] = None,
-        min_epoch: Optional[int] = None,
-        max_epoch: Optional[int] = None,
+        X_explain: pd.DataFrame | pd.Series,
+        X_baseline: pd.DataFrame | pd.Series,
+        quantile: float | None = None,
+        min_epoch: int | None = None,
+        max_epoch: int | None = None,
         save_path: str = SAVE_PATH,
-        dataloader_kwargs: Optional[dict] = None,
+        dataloader_kwargs: dict | None = None,
     ) -> pd.DataFrame:
         """Generate explainable feature attributions for input data.
 
         Args:
-            X_explain (Union[pd.DataFrame, pd.Series]): Data to explain.
-            X_baseline (Union[pd.DataFrame, pd.Series]): Baseline data.
-            quantile (Optional[float], optional): Quantile to estimate.
+            X_explain (pd.DataFrame | pd.Series): Data to explain.
+            X_baseline (pd.DataFrame | pd.Series): Baseline data.
+            quantile (float | None, optional): Quantile to estimate.
                 If None, defaults to 0.5.
-            min_epoch (Optional[int], optional): Minimum prediction epoch.
+            min_epoch (int | None, optional): Minimum prediction epoch.
                 If None, defaults to the final epoch.
-            max_epoch (Optional[int], optional): Maximum prediction epoch.
+            max_epoch (int | None, optional): Maximum prediction epoch.
                 If None, defaults to the final epoch.
             save_path (str, optional):
                 Defaults to SAVE_PATH.
-            dataloader_kwargs (Optional[dict], optional): Data loader keyword
+            dataloader_kwargs (dict | None, optional): Data loader keyword
                 arguments.
                 Defaults to None.
 
         Returns:
             pd.DataFrame: Feature attributions for each row in the data.
+
         """
         if quantile is None:
             quantile = 0.5
@@ -775,7 +856,7 @@ class NeuralAVM:
         if min_epoch > max_epoch:
             logging.warning(
                 f"`min_epoch` {min_epoch} is greater than `max_epoch` {max_epoch}. "
-                f"Setting `min_epoch` to {max_epoch}."
+                f"Setting `min_epoch` to {max_epoch}.",
             )
             min_epoch = max_epoch
 
@@ -783,12 +864,16 @@ class NeuralAVM:
             dataloader_kwargs = {}
 
         if len(X_baseline) == 0:
-            raise ValueError("Must provide at least 1 baseline sample.")
+            msg = "Must provide at least 1 baseline sample."
+            raise ValueError(msg)
 
         if not self._is_fitted:
-            raise NotFittedError(
+            msg = (
                 "The model is not fitted yet. Call `fit` with appropriate "
                 "arguments before using this model."
+            )
+            raise NotFittedError(
+                msg,
             )
 
         num_background = len(X_baseline)
@@ -852,5 +937,4 @@ class NeuralAVM:
                 attrs.append(pd.DataFrame(f_attrs_i))
 
         df_attrs = pd.concat(attrs)
-        df_attrs = df_attrs.groupby(df_attrs.index).mean()
-        return df_attrs
+        return df_attrs.groupby(df_attrs.index).mean()

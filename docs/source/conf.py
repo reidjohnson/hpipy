@@ -64,7 +64,7 @@ html_theme_options = {
             "url": "https://github.com/reidjohnson/hpipy",
             "icon": "fab fa-github fa-lg",
             "type": "fontawesome",
-        }
+        },
     ],
     "show_toc_level": 1,
 }

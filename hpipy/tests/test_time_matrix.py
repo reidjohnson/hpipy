@@ -7,6 +7,7 @@ from hpipy.trans_data import RepeatTransactionData
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_rt_create_trans(seattle_dataset: pd.DataFrame) -> None:
+    """Test repeat transaction time matrix creation."""
     repeat_trans_data = RepeatTransactionData(seattle_dataset).create_transactions(
         prop_id="pinx",
         trans_id="sale_id",

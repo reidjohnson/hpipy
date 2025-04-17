@@ -3,7 +3,7 @@
 import copy
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -36,7 +36,7 @@ class BaseHousePriceIndex(ABC):
     revision: pd.DataFrame
     revision_smooth: pd.DataFrame
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize base house price index."""
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -45,15 +45,19 @@ class BaseHousePriceIndex(ABC):
     def coef_to_index(
         coef_df: pd.DataFrame,
         log_dep: bool,
-        base_price: Union[int, float] = 1,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        base_price: float = 1,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Convert coefficients to an index.
 
         Args:
             coef_df (pd.DataFrame): Coefficients.
             log_dep (bool): Log dependent variable.
-            base_price (Union[int, float], optional): Base price.
+            base_price (float, optional): Base price.
                 Defaults to 1.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: Index and imputed values.
+
         """
         coef_df.loc[coef_df["coefficient"].abs() < 1e-15, "coefficient"] = 0
         coef_df.loc[coef_df["coefficient"].eq(0) & (coef_df.index > 0), "coefficient"] = np.nan
@@ -90,7 +94,7 @@ class BaseHousePriceIndex(ABC):
 
             # coef_df["coefficient"] = coef_df["coefficient"].interpolate(method="linear")
             coef_df["coefficient"] = coef_df["coefficient"].transform(
-                lambda x: pd.Series(interpolate_stineman(x.values))
+                lambda x: pd.Series(interpolate_stineman(x.values)),
             )
 
             n_imp = len(na_coef[na_coef])
@@ -101,10 +105,10 @@ class BaseHousePriceIndex(ABC):
         # Convert estimate to an index value.
         if log_dep:  # coefficients represent log-ratio: log(Pt / P0)
             estimate = np.exp(coef_df["coefficient"])
-            index_value = ((estimate) * 100)[:max_period]
+            index_value = (estimate * 100)[:max_period]
         else:  # coefficients represent price delta: Pt - P0
             estimate = (coef_df["coefficient"] + base_price) / base_price
-            index_value = ((estimate) * 100)[:max_period]
+            index_value = (estimate * 100)[:max_period]
         index = index_value
 
         return index, is_imputed
@@ -113,8 +117,8 @@ class BaseHousePriceIndex(ABC):
     def from_model(
         cls,
         model: BaseHousePriceModel,
-        trans_data: Optional[TransactionData] = None,
-        max_period: Optional[int] = None,
+        trans_data: TransactionData | None = None,
+        max_period: int | None = None,
         smooth: bool = False,
         **kwargs: Any,
     ) -> Self:
@@ -122,28 +126,33 @@ class BaseHousePriceIndex(ABC):
 
         Args:
             model (BaseHousePriceModel): House price model object.
-            trans_data (Optional[TransactionData], optional): Transaction data
+            trans_data (TransactionData | None, optional): Transaction data
                 object.
                 Defaults to None.
-            max_period (Optional[int], optional): Maximum period for the
-                index.
+            max_period (int | None, optional): Maximum period for the index.
                 Defaults to None.
             smooth (bool, optional): Smooth the index.
                 Defaults to False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Index object.
+
         """
         if max_period is None:
             max_period = int(model.coefficients["time"].max())
 
         # Check max period.
-        if not isinstance(max_period, (int, np.integer)):
-            raise ValueError("'max_period' argument must be numeric/integer.")
+        if not isinstance(max_period, int | np.integer):
+            msg = "'max_period' argument must be numeric/integer."
+            raise ValueError(msg)
 
         # Extract coefficients.
         coef_df = pd.DataFrame({"time": list(range(1, max_period + 1))})
         coef_df = coef_df.merge(model.coefficients, on="time", how="left")
 
         log_dep = False
-        if "log_dep" in model.params and model.params["log_dep"]:
+        if model.params.get("log_dep"):
             log_dep = True
 
         coef_cols = ["time", "coefficient"]
@@ -155,7 +164,9 @@ class BaseHousePriceIndex(ABC):
             for idx, row in unique_df.iterrows():
                 coef_df_i = coef_df.merge(row.to_frame().T, on=partition_cols, how="inner")
                 index_i, is_imputed_i = cls.coef_to_index(
-                    coef_df_i, log_dep, base_price=model.base_price
+                    coef_df_i,
+                    log_dep,
+                    base_price=model.base_price,
                 )
                 index_i_df = pd.DataFrame({"index": index_i})
                 for col in partition_cols:
@@ -175,17 +186,16 @@ class BaseHousePriceIndex(ABC):
         )
 
         if not isinstance(instance, BaseHousePriceIndex):
-            raise Exception("Converting model results to index failed.")
+            msg = "Converting model results to index failed."
+            raise Exception(msg)
 
         if smooth:
-            if "smooth_order" not in kwargs:
-                smooth_order = 3
-            else:
-                smooth_order = kwargs["smooth_order"]
+            smooth_order = kwargs.get("smooth_order", 3)
 
             instance = instance.smooth_index(order=smooth_order, in_place=True)
             if not hasattr(instance, "smooth"):
-                raise Exception("Smoothing index failed.")
+                msg = "Smoothing index failed."
+                raise Exception(msg)
 
         if trans_data is not None:
             instance.data = trans_data
@@ -211,9 +221,22 @@ class BaseHousePriceIndex(ABC):
     @classmethod
     @abstractmethod
     def _create_transactions(
-        cls, trans_data: TransactionData, *args: Any, **kwargs: Any
+        cls,
+        trans_data: TransactionData,
+        *args: Any,
+        **kwargs: Any,
     ) -> TransactionData:
-        """Abstract transaction data creation method."""
+        """Abstract transaction data creation method.
+
+        Args:
+            trans_data (TransactionData): Transaction data.
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            TransactionData: Transaction data.
+
+        """
         raise NotImplementedError
 
     @classmethod
@@ -225,51 +248,60 @@ class BaseHousePriceIndex(ABC):
     @classmethod
     def create_index(
         cls,
-        trans_data: Union[TransactionData, PeriodTable, pd.DataFrame],
-        prop_id: Optional[str] = None,
-        trans_id: Optional[str] = None,
-        price: Optional[str] = None,
+        trans_data: TransactionData | PeriodTable | pd.DataFrame,
+        prop_id: str | None = None,
+        trans_id: str | None = None,
+        price: str | None = None,
         seq_only: bool = True,
-        max_period: Optional[int] = None,
+        max_period: int | None = None,
         smooth: bool = False,
-        periodicity: Optional[str] = None,
-        min_date: Optional[str] = None,
-        max_date: Optional[str] = None,
-        adj_type: Optional[str] = None,
+        periodicity: str | None = None,
+        min_date: str | None = None,
+        max_date: str | None = None,
+        adj_type: str | None = None,
         **kwargs: Any,
     ) -> Self:
         """Create the index.
 
         Args:
-            trans_data (TransactionData): Input transaction data.
-            prop_id (Optional[str], optional): Property identifier.
+            trans_data (TransactionData | PeriodTable | pd.DataFrame): Input
+                transaction data.
+            prop_id (str | None, optional): Property identifier.
                 Defaults to None.
-            trans_id (Optional[str], optional): Transaction identifier.
+            trans_id (str | None, optional): Transaction identifier.
                 Defaults to None.
-            price (Optional[str], optional): Price column name.
+            price (str | None, optional): Price column name.
                 Defaults to None.
             seq_only (bool, optional): Sequential only.
                 Defaults to True.
-            max_period (Optional[int], optional): Maximum index period.
+            max_period (int | None, optional): Maximum index period.
                 Defaults to None.
             smooth (bool, optional): Smooth the index.
                 Defaults to False.
-            periodicity (Optional[str], optional): Periodicity of the index.
+            periodicity (str | None, optional): Periodicity of the index.
                 Defaults to None.
-            min_date (Optional[str], optional): Minimum date for the index.
+            min_date (str | None, optional): Minimum date for the index.
                 Defaults to None.
-            max_date (Optional[str], optional): Maximum date for the index.
+            max_date (str | None, optional): Maximum date for the index.
                 Defaults to None.
-            adj_type (Optional[str], optional): Adjustment type.
+            adj_type (str | None, optional): Adjustment type.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Index object.
+
         """
         # Check if trans_data has a trans_df object.
         if not isinstance(trans_data, TransactionData):
             if not isinstance(trans_data, PeriodTable):
                 if "date" not in kwargs:
-                    raise ValueError(
+                    msg = (
                         "When supplying a raw dataframe to the 'trans_df' object, a valid 'date' "
                         "argument must be supplied."
+                    )
+                    raise ValueError(
+                        msg,
                     )
 
                 # Create period table object.
@@ -282,20 +314,29 @@ class BaseHousePriceIndex(ABC):
                 )
 
             if trans_id is None:
-                raise ValueError(
+                msg = (
                     "When not supplying an 'hpidata' object, a 'trans_id' argument must be "
                     "supplied."
                 )
+                raise ValueError(
+                    msg,
+                )
 
             if prop_id is None:
-                raise ValueError(
+                msg = (
                     "When not supplying an 'hpidata' object, a 'prop_id' argument must be "
                     "supplied."
                 )
+                raise ValueError(
+                    msg,
+                )
 
             if price is None:
-                raise ValueError(
+                msg = (
                     "When not supplying an 'hpidata' object, a 'price' argument must be supplied."
+                )
+                raise ValueError(
+                    msg,
                 )
 
             # Create transaction data object.
@@ -310,15 +351,17 @@ class BaseHousePriceIndex(ABC):
             )
 
         if not hasattr(trans_data, "trans_df"):
-            raise ValueError("Converting sales data to sales object failed.")
+            msg = "Converting sales data to sales object failed."
+            raise ValueError(msg)
 
         model = cls._create_model(trans_data, **kwargs)
 
         if not isinstance(model, BaseHousePriceModel):
-            raise Exception("Estimating model failed.")
+            msg = "Estimating model failed."
+            raise Exception(msg)
 
         # Convert to an index.
-        index = cls.from_model(
+        return cls.from_model(
             model,
             trans_data=trans_data,
             max_period=max_period,
@@ -326,12 +369,10 @@ class BaseHousePriceIndex(ABC):
             **kwargs,
         )
 
-        return index
-
     def create_series(
         self,
         train_period: int = 12,
-        max_period: Optional[int] = None,
+        max_period: int | None = None,
         **kwargs: Any,
     ) -> Self:
         """Create a series from the index.
@@ -339,9 +380,13 @@ class BaseHousePriceIndex(ABC):
         Args:
             train_period (int, optional): Train period for the series.
                 Defaults to 12.
-            max_period (Optional[int], optional): Maximum period for the
-                series.
+            max_period (int | None, optional): Maximum period for the series.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Index object.
+
         """
         if self.model is None:
             raise ValueError
@@ -349,8 +394,9 @@ class BaseHousePriceIndex(ABC):
             raise ValueError
 
         # Check training period.
-        if not isinstance(train_period, (int, float)):
-            raise ValueError("'train_period' must be a single numeric value.")
+        if not isinstance(train_period, int | float):
+            msg = "'train_period' must be a single numeric value."
+            raise ValueError(msg)
 
         train_period = int(train_period)
 
@@ -363,9 +409,12 @@ class BaseHousePriceIndex(ABC):
 
         # Ensure training period is no greater than specified max or index max.
         if train_period >= min(self.model.periods.period.max(), max_period):
-            raise ValueError(
+            msg = (
                 "'train_period' is greater than the length of the "
                 "index and/or the 'max_period' argument."
+            )
+            raise ValueError(
+                msg,
             )
 
         # Trim by time.
@@ -395,7 +444,7 @@ class BaseHousePriceIndex(ABC):
                     model_i,
                     trans_data=data,
                     max_period=time_range[idx] - 1,
-                )
+                ),
             )
             is_hpis.append(index_i)
 
@@ -405,19 +454,20 @@ class BaseHousePriceIndex(ABC):
 
     def smooth_index(
         self,
-        order: Union[list[int], int] = 3,
+        order: list[int] | int = 3,
         in_place: bool = False,
-    ) -> Union[Self, pd.Series]:
+    ) -> Self | pd.Series:
         """Smooth the index.
 
         Args:
-            order (Union[list[int], int], optional): Smoothing order.
+            order (list[int] | int, optional): Smoothing order.
                 Defaults to 3.
             in_place (bool, optional): Smooth in place or return new object.
                 Defaults to False.
 
         Returns:
-            Self with smoothed index or new smoothed index object.
+            Self | pd.Series: Smoothed index or new smoothed index object.
+
         """
         if not isinstance(order, list):
             order = [order]
@@ -428,16 +478,19 @@ class BaseHousePriceIndex(ABC):
         # Check order.
         for idx, o_i in enumerate(order):
             if np.all(
-                isinstance(o_i, (int, float))
+                isinstance(o_i, int | float)
                 and not np.isnan(o_i)
                 and o_i > 0
-                and o_i <= len(self.value) / 2
+                and o_i <= len(self.value) / 2,
             ):
                 order[idx] = int(round(o_i, 0))
             else:
-                raise ValueError(
+                msg = (
                     "'order' argument must be a positive integer or list of positive integers "
                     " less than half the length of the index."
+                )
+                raise ValueError(
+                    msg,
                 )
 
         # Create smoothed index (retain existing).
@@ -482,6 +535,10 @@ class BaseHousePriceIndex(ABC):
         Args:
             order (int) Smoothing order.
                 Defaults to 3.
+
+        Returns:
+            Self: Index object.
+
         """
         for hpi in self.hpis:
             hpi = hpi.smooth_index(order, in_place=True)
@@ -491,78 +548,51 @@ class BaseHousePriceIndex(ABC):
 class RepeatTransactionIndex(BaseHousePriceIndex):
     """Repeat transaction house price index.
 
-    This class implements the repeat transaction methodology for constructing
-    house price indices. It uses pairs of transactions for the same property
-    to estimate price changes over time, controlling for property-specific
-    characteristics that remain constant between sales.
+    Implements the repeat transaction methodology for constructing
+    house price indices. It uses pairs of transactions for the same
+    property to estimate price changes over time, controlling for
+    property-specific characteristics that remain constant between sales.
 
-    Parameters
-    ----------
-    data : TransactionData
-        The transaction data used to construct the index.
-    model : BaseHousePriceModel
-        The underlying price model used to estimate the index.
-    name : pd.Series
-        The names of the time periods in the index.
-    periods : pd.Series
-        The time periods covered by the index.
-    value : pd.Series
-        The index values.
-    index : Any
-        The index values in a different format.
-    imputed : np.ndarray
-        Boolean array indicating which periods were imputed.
-    smooth : Any
-        Smoothed version of the index values.
-    volatility : pd.DataFrame
-        Volatility measures for the index.
-    volatility_smooth : pd.DataFrame
-        Smoothed volatility measures.
-    revision : pd.DataFrame
-        Revision measures for the index.
-    revision_smooth : pd.DataFrame
-        Smoothed revision measures.
+    Args:
+        data: TransactionData. The transaction data used to construct the
+            index.
+        model: BaseHousePriceModel. The underlying price model used to
+            estimate the index.
 
-    Methods
-    -------
-    get_data()
-        Returns the appropriate transaction data class.
-    get_model()
-        Returns the appropriate price model class.
-    _create_transactions(trans_data, *args, **kwargs)
-        Creates transaction data from input data.
-    _create_model(trans_data, estimator, log_dep, **kwargs)
-        Creates a price model from transaction data.
-    create_index(trans_data, *args, **kwargs)
-        Creates a new index from transaction data.
-    create_series(train_period=12, max_period=None, **kwargs)
-        Creates a series of indices for different time periods.
-    smooth_index(order=3, in_place=False)
-        Smooths the index values.
-    smooth_series(order=3)
-        Smooths a series of indices.
+    Attributes:
+        name: pd.Series. The names of the time periods in the index.
+        periods: pd.Series. The time periods covered by the index.
+        value: pd.Series. The index values.
+        index: Any. The index values in an alternate format.
+        imputed: np.ndarray. Boolean array indicating which periods were
+            imputed.
+        smooth: Any. Smoothed version of the index values.
+        volatility: pd.DataFrame. Volatility measures for the index.
+        volatility_smooth: pd.DataFrame. Smoothed volatility measures.
+        revision: pd.DataFrame. Revision measures for the index.
+        revision_smooth: pd.DataFrame. Smoothed revision measures.
 
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> from hpipy.price_index import RepeatTransactionIndex
-    >>> # Create sample transaction data.
-    >>> data = pd.DataFrame({
-    ...     "property_id": [1, 1, 2, 2],
-    ...     "transaction_id": [1, 2, 3, 4],
-    ...     "price": [200000, 250000, 300000, 350000],
-    ...     "date": ["2020-01", "2021-01", "2020-02", "2021-02"],
-    ... })
-    >>> # Create index.
-    >>> index = RepeatTransactionIndex.create_index(
-    ...     data,
-    ...     prop_id="property_id",
-    ...     trans_id="transaction_id",
-    ...     price="price",
-    ...     periodicity="M",
-    ...     min_date="2020-01",
-    ...     max_date="2021-02",
-    ... )
+    Example:
+        >>> import pandas as pd
+        >>> from hpipy.price_index import RepeatTransactionIndex
+        >>> # Create sample transaction data.
+        >>> data = pd.DataFrame({
+        ...     "property_id": [1, 1, 2, 2],
+        ...     "transaction_id": [1, 2, 3, 4],
+        ...     "price": [200000, 250000, 300000, 350000],
+        ...     "date": ["2020-01", "2021-01", "2020-02", "2021-02"],
+        ... })
+        >>> # Create index.
+        >>> index = RepeatTransactionIndex.create_index(
+        ...     data,
+        ...     prop_id="property_id",
+        ...     trans_id="transaction_id",
+        ...     price="price",
+        ...     periodicity="M",
+        ...     min_date="2020-01",
+        ...     max_date="2021-02",
+        ... )
+
     """
 
     @staticmethod
@@ -582,7 +612,18 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
         *args: Any,
         **kwargs: Any,
     ) -> TransactionData:
-        """Create repeat transaction data."""
+        """Create repeat transaction data.
+
+        Args:
+            trans_data (pd.DataFrame): The transaction data used to construct
+                the index.
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            TransactionData: The repeat transaction data.
+
+        """
         return cls.get_data()(trans_data).create_transactions(*args, **kwargs)
 
     @classmethod
@@ -593,88 +634,73 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
         log_dep: bool,
         **kwargs: Any,
     ) -> BaseHousePriceModel:
-        """Create a repeat transaction house price model."""
+        """Create a repeat transaction house price model.
+
+        Args:
+            trans_data (TransactionData): The transaction data used to
+                construct the index.
+            estimator (str): The estimator to use.
+            log_dep (bool): Whether to use a log-dependent variable.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            BaseHousePriceModel: The repeat transaction house price model.
+
+        """
         return cls.get_model()(trans_data).fit(estimator=estimator, log_dep=log_dep, **kwargs)
 
 
 class HedonicIndex(BaseHousePriceIndex):
     """Hedonic house price index.
 
-    This class implements the hedonic methodology for constructing house price
+    Implements the hedonic methodology for constructing house price
     indices. It uses property characteristics to control for quality
-    differences between properties and estimates the pure price change over
-    time.
+    differences between properties and estimates the pure price change
+    over time.
 
-    Parameters
-    ----------
-    data : TransactionData
-        The transaction data used to construct the index.
-    model : BaseHousePriceModel
-        The underlying price model used to estimate the index.
-    name : pd.Series
-        The names of the time periods in the index.
-    periods : pd.Series
-        The time periods covered by the index.
-    value : pd.Series
-        The index values.
-    index : Any
-        The index values in a different format.
-    imputed : np.ndarray
-        Boolean array indicating which periods were imputed.
-    smooth : Any
-        Smoothed version of the index values.
-    volatility : pd.DataFrame
-        Volatility measures for the index.
-    volatility_smooth : pd.DataFrame
-        Smoothed volatility measures.
-    revision : pd.DataFrame
-        Revision measures for the index.
-    revision_smooth : pd.DataFrame
-        Smoothed revision measures.
+    Args:
+        data: TransactionData. The transaction data used to construct the
+            index.
+        model: BaseHousePriceModel. The underlying price model used to
+            estimate the index.
 
-    Methods
-    -------
-    get_data()
-        Returns the appropriate transaction data class.
-    get_model()
-        Returns the appropriate price model class.
-    _create_transactions(trans_data, *args, **kwargs)
-        Creates transaction data from input data.
-    _create_model(trans_data, dep_var, ind_var, **kwargs)
-        Creates a price model from transaction data.
-    create_index(trans_data, *args, **kwargs)
-        Creates a new index from transaction data.
-    create_series(train_period=12, max_period=None, **kwargs)
-        Creates a series of indices for different time periods.
-    smooth_index(order=3, in_place=False)
-        Smooths the index values.
-    smooth_series(order=3)
-        Smooths a series of indices.
+    Attributes:
+        name: pd.Series. The names of the time periods in the index.
+        periods: pd.Series. The time periods covered by the index.
+        value: pd.Series. The index values.
+        index: Any. The index values in an alternate format.
+        imputed: np.ndarray. Boolean array indicating which periods were
+            imputed.
+        smooth: Any. Smoothed version of the index values.
+        volatility: pd.DataFrame. Volatility measures for the index.
+        volatility_smooth: pd.DataFrame. Smoothed volatility measures.
+        revision: pd.DataFrame. Revision measures for the index.
+        revision_smooth: pd.DataFrame. Smoothed revision measures.
 
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> from hpipy.price_index import HedonicIndex
-    >>> # Create sample transaction data.
-    >>> data = pd.DataFrame({
-    ...     "property_id": [1, 2, 3, 4],
-    ...     "transaction_id": [1, 2, 3, 4],
-    ...     "price": [200000, 250000, 300000, 350000],
-    ...     "date": ["2020-01", "2020-01", "2021-01", "2021-01"],
-    ...     "sqft": [1500, 1800, 2000, 2200],
-    ...     "bedrooms": [3, 3, 4, 4],
-    ... })
-    >>> # Create index.
-    >>> index = HedonicIndex.create_index(
-    ...     data,
-    ...     prop_id="property_id",
-    ...     trans_id="transaction_id",
-    ...     price="price",
-    ...     periodicity="M",
-    ...     min_date="2020-01",
-    ...     max_date="2021-01",
-    ...     ind_var=["sqft", "bedrooms"],
-    ... )
+    Example:
+        >>> import pandas as pd
+        >>> from hpipy.price_index import HedonicIndex
+        >>> # Create sample transaction data.
+        >>> data = pd.DataFrame({
+        ...     "property_id": [1, 2, 3, 4],
+        ...     "transaction_id": [1, 2, 3, 4],
+        ...     "price": [200000, 250000, 300000, 350000],
+        ...     "date": ["2020-01", "2020-01", "2021-01", "2021-01"],
+        ...     "sqft": [1500, 1800, 2000, 2200],
+        ...     "bedrooms": [3, 3, 4, 4],
+        ... })
+        >>> # Create index.
+        >>> index = HedonicIndex.create_index(
+        ...     data,
+        ...     prop_id="property_id",
+        ...     trans_id="transaction_id",
+        ...     price="price",
+        ...     periodicity="M",
+        ...     min_date="2020-01",
+        ...     max_date="2021-01",
+        ...     ind_var=["sqft", "bedrooms"],
+        ... )
+
     """
 
     @staticmethod
@@ -694,7 +720,18 @@ class HedonicIndex(BaseHousePriceIndex):
         *args: Any,
         **kwargs: Any,
     ) -> TransactionData:
-        """Create hedonic transaction data."""
+        """Create hedonic transaction data.
+
+        Args:
+            trans_data (pd.DataFrame): The transaction data used to construct
+                the index.
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            TransactionData: The hedonic transaction data.
+
+        """
         return cls.get_data()(trans_data).create_transactions(*args, **kwargs)
 
     @classmethod
@@ -705,9 +742,22 @@ class HedonicIndex(BaseHousePriceIndex):
         ind_var: str,
         **kwargs: Any,
     ) -> BaseHousePriceModel:
-        """Create a hedonic house price model."""
+        """Create a hedonic house price model.
+
+        Args:
+            trans_data (TransactionData): The transaction data used to construct
+                the index.
+            dep_var (str): The dependent variable.
+            ind_var (str): The independent variables.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            BaseHousePriceModel: The hedonic house price model.
+
+        """
         if dep_var is not None and ind_var is not None:
             return cls.get_model()(trans_data).fit(dep_var=dep_var, ind_var=ind_var, **kwargs)
+        msg = "A dependent (dep_var) and independent variables (ind_var) must be provided."
         raise ValueError(
-            "A dependent (dep_var) and independent variables (ind_var) must be provided.",
+            msg,
         )

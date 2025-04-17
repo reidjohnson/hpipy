@@ -6,7 +6,8 @@ import torch
 
 
 def prepare_dataframe(
-    X: pd.DataFrame, feature_dict: dict[str, list[str]]
+    X: pd.DataFrame,
+    feature_dict: dict[str, list[str]],
 ) -> dict[str, np.ndarray]:
     """Prepare dataframe feature data.
 
@@ -19,6 +20,7 @@ def prepare_dataframe(
 
     Returns:
         Dictionary of feature names mapped to NumPy arrays.
+
     """
     X_out = {}
 
@@ -46,21 +48,20 @@ def prepare_tensor(X: torch.Tensor, feature_dict: dict[str, list[str]]) -> dict[
 
     Returns:
         Dictionary of feature names mapped to Tensors.
+
     """
     X_out = {}
 
     f_idx = 0
     for d in feature_dict:
         for key in feature_dict[d]:
-            if key in feature_dict["nulls"]:
-                X_out[key] = X[:, f_idx]
-            elif key in feature_dict["numerics"]:
-                X_out[key] = X[:, f_idx]
-            elif key in feature_dict["log_numerics"]:
-                X_out[key] = X[:, f_idx]
-            elif key in feature_dict["categoricals"]:
-                X_out[key] = X[:, f_idx]
-            elif key in feature_dict["ordinals"]:
+            if (
+                key in feature_dict["nulls"]
+                or key in feature_dict["numerics"]
+                or key in feature_dict["log_numerics"]
+                or key in feature_dict["categoricals"]
+                or key in feature_dict["ordinals"]
+            ):
                 X_out[key] = X[:, f_idx]
             else:
                 continue

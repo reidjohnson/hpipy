@@ -1,7 +1,5 @@
 """Stineman interpolation functions."""
 
-from typing import Optional
-
 import numpy as np
 
 
@@ -25,6 +23,7 @@ def stineman_slope(x: np.ndarray, y: np.ndarray, scale: bool = False) -> np.ndar
     References:
         [1] Stineman, Russell W. "A Consistently Well-Behaved Method of
             Interpolation." Creative Computing 6.7 (1980): 54-57.
+
     """
     m = len(x)
     if m == 2:
@@ -70,6 +69,7 @@ def parabola_slope(x: np.ndarray, y: np.ndarray) -> np.ndarray:
 
     Returns:
         np.ndarray: Estimate of the slope of the interpolant at (x, y).
+
     """
     m = len(x)
     dx = np.diff(x)
@@ -90,8 +90,8 @@ def calculate_stineman_interpolant(
     x: np.ndarray,
     y: np.ndarray,
     xout: np.ndarray,
-    yp: Optional[np.ndarray] = None,
-    method: Optional[str] = None,
+    yp: np.ndarray | None = None,
+    method: str | None = None,
 ) -> np.ndarray:
     """Calculate Stineman interpolation.
 
@@ -123,9 +123,11 @@ def calculate_stineman_interpolant(
     References:
         [1] Stineman, Russell W. "A Consistently Well-Behaved Method of
             Interpolation." Creative Computing 6.7 (1980): 54-57.
+
     """
     if x is None or y is None or xout is None:
-        raise ValueError("Wrong number of input arguments: `x`, `y` and `xout` must be specified.")
+        msg = "Wrong number of input arguments: `x`, `y` and `xout` must be specified."
+        raise ValueError(msg)
     if (
         not isinstance(x, np.ndarray)
         or not isinstance(y, np.ndarray)
@@ -134,28 +136,37 @@ def calculate_stineman_interpolant(
         or not issubclass(y.dtype.type, np.number)
         or not issubclass(xout.dtype.type, np.number)
     ):
-        raise ValueError("`x`, `y` and `xout` must be numeric vectors.")
+        msg = "`x`, `y` and `xout` must be numeric vectors."
+        raise ValueError(msg)
     if len(x) < 2:
-        raise ValueError("`x` must have 2 or more elements.")
+        msg = "`x` must have 2 or more elements."
+        raise ValueError(msg)
     if len(x) != len(y):
-        raise ValueError("`x` must have the same number of elements as `y`.")
+        msg = "`x` must have the same number of elements as `y`."
+        raise ValueError(msg)
     if np.any(np.isnan(x)) or np.any(np.isnan(y)) or np.any(np.isnan(xout)):
-        raise ValueError("NaNs in `x`, `y` or xout are not allowed.")
+        msg = "NaNs in `x`, `y` or xout are not allowed."
+        raise ValueError(msg)
     if yp is not None:
         if not isinstance(yp, np.ndarray) or not issubclass(yp.dtype.type, np.number):
-            raise ValueError("`yp` must be a numeric vector.")
+            msg = "`yp` must be a numeric vector."
+            raise ValueError(msg)
         if len(y) != len(yp):
-            raise ValueError("When specified, `yp` must have the same number of elements as `y`.")
+            msg = "When specified, `yp` must have the same number of elements as `y`."
+            raise ValueError(msg)
         if np.any(np.isnan(yp)):
-            raise ValueError("NaNs in `yp` are not allowed.")
+            msg = "NaNs in `yp` are not allowed."
+            raise ValueError(msg)
         if method is not None:
-            raise ValueError("Method should not be specified if `yp` is given.")
+            msg = "Method should not be specified if `yp` is given."
+            raise ValueError(msg)
 
     dx = np.diff(x)
     dy = np.diff(y)
 
     if np.any(dx <= 0):
-        raise ValueError("The values of `x` must strictly increasing.")
+        msg = "The values of `x` must strictly increasing."
+        raise ValueError(msg)
 
     # Calculation of slopes if needed.
     if yp is None:
@@ -177,7 +188,7 @@ def calculate_stineman_interpolant(
     epx = 5 * (np.finfo(float).eps) * np.diff(np.array([np.min(x), np.max(x)]))
     ix[((np.min(x) - epx) <= xout) & (xout <= np.min(x))] = 0
     ix[(np.max(x) <= xout) & (xout <= (np.max(x) + epx))] = m - 2
-    idx = (0 <= ix) & (ix <= (m - 2))
+    idx = (ix >= 0) & (ix <= (m - 2))
     ix1 = ix[idx]
     ix2 = ix1 + 1
 
@@ -225,6 +236,7 @@ def fill_missing(arr: np.ndarray, option: str = "locf") -> np.ndarray:
 
     Returns:
         np.ndarray: Array with missing values filled.
+
     """
     if option == "nocb":
         arr = np.flip(arr)
@@ -249,6 +261,7 @@ def interpolate_stineman(x: np.ndarray) -> np.ndarray:
 
     Returns:
         np.ndarray: Array with missing values replaced.
+
     """
     x_isnan = np.isnan(x)
     if x_isnan.sum() > 0:

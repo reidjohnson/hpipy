@@ -3,7 +3,7 @@
 import itertools
 import logging
 from abc import abstractmethod
-from typing import Any, Optional, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -20,65 +20,89 @@ class TransactionData:
     """Transaction data class.
 
     Args:
-        trans_data (Union[PeriodTable, pd.DataFrame]): Data from which to
+        trans_data (PeriodTable | pd.DataFrame): Data from which to
             create transactions.
+
+    Attributes:
+        trans_data (PeriodTable | pd.DataFrame): Data from which to
+            create transactions.
+        trans_df (pd.DataFrame): Transaction data.
+        period_table (pd.DataFrame): Period table.
+
+    Example:
+        >>> trans_data = pd.DataFrame({
+        ...     "prop_id": [1, 2, 3],
+        ...     "trans_id": [1, 2, 3],
+        ...     "price": [100, 200, 300],
+        ...     "date": ["2020-01-01", "2020-01-02", "2020-01-03"],
+        ... })
+        >>> trans_data = TransactionData(trans_data)
+
     """
 
-    trans_data: Union[PeriodTable, pd.DataFrame]
+    trans_data: PeriodTable | pd.DataFrame
     trans_df: pd.DataFrame
     period_table: pd.DataFrame
 
-    def __init__(self, trans_data: Union[PeriodTable, pd.DataFrame]):
+    def __init__(self, trans_data: PeriodTable | pd.DataFrame) -> None:
         """Initialize transaction data."""
-        self.trans_data: Union[PeriodTable, pd.DataFrame] = trans_data
+        self.trans_data: PeriodTable | pd.DataFrame = trans_data
 
     @staticmethod
     def _check_fields(
-        prop_id: Optional[str],
-        trans_id: Optional[str],
-        price: Optional[str],
+        prop_id: str | None,
+        trans_id: str | None,
+        price: str | None,
     ) -> None:
         """Check necessary fields.
 
         Args:
-            prop_id (Optional[str]): Property identifier.
-            trans_id (Optional[str]): Transaction identifier.
-            price (Optional[str]): Price column name.
+            prop_id (str | None): Property identifier.
+            trans_id (str | None): Transaction identifier.
+            price (str | None): Price column name.
+
         """
         if prop_id is None:
-            raise ValueError("'prop_id' field not found.")
+            msg = "'prop_id' field not found."
+            raise ValueError(msg)
 
         if trans_id is None:
-            raise ValueError("'trans_id' field not found.")
+            msg = "'trans_id' field not found."
+            raise ValueError(msg)
 
         if price is None:
-            raise ValueError("'price' field not found.")
+            msg = "'price' field not found."
+            raise ValueError(msg)
 
     def _create_period_table(
         self,
-        date: Optional[str],
-        periodicity: Optional[str] = None,
+        date: str | None,
+        periodicity: str | None = None,
         **kwargs: Any,
     ) -> Self:
         """Create period table.
 
         Args:
-            date (Optional[str]): Date column name.
-            periodicity (Optional[str], optional): Period frequency.
+            date (str | None): Date column name.
+            periodicity (str | None, optional): Period frequency.
                 Defaults to None.
+
         """
         # Create the `trans_df` if not provided.
         if not isinstance(self.trans_data, PeriodTable):
             if date is None:
+                msg = "You must provide the name of a field with date of transaction (date=)."
                 raise ValueError(
-                    "You must provide the name of a field with date of transaction (date=)."
+                    msg,
                 )
             if periodicity is None:
                 logging.warning("No periodicity (periodicity=) provided, defaulting to yearly.")
                 periodicity = "yearly"
 
             self.trans_data = PeriodTable(self.trans_data).create_period_table(
-                date, periodicity, **kwargs
+                date,
+                periodicity,
+                **kwargs,
             )
 
         return self
@@ -102,6 +126,7 @@ class TransactionData:
 
         Returns:
             Forecasts as a NumPy array.
+
         """
         if not isinstance(time_cut, int) or time_cut < 1:
             raise ValueError
@@ -117,11 +142,11 @@ class TransactionData:
     @abstractmethod
     def create_transactions(
         self,
-        prop_id: Optional[str],
-        trans_id: Optional[str],
-        price: Optional[str],
-        date: Optional[str] = None,
-        periodicity: Optional[str] = None,
+        prop_id: str | None,
+        trans_id: str | None,
+        price: str | None,
+        date: str | None = None,
+        periodicity: str | None = None,
     ) -> Self:
         """Abstract transaction creation method."""
         raise NotImplementedError
@@ -137,29 +162,30 @@ class RepeatTransactionData(TransactionData):
 
     def create_transactions(
         self,
-        prop_id: Optional[str],
-        trans_id: Optional[str],
-        price: Optional[str],
-        date: Optional[str] = None,
-        periodicity: Optional[str] = None,
+        prop_id: str | None,
+        trans_id: str | None,
+        price: str | None,
+        date: str | None = None,
+        periodicity: str | None = None,
         seq_only: bool = False,
-        min_period_dist: Optional[int] = None,
+        min_period_dist: int | None = None,
         **kwargs: Any,
     ) -> Self:
         """Create repeat transaction data.
 
         Args:
-            prop_id (Optional[str]): Property identifier.
-            trans_id (Optional[str]): Transaction identifier.
-            price (Optional[str]): Price column name.
-            date (Optional[str], optional): Date column name.
+            prop_id (str | None): Property identifier.
+            trans_id (str | None): Transaction identifier.
+            price (str | None): Price column name.
+            date (str | None, optional): Date column name.
                 Defaults to None.
-            periodicity (Optional[str], optional): Periodicity of the data.
+            periodicity (str | None, optional): Periodicity of the data.
                 Defaults to None.
-            seq_only (Optional[bool], optional): Sequential only.
+            seq_only (bool, optional): Sequential only.
                 Defaults to False.
-            min_period_dist (Optional[int], optional): Minimum period distance.
+            min_period_dist (int | None, optional): Minimum period distance.
                 Defaults to None.
+
         """
         self._check_fields(prop_id, trans_id, price)
         self._create_period_table(date, periodicity, **kwargs)
@@ -176,10 +202,8 @@ class RepeatTransactionData(TransactionData):
                 ascending=[True, True, False],
             )
             .assign(
-                **{
-                    "trans_period": lambda x: x["trans_period"].astype(int),
-                    "temp": lambda x: x["prop_id"] + "_" + x["trans_period"].astype(str),
-                }
+                trans_period=lambda x: x["trans_period"].astype(int),
+                temp=lambda x: x["prop_id"] + "_" + x["trans_period"].astype(str),
             )
             .drop_duplicates("temp")  # remove any properties that sold twice in same time period
             .drop(columns="temp")
@@ -196,7 +220,8 @@ class RepeatTransactionData(TransactionData):
         )
 
         if len(repeat_trans_df) == 0:
-            raise ValueError("No repeat sales found.")
+            msg = "No repeat sales found."
+            raise ValueError(msg)
 
         # Split into 2 sales and greater than two sales per property.
         rt2 = repeat_trans_df.query("count == 2")
@@ -206,7 +231,7 @@ class RepeatTransactionData(TransactionData):
         if len(rt2) > 0:
             # Extract original sales and sort by id, then time.
             x_df = trans_df.query(f"prop_id in {list(rt2['prop_id'].unique())}").sort_values(
-                ["prop_id", "trans_period"]
+                ["prop_id", "trans_period"],
             )
 
             # Separate into first and second sale.
@@ -223,7 +248,7 @@ class RepeatTransactionData(TransactionData):
                     "price_2": x_df[id_2]["price"].reset_index(drop=True),
                     "trans_id1": x_df[id_1]["trans_id"].reset_index(drop=True),
                     "trans_id2": x_df[id_2]["trans_id"].reset_index(drop=True),
-                }
+                },
             )
         else:
             d2 = pd.DataFrame()
@@ -233,10 +258,11 @@ class RepeatTransactionData(TransactionData):
 
             # Create a dataframe of combinations of repeat sales.
             s = x_df.groupby("prop_id").apply(
-                lambda x: list(itertools.combinations(x["trans_id"], 2)), include_groups=False
+                lambda x: list(itertools.combinations(x["trans_id"], 2)),
+                include_groups=False,
             )
             d3 = pd.DataFrame(
-                np.vstack([[[s.index[idx]] + list(x_i) for x_i in x] for idx, x in enumerate(s)]),
+                np.vstack([[[s.index[idx], *list(x_i)] for x_i in x] for idx, x in enumerate(s)]),
                 columns=["prop_id", "trans_id1", "trans_id2"],
             )
 
@@ -284,7 +310,8 @@ class RepeatTransactionData(TransactionData):
         repeat_trans_df = repeat_trans_df.assign(pair_id=list(range(1, len(repeat_trans_df) + 1)))
 
         if repeat_trans_df is None or len(repeat_trans_df) == 0:
-            raise ValueError("No repeat transactions created.")
+            msg = "No repeat transactions created."
+            raise ValueError(msg)
 
         repeat_trans_df = repeat_trans_df.sort_values(["prop_id", "trans_id1"])
 
@@ -298,6 +325,7 @@ class RepeatTransactionData(TransactionData):
 
         Returns:
             np.ndarray: Forecast periods as an array.
+
         """
         return self._create_forecast_periods("period_2", *args, **kwargs)
 
@@ -307,23 +335,24 @@ class HedonicTransactionData(TransactionData):
 
     def create_transactions(
         self,
-        prop_id: Optional[str],
-        trans_id: Optional[str],
-        price: Optional[str],
-        date: Optional[str] = None,
-        periodicity: Optional[str] = None,
+        prop_id: str | None,
+        trans_id: str | None,
+        price: str | None,
+        date: str | None = None,
+        periodicity: str | None = None,
         **kwargs: Any,
     ) -> Self:
         """Create hedonic transaction data.
 
         Args:
-            prop_id (Optional[str]): Property identifier.
-            trans_id (Optional[str]): Transaction identifier.
-            price (Optional[str]): Price column name.
-            date (Optional[str], optional): Date column name.
+            prop_id (str | None): Property identifier.
+            trans_id (str | None): Transaction identifier.
+            price (str | None): Price column name.
+            date (str | None, optional): Date column name.
                 Defaults to None.
-            periodicity (Optional[str], optional): Periodicity of the data.
+            periodicity (str | None, optional): Periodicity of the data.
                 Defaults to None.
+
         """
         self._check_fields(prop_id, trans_id, price)
         self._create_period_table(date, periodicity, **kwargs)
@@ -333,7 +362,7 @@ class HedonicTransactionData(TransactionData):
 
         # Prepare input data.
         hedonic_trans_df = trans_df.rename(
-            columns={prop_id: "prop_id", trans_id: "trans_id", price: "price"}
+            columns={prop_id: "prop_id", trans_id: "trans_id", price: "price"},
         ).sort_values(["prop_id", "trans_period", "price"], ascending=[True, True, False])
 
         # Remove any properties that sold twice in same time period.
@@ -355,5 +384,6 @@ class HedonicTransactionData(TransactionData):
 
         Returns:
             np.ndarray: Forecast periods as an array.
+
         """
         return self._create_forecast_periods("trans_period", *args, **kwargs)

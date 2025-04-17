@@ -7,6 +7,7 @@ from hpipy.trans_data import HedonicTransactionData, RepeatTransactionData
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_rt_create_trans(seattle_dataset: pd.DataFrame) -> None:
+    """Test repeat transaction transaction data creation."""
     sales_df = PeriodTable(seattle_dataset).create_period_table(
         date="sale_date",
         periodicity="monthly",
@@ -105,7 +106,7 @@ def test_rt_create_trans(seattle_dataset: pd.DataFrame) -> None:
         )
 
     with pytest.raises(TypeError):
-        RepeatTransactionData(seattle_dataset).create_transactions(  # type: ignore
+        RepeatTransactionData(seattle_dataset).create_transactions(
             date="sale_date",
             periodicity="monthly",
         )
@@ -113,6 +114,7 @@ def test_rt_create_trans(seattle_dataset: pd.DataFrame) -> None:
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_hed_create_trans(seattle_dataset: pd.DataFrame) -> None:
+    """Test hedonic transaction data creation."""
     sales_df = PeriodTable(seattle_dataset).create_period_table(
         date="sale_date",
         periodicity="monthly",

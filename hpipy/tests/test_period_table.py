@@ -7,6 +7,7 @@ from hpipy.period_table import PeriodTable
 
 @pytest.mark.usefixtures("toy_dataset")
 def test_period_table(toy_dataset: pd.DataFrame) -> None:
+    """Test period table creation."""
     toy_dataset["trans_date"] = toy_dataset["sale_date"]
 
     pt_df = PeriodTable(toy_dataset).create_period_table("sale_date", periodicity="annual")
@@ -35,21 +36,30 @@ def test_period_table(toy_dataset: pd.DataFrame) -> None:
     assert pt_df.period_table["name"].iloc[83] == "equalfreq (30): 2016-10-29 to 2016-12-22"
 
     pt_df = PeriodTable(toy_dataset).create_period_table(
-        "sale_date", periodicity="equalfreq", freq=15
+        "sale_date",
+        periodicity="equalfreq",
+        freq=15,
     )
     assert len(pt_df.period_table) == 169
     assert len(pt_df.period_table.columns) == 4
     assert (pt_df.period_table["end_date"][168] - pt_df.period_table["start_date"][168]).days > 15
 
     pt_df = PeriodTable(toy_dataset).create_period_table(
-        "sale_date", periodicity="equalfreq", freq=15, start="last"
+        "sale_date",
+        periodicity="equalfreq",
+        freq=15,
+        start="last",
     )
     assert len(pt_df.period_table) == 169
     assert len(pt_df.period_table.columns) == 4
     assert (pt_df.period_table["end_date"][0] - pt_df.period_table["start_date"][0]).days > 15
 
     pt_df = PeriodTable(toy_dataset).create_period_table(
-        "sale_date", periodicity="equalfreq", freq=15, start="last", first_date="2010-01-01"
+        "sale_date",
+        periodicity="equalfreq",
+        freq=15,
+        start="last",
+        first_date="2010-01-01",
     )
     assert len(pt_df.period_table) == 169
     assert len(pt_df.period_table.columns) == 4
@@ -57,14 +67,20 @@ def test_period_table(toy_dataset: pd.DataFrame) -> None:
     assert (pt_df.period_table["end_date"][0] - pt_df.period_table["start_date"][0]).days > 15
 
     pt_df = PeriodTable(toy_dataset).create_period_table(
-        "sale_date", periodicity="equalfreq", freq=15, start="last", first_date="2010-01-11"
+        "sale_date",
+        periodicity="equalfreq",
+        freq=15,
+        start="last",
+        first_date="2010-01-11",
     )
     assert len(pt_df.period_table) == 169
     assert len(pt_df.period_table.columns) == 4
     assert (pt_df.period_table["end_date"][0] - pt_df.period_table["start_date"][0]).days > 15
 
     pt_df = PeriodTable(toy_dataset).create_period_table(
-        "sale_date", periodicity="equalsample", nbr_periods=50
+        "sale_date",
+        periodicity="equalsample",
+        nbr_periods=50,
     )
     assert len(pt_df.period_table) == 50
     assert len(pt_df.period_table.columns) == 4
@@ -81,13 +97,15 @@ def test_period_table(toy_dataset: pd.DataFrame) -> None:
     assert len(pt.create_period_table("sale_date", periodicity="annual").period_table) == 4
 
     with pytest.raises(TypeError):
-        PeriodTable(toy_dataset).create_period_table()  # type: ignore
+        PeriodTable(toy_dataset).create_period_table()
 
 
 @pytest.mark.usefixtures("toy_dataset")
 def test_date_to_period(toy_dataset: pd.DataFrame) -> None:
+    """Test date to period conversion."""
     sales_df = PeriodTable(toy_dataset).create_period_table(
-        date="sale_date", periodicity="monthly"
+        date="sale_date",
+        periodicity="monthly",
     )
 
     assert "trans_period" in sales_df.trans_df.columns
@@ -104,7 +122,9 @@ def test_date_to_period(toy_dataset: pd.DataFrame) -> None:
     # Check `min_date`.
     for min_date in ["2010-01-03", "2010-01-01"]:
         sales_df = PeriodTable(toy_dataset).create_period_table(
-            date="sale_date", periodicity="monthly", min_date=min_date
+            date="sale_date",
+            periodicity="monthly",
+            min_date=min_date,
         )
         assert sales_df.min_date == min_date
 

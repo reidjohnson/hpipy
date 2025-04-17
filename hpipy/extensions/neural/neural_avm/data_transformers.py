@@ -1,7 +1,6 @@
 """Data feature and response transformer functions."""
 
 import collections
-from typing import Union
 
 try:
     from typing import Self
@@ -29,20 +28,21 @@ class FeatureTransformer:
     def __init__(
         self,
         feature_dict: dict[str, list],
-        fill_value: Union[int, float, str] = -float("inf"),
+        fill_value: float | str = -float("inf"),
     ) -> None:
         """Initialize the feature transformer.
 
         Args:
-            feature_dict (dict[str, list): Feature dictionary.
-            fill_value (Union[int, float, str], optional): Missing fill value.
+            feature_dict (dict[str, list]): Feature dictionary.
+            fill_value (float | str, optional): Missing fill value.
                 Defaults to -float("inf").
+
         """
         self.feature_dict_ = feature_dict
         self.fill_value_ = fill_value
         self.num_medians_: dict[str, float] = {}
         self.cat_counts_: dict[str, dict] = {}
-        self.cat_labels_: dict[str, dict[Union[int, float, str], int]] = {}
+        self.cat_labels_: dict[str, dict[int | float | str, int]] = {}
 
         for dtype in ["nulls", "numerics", "log_numerics", "categoricals", "ordinals"]:
             if dtype not in self.feature_dict_:
@@ -53,12 +53,13 @@ class FeatureTransformer:
 
         Args:
             feature_dict (dict[str, list[str]]): Feature dictionary.
+
         """
         self.feature_dict_ = feature_dict
 
     def prepare_init_dict(
         self,
-        X: Union[dict[str, np.ndarray], pd.DataFrame],
+        X: dict[str, np.ndarray] | pd.DataFrame,
     ) -> dict[str, np.ndarray]:
         """Prepare model initialization dictionary.
 
@@ -69,10 +70,11 @@ class FeatureTransformer:
         has the necessary values.
 
         Args:
-            X (Union[dict[str, np.ndarray], pd.DataFrame]): Input data.
+            X (dict[str, np.ndarray] | pd.DataFrame): Input data.
 
         Returns:
             dict[str, np.ndarray]: Feature names mapped to NumPy arrays.
+
         """
         # if isinstance(X, pd.DataFrame):
         #     X_dict = {str(k): np.array(v) for k, v in X.to_dict()}
@@ -87,7 +89,7 @@ class FeatureTransformer:
         for k in self.feature_dict_["categoricals"] + self.feature_dict_["ordinals"]:
             f_vals = list(self.cat_counts_[k].keys())
             f_vals = [v for v in f_vals if v != self.fill_value_]
-            f_vals = [self.fill_value_] + sorted(list(set(f_vals)))
+            f_vals = [self.fill_value_, *sorted(set(f_vals))]
             k_max = max([self.cat_labels_[k][f] for f in f_vals])
             init_dict[k] = np.array([k_max])
 
@@ -100,6 +102,7 @@ class FeatureTransformer:
             X (pd.DataFrame): Input feature data.
             copy (bool, optional): Copy the input data.
                 Defaults to True.
+
         """
         X = X.copy() if copy else X
 
@@ -118,9 +121,7 @@ class FeatureTransformer:
             X[f] = X[f] - self.num_medians_[f]
 
         for f in self.feature_dict_["categoricals"] + self.feature_dict_["ordinals"]:
-            if np.issubdtype(X[f].dtype, np.integer):
-                X[f] = X[f].astype(np.float64)
-            elif np.issubdtype(X[f].dtype, np.floating):
+            if np.issubdtype(X[f].dtype, np.integer) or np.issubdtype(X[f].dtype, np.floating):
                 X[f] = X[f].astype(np.float64)
 
             X[f] = X[f].fillna(self.fill_value_)
@@ -134,7 +135,7 @@ class FeatureTransformer:
 
             f_vals = [k for (k, v) in self.cat_counts_[f].items() if v >= 1]
             f_vals = [v for v in f_vals if v != self.fill_value_]
-            f_vals = [self.fill_value_] + sorted(list(set(f_vals)))
+            f_vals = [self.fill_value_, *sorted(set(f_vals))]
             self.cat_labels_[f] = {v: i for i, v in enumerate(f_vals)}
 
         return self
@@ -149,6 +150,7 @@ class FeatureTransformer:
 
         Returns:
             pd.DataFrame: Transformed feature data.
+
         """
         X = X.copy() if copy else X
 
@@ -164,9 +166,7 @@ class FeatureTransformer:
             X[f] = X[f] - self.num_medians_[f]
 
         for f in self.feature_dict_["categoricals"] + self.feature_dict_["ordinals"]:
-            if np.issubdtype(X[f].dtype, np.integer):
-                X[f] = X[f].astype(np.float64)
-            elif np.issubdtype(X[f].dtype, np.floating):
+            if np.issubdtype(X[f].dtype, np.integer) or np.issubdtype(X[f].dtype, np.floating):
                 X[f] = X[f].astype(np.float64)
 
             X[f] = X[f].fillna(self.fill_value_)
@@ -178,7 +178,7 @@ class FeatureTransformer:
                 f_min_val, f_max_val = list(d.keys())[1], list(d.keys())[-1]
                 f_min_idx = X[f].astype(float) < f_min_val
                 f_max_idx = X[f].astype(float) > f_max_val
-            X[f] = X[f].apply(lambda x: d[x] if x in d.keys() else d[self.fill_value_])
+            X[f] = X[f].apply(lambda x, d=d: d[x] if x in d else d[self.fill_value_])
             if f in self.feature_dict_["ordinals"]:
                 X[f] = X[f].astype("category").cat.set_categories(list(d.values()))
                 X.loc[f_min_idx, f] = d[f_min_val]
@@ -194,6 +194,7 @@ class FeatureTransformer:
 
         Returns:
             pd.DataFrame: Transformed feature data.
+
         """
         return self.fit(X).transform(X)
 
@@ -218,6 +219,7 @@ class ResponseTransformer:
 
         Args:
             y (pd.Series): Input response data.
+
         """
         self.median_ = y.median()
         return self
@@ -230,6 +232,7 @@ class ResponseTransformer:
 
         Returns:
              pd.Series: Transformed response data.
+
         """
         return np.log(y) - np.log(self.median_)
 
@@ -241,6 +244,7 @@ class ResponseTransformer:
 
         Returns:
             pd.Series: Inverse transformed response data.
+
         """
         return np.exp(y + np.log(self.median_))
 
@@ -252,5 +256,6 @@ class ResponseTransformer:
 
         Returns:
             pd.Series: Transformed response data.
+
         """
         return self.fit(y).transform(y)

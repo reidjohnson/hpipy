@@ -10,6 +10,21 @@ class TimeMatrixMixin:
     The class provides a method to create a time matrix from a dataframe
     consisting of repeat transaction data. The method utilizes datetime data
     represented as periods and constructs a chronologically ordered matrix.
+
+    Args:
+        repeat_trans_df (pd.DataFrame): Input DataFrame. Must contain
+            "period_1" and "period_2" columns containing integer values
+            representing periods (i.e., time series expressed as integer).
+
+    Example:
+        >>> repeat_trans_df = pd.DataFrame({
+        ...     "period_1": [1, 1, 2, 2],
+        ...     "period_2": [2, 2, 3, 3],
+        ...     "price_1": [100, 100, 100, 100],
+        ...     "price_2": [110, 110, 110, 110],
+        ... })
+        >>> time_matrix = TimeMatrixMixin().create_time_matrix(repeat_trans_df)
+
     """
 
     def create_time_matrix(self, repeat_trans_df: pd.DataFrame) -> pd.DataFrame:
@@ -30,6 +45,7 @@ class TimeMatrixMixin:
             pd.DataFrame: DataFrame with columns 'time_x', where each row
                 represents a transaction pair and 'x' is a time period between
                 the minimum and maximum periods in the input data.
+
         """
         # Extract start/end/diff.
         time_start = repeat_trans_df["period_1"].min()
@@ -45,8 +61,7 @@ class TimeMatrixMixin:
             time_matrix[repeat_trans_df["period_2"] == tm, tm - time_start - 1] = 1
 
         # Create time matrix dataframe.
-        time_matrix_df = pd.DataFrame(
-            time_matrix, columns=[f"time_{x}" for x in range(time_start + 1, time_end + 1)]
+        return pd.DataFrame(
+            time_matrix,
+            columns=[f"time_{x}" for x in range(time_start + 1, time_end + 1)],
         )
-
-        return time_matrix_df

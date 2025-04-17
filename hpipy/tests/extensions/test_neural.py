@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import torch
-import torch.nn as nn
+from torch import nn
 
 from hpipy.extensions import NeuralNetworkIndex
 from hpipy.extensions.neural.neural_avm.data_preprocessors import GeospatialPreprocessor
@@ -107,9 +107,12 @@ class TestMonotonicDense:
 
     def test_monotonicity_constraints(self, device: torch.device) -> None:
         """Test that monotonicity constraints are properly enforced."""
-        # Test increasing monotonicity.
+        # Check increasing monotonicity.
         layer = MonotonicDense(
-            in_features=1, out_features=1, monotonicity_indicator=1, device=device
+            in_features=1,
+            out_features=1,
+            monotonicity_indicator=1,
+            device=device,
         )
         x1 = torch.tensor([[1.0]], device=device)
         x2 = torch.tensor([[2.0]], device=device)
@@ -117,9 +120,12 @@ class TestMonotonicDense:
         y2 = layer(x2)
         assert (y2 >= y1).all()
 
-        # Test decreasing monotonicity.
+        # Check decreasing monotonicity.
         layer = MonotonicDense(
-            in_features=1, out_features=1, monotonicity_indicator=-1, device=device
+            in_features=1,
+            out_features=1,
+            monotonicity_indicator=-1,
+            device=device,
         )
         y1 = layer(x1)
         y2 = layer(x2)
@@ -220,7 +226,8 @@ def test_mixup_lambda_range() -> None:
 
     _, _, _, lam = mixup(X, y, alpha=1.0)
 
-    assert torch.all(lam >= 0) and torch.all(lam <= 1)
+    assert torch.all(lam >= 0)
+    assert torch.all(lam <= 1)
 
 
 def test_mixup_deterministic() -> None:
@@ -235,7 +242,7 @@ def test_mixup_deterministic() -> None:
     torch.manual_seed(0)
     result2 = mixup(X.clone(), y.clone(), alpha=1.0)
 
-    for r1, r2 in zip(result1, result2):
+    for r1, r2 in zip(result1, result2, strict=False):
         assert torch.allclose(r1, r2)
 
 
@@ -281,7 +288,7 @@ def test_prepare_dataframe() -> None:
             "log_numeric_feature": [10.0, 20.0, 30.0],
             "categorical_feature": [0, 1, 2],
             "ordinal_feature": [1, 2, 3],
-        }
+        },
     )
 
     feature_dict = {
@@ -306,10 +313,12 @@ def test_prepare_dataframe() -> None:
 
     # Check values.
     np.testing.assert_array_equal(
-        result["numeric_feature"], np.array([[1.5], [2.5], [3.5]], dtype=np.float32)
+        result["numeric_feature"],
+        np.array([[1.5], [2.5], [3.5]], dtype=np.float32),
     )
     np.testing.assert_array_equal(
-        result["categorical_feature"], np.array([[0], [1], [2]], dtype=np.int32)
+        result["categorical_feature"],
+        np.array([[0], [1], [2]], dtype=np.int32),
     )
 
 
@@ -447,12 +456,10 @@ def test_nn_model_inputs_to_features(seattle_dataset: pd.DataFrame) -> None:
             resolutions=[6],
             latitude_col="latitude",
             longitude_col="longitude",
-        )
+        ),
     ]
 
-    # Test feature conversion.
-    features = nn_index.model._model_inputs_to_features(  # type: ignore
-        data_pipeline, ["latitude", "longitude"]
-    )
+    # Check feature conversion.
+    features = nn_index.model._model_inputs_to_features(data_pipeline, ["latitude", "longitude"])
     assert isinstance(features, list)
     assert len(features) > 0

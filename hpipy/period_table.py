@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -14,25 +14,26 @@ import pandas as pd
 
 
 def check_date(
-    date: Optional[Union[str, datetime.date, datetime.datetime, pd.Series]],
+    date: str | datetime.date | datetime.datetime | pd.Series | None,
     name: str,
-) -> Union[None, datetime.datetime]:
+) -> None | datetime.datetime:
     """Check and validate the provided date object.
 
     Checks that the date is either of type datetime or convertible to
     datetime. Provides error handling for incorrect date inputs.
 
-    Parameters:
-        date (Optional[Union[str, datetime.date, datetime.datetime,
-            pd.Series]]): Date object that needs validation.
+    Args:
+        date (str | datetime.date | datetime.datetime | pd.Series | None):
+            Date object that needs validation.
         name (str): Name for the 'date' argument being checked.
 
     Returns:
-        Union[None, datetime.datetime]: Date converted to a datetime.datetime
+        None | datetime.datetime: Date converted to a datetime.datetime
             object. If the input date is None, the function returns None.
 
     Raises:
         ValueError: If date cannot be converted to a datetime object.
+
     """
     # If None, return None.
     if date is None:
@@ -43,13 +44,14 @@ def check_date(
     #     raise TypeError("Date must be a datetime type.")
 
     # If any form of date/time, convert to datetime.
-    if isinstance(date, (datetime.date, datetime.datetime)):
+    if isinstance(date, datetime.date | datetime.datetime):
         date = pd.to_datetime(date)
     else:
         # Try to convert dates given as characters, such as '2000-01-01'.
         date = pd.to_datetime(date)
         if np.any(date is pd.NaT):
-            raise ValueError(f"{name} argument must be a datetime type.")
+            msg = f"{name} argument must be a datetime type."
+            raise ValueError(msg)
 
     return date
 
@@ -59,12 +61,6 @@ class PeriodTable:
 
     Organizes transaction data into defined time periods.
 
-    Args:
-        trans_df (pd.DataFrame): Transaction data.
-        period_table (Optional[pd.DataFrame]): Period table.
-
-    Raises:
-        TypeError: If 'trans_df' is not or does not inherit from a DataFrame.
     """
 
     trans_df: pd.DataFrame
@@ -73,12 +69,22 @@ class PeriodTable:
     def __init__(
         self,
         trans_df: pd.DataFrame,
-        period_table: Optional[pd.DataFrame] = None,
-    ):
-        """Initialize period table."""
+        period_table: pd.DataFrame | None = None,
+    ) -> None:
+        """Initialize period table.
+
+        Args:
+            trans_df (pd.DataFrame): Transaction data.
+            period_table (pd.DataFrame | None): Period table.
+
+        Raises:
+            TypeError: If 'trans_df' is not or does not inherit from a DataFrame.
+
+        """
         # Check that `trans_df` is a DataFrame.
         if not isinstance(trans_df, pd.DataFrame):
-            raise TypeError("'trans_df' must be a DataFrame (or inherit from one).")
+            msg = "'trans_df' must be a DataFrame (or inherit from one)."
+            raise TypeError(msg)
 
         self.trans_df = trans_df
 
@@ -89,13 +95,27 @@ class PeriodTable:
     def _check_date(
         trans_df: pd.DataFrame,
         date: str,
-        min_date: Optional[str],
-        max_date: Optional[str],
-        adj_type: Optional[str],
-    ) -> Tuple[pd.DataFrame, datetime.datetime, datetime.datetime]:
-        """Check date fields and arguments."""
+        min_date: str | None,
+        max_date: str | None,
+        adj_type: str | None,
+    ) -> tuple[pd.DataFrame, datetime.datetime, datetime.datetime]:
+        """Check date fields and arguments.
+
+        Args:
+            trans_df (pd.DataFrame): Transaction data.
+            date (str): Date field.
+            min_date (str | None): Minimum date.
+            max_date (str | None): Maximum date.
+            adj_type (str | None): Adjustment type.
+
+        Returns:
+            tuple[pd.DataFrame, datetime.datetime, datetime.datetime]:
+                Transformed transaction data, minimum date, and maximum date.
+
+        """
         if not np.issubdtype(trans_df[date].dtype, np.datetime64):
-            raise TypeError("Date must be a datetime type.")
+            msg = "Date must be a datetime type."
+            raise TypeError(msg)
 
         # Check date fields.
         trans_df.loc[:, date] = check_date(trans_df[date], "date")
@@ -105,36 +125,34 @@ class PeriodTable:
         # Set minimum date.
         if min_datetime is None:
             min_datetime = trans_df[date].min()
-        else:
-            if min_datetime > trans_df[date].min():
-                if adj_type == "move":
-                    logging.info(
-                        "Supplied 'min_date' is greater than minimum of transactions. Adjusting."
-                    )
-                    min_datetime = trans_df[date].min()
-                elif adj_type == "clip":
-                    logging.info(
-                        "Supplied 'min_date' date is greater than minimum of transactions. "
-                        "Clipping transactions."
-                    )
-                    trans_df = trans_df[trans_df[date] >= min_datetime].copy()
+        elif min_datetime > trans_df[date].min():
+            if adj_type == "move":
+                logging.info(
+                    "Supplied 'min_date' is greater than minimum of transactions. Adjusting.",
+                )
+                min_datetime = trans_df[date].min()
+            elif adj_type == "clip":
+                logging.info(
+                    "Supplied 'min_date' date is greater than minimum of transactions. "
+                    "Clipping transactions.",
+                )
+                trans_df = trans_df[trans_df[date] >= min_datetime].copy()
 
         # Set maximum date.
         if max_datetime is None:
             max_datetime = trans_df[date].max()
-        else:
-            if max_datetime < trans_df[date].max():
-                if adj_type == "move":
-                    logging.info(
-                        "Supplied 'max_date' is less than maximum of transactions. Adjusting."
-                    )
-                    max_datetime = trans_df[date].max()
-                elif adj_type == "clip":
-                    logging.info(
-                        "Supplied 'max_date' is less than maximum of transactions. "
-                        "Clipping transactions."
-                    )
-                    trans_df = trans_df[trans_df[date] <= max_datetime]
+        elif max_datetime < trans_df[date].max():
+            if adj_type == "move":
+                logging.info(
+                    "Supplied 'max_date' is less than maximum of transactions. Adjusting.",
+                )
+                max_datetime = trans_df[date].max()
+            elif adj_type == "clip":
+                logging.info(
+                    "Supplied 'max_date' is less than maximum of transactions. "
+                    "Clipping transactions.",
+                )
+                trans_df = trans_df[trans_df[date] <= max_datetime]
 
         # Set standardized date field.
         trans_df.loc[:, "trans_date"] = trans_df[date]
@@ -142,8 +160,16 @@ class PeriodTable:
         return trans_df, min_datetime, max_datetime  # type: ignore
 
     @staticmethod
-    def _check_periodicity(periodicity: Optional[str]) -> str:
-        """Check periodicity argument."""
+    def _check_periodicity(periodicity: str | None) -> str:
+        """Check periodicity argument.
+
+        Args:
+            periodicity (str | None): Periodicity.
+
+        Returns:
+            str: Periodicity.
+
+        """
         # Check for periodicity.
         if periodicity is None:
             logging.warning("No 'periodicity' supplied, defaulting to 'annual'.")
@@ -167,23 +193,25 @@ class PeriodTable:
         ]
         periodicity = periodicity.lower()
         if periodicity not in periodicity_options:
-            raise ValueError(
+            msg = (
                 "'periodicity' must be one of: 'weekly', 'monthly', 'quarterly', "
                 "'annual', 'equalfreq' or 'equalsample'."
             )
-        else:
-            if periodicity in ["yearly", "y", "a"]:
-                periodicity = "annual"
-            elif periodicity == "q":
-                periodicity = "quarterly"
-            elif periodicity == "m":
-                periodicity = "monthly"
-            elif periodicity == "w":
-                periodicity = "weekly"
-            elif periodicity == "ef":
-                periodicity = "equalfreq"
-            elif periodicity == "es":
-                periodicity = "equalsample"
+            raise ValueError(
+                msg,
+            )
+        if periodicity in ["yearly", "y", "a"]:
+            periodicity = "annual"
+        elif periodicity == "q":
+            periodicity = "quarterly"
+        elif periodicity == "m":
+            periodicity = "monthly"
+        elif periodicity == "w":
+            periodicity = "weekly"
+        elif periodicity == "ef":
+            periodicity = "equalfreq"
+        elif periodicity == "es":
+            periodicity = "equalsample"
 
         return periodicity
 
@@ -191,13 +219,27 @@ class PeriodTable:
     def _create_periods(
         trans_df: pd.DataFrame,
         periodicity: str,
-        nbr_periods: Optional[int] = None,
-        freq: Optional[int] = None,
-        start: Optional[str] = None,
-        first_date: Optional[str] = None,
-        last_date: Optional[str] = None,
+        nbr_periods: int | None = None,
+        freq: int | None = None,
+        start: str | None = None,
+        first_date: str | None = None,
+        last_date: str | None = None,
     ) -> pd.DataFrame:
-        """Create dataframe of periods of specified periodicity."""
+        """Create dataframe of periods of specified periodicity.
+
+        Args:
+            trans_df (pd.DataFrame): Transaction data.
+            periodicity (str): Periodicity.
+            nbr_periods (int | None): Number of periods.
+            freq (int | None): Frequency.
+            start (str | None): Start.
+            first_date (str | None): First date.
+            last_date (str | None): Last date.
+
+        Returns:
+            pd.DataFrame: Period table.
+
+        """
         if periodicity == "annual":
             date_range = pd.date_range(
                 trans_df["trans_date"].min().to_period("Y").to_timestamp(),
@@ -248,7 +290,7 @@ class PeriodTable:
             period = list(range(1, len(start_date) + 1))
             name = [
                 f"week: {x_start.strftime('%Y-%m-%d')} to {x_end.strftime('%Y-%m-%d')}"
-                for x_start, x_end in zip(start_date, end_date)
+                for x_start, x_end in zip(start_date, end_date, strict=False)
             ]
             data = {"start_date": start_date, "end_date": end_date, "period": period, "name": name}
         elif periodicity == "equalfreq":
@@ -269,14 +311,14 @@ class PeriodTable:
                 freq = 30
                 logging.warning(
                     "You did not supply a frequency ('freq = '). "
-                    "Running at the default of 30 days."
+                    "Running at the default of 30 days.",
                 )
 
             if start is None:
                 start = "first"
                 logging.warning(
                     "You did not specify when you wanted to start counting ('start = "
-                    "['first' | 'last']). Defaulting to starting from the first sale."
+                    "['first' | 'last']). Defaulting to starting from the first sale.",
                 )
 
             if start == "last":
@@ -308,20 +350,20 @@ class PeriodTable:
             name = [
                 f"equalfreq ({freq}): {x_start.strftime('%Y-%m-%d')} to "
                 f"{x_end.strftime('%Y-%m-%d')}"
-                for x_start, x_end in zip(start_date, end_date)
+                for x_start, x_end in zip(start_date, end_date, strict=False)
             ]
             data = {"start_date": start_date, "end_date": end_date, "period": period, "name": name}
         elif periodicity == "equalsample":
             if nbr_periods is None:
                 raise ValueError
             # Set quantiles.
-            period_qtls = [(x / nbr_periods) for x in range(0, nbr_periods + 1)]
+            period_qtls = [(x / nbr_periods) for x in range(nbr_periods + 1)]
             date_qtls = trans_df["trans_date"].astype("int64").quantile(period_qtls[:-1]).values
             date_qtls[0] = date_qtls[0] - 1
             start_date = pd.to_datetime(
                 pd.Series(
-                    pd.to_datetime(date_qtls, origin="1970-01-01") + pd.to_timedelta(1, unit="s")
-                ).dt.strftime("%Y-%m-%d")
+                    pd.to_datetime(date_qtls, origin="1970-01-01") + pd.to_timedelta(1, unit="s"),
+                ).dt.strftime("%Y-%m-%d"),
             ).tolist()
             end_date = (
                 pd.to_datetime(
@@ -331,7 +373,7 @@ class PeriodTable:
                             pd.Series(pd.to_datetime(trans_df["trans_date"].max())),
                         ],
                         ignore_index=True,
-                    ).dt.strftime("%Y-%m-%d")
+                    ).dt.strftime("%Y-%m-%d"),
                 )
                 - datetime.timedelta(days=1)
             ).to_list()
@@ -339,48 +381,54 @@ class PeriodTable:
             name = [f"period {x}" for x in list(range(1, nbr_periods + 1))]
             data = {"start_date": start_date, "end_date": end_date, "period": period, "name": name}
 
-        periods_df = pd.DataFrame(data)
-
-        return periods_df
+        return pd.DataFrame(data)
 
     def create_period_table(
         self,
         date: str,
-        periodicity: Optional[str] = None,
-        nbr_periods: Optional[int] = None,
-        freq: Optional[int] = None,
-        start: Optional[str] = None,
-        min_date: Optional[str] = None,
-        max_date: Optional[str] = None,
-        adj_type: Optional[str] = "move",
+        periodicity: str | None = None,
+        nbr_periods: int | None = None,
+        freq: int | None = None,
+        start: str | None = None,
+        min_date: str | None = None,
+        max_date: str | None = None,
+        adj_type: str | None = "move",
         **kwargs: Any,
     ) -> Self:
         """Create a period table from a transaction dataframe.
 
         Args:
             date (str): Date field.
-            periodicity (Optional[str], optional): Periodicity of the table.
+            periodicity (str | None, optional): Periodicity of the table.
                 Defaults to None.
-            nbr_periods (Optional[int], optional): Number of periods (only
+            nbr_periods (int | None, optional): Number of periods (only
                 used if `periodicity` is "equalsample").
                 Defaults to None.
-            freq (Optional[int], optional): Frequency in days (only used if
+            freq (int | None, optional): Frequency in days (only used if
                 `periodicity` is "equalfreq").
                 Defaults to None.
-            start (Optional[str], optional): Starting position (only used if
+            start (str | None, optional): Starting position (only used if
                 `periodicity` is "equalfreq"). One of "first" or "last".
                 Defaults to None.
-            min_date (Optional[str], optional): Minimum date.
+            min_date (str | None, optional): Minimum date.
                 Defaults to None.
-            max_date (Optional[str], optional): Maximum dare.
+            max_date (str | None, optional): Maximum dare.
                 Defaults to None.
-            adj_type (ptional[str], optional): Adjustment type.
+            adj_type (str | None, optional): Adjustment type.
                 Defaults to "move".
+
+        Returns:
+            Self: Period table.
+
         """
         trans_df = self.trans_df
 
         trans_df, min_datetime, max_datetime = self._check_date(
-            trans_df, date, min_date, max_date, adj_type
+            trans_df,
+            date,
+            min_date,
+            max_date,
+            adj_type,
         )
         periodicity = self._check_periodicity(periodicity)
 
@@ -417,12 +465,12 @@ class PeriodTable:
         if num_periods < len(period_table):
             logging.info(
                 f"Your choice of periodicity resulted in {len(period_table) - num_periods} "
-                f"empty periods out of {len(period_table)} total periods."
+                f"empty periods out of {len(period_table)} total periods.",
             )
             if (len(period_table) - num_periods) / len(period_table) > 0.3:
                 logging.warning(
                     "You may wish to set a coarser periodicity "
-                    "or set different start and end dates."
+                    "or set different start and end dates.",
                 )
 
         self.trans_df = trans_df

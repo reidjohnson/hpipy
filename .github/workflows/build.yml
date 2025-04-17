@@ -45,6 +45,10 @@ jobs:
           uv run flake8 . --exclude=.venv --count --show-source --statistics || exit 1
           uv run flake8 . --exclude=.venv --count --exit-zero --statistics
 
+      - name: Lint with ruff
+        run: |
+          uv run ruff check .
+
       - name: Type check with mypy
         run: |
           uv run mypy hpipy
@@ -52,7 +56,7 @@ jobs:
       - name: Test with pytest
         run: |
           uv run pytest --doctest-glob="*.rst" --doctest-modules docs
-          uv run pytest --pyargs hpipy --cov=hpipy
+          uv run pytest --cov=hpipy
 
       - name: Generate coverage report
         run: uv run coverage xml

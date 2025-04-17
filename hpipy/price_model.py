@@ -3,7 +3,7 @@
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any
 
 try:
     from typing import Self
@@ -25,6 +25,7 @@ class BaseHousePriceModel(ABC):
 
     Args:
         hpi_data (TransactionData): Input transaction data.
+
     """
 
     coefficients: pd.DataFrame
@@ -56,7 +57,24 @@ class BaseHousePriceModel(ABC):
 
 
 class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
-    """Repeat transaction house price model."""
+    """Repeat transaction house price model.
+
+    Args:
+        repeat_trans_df (pd.DataFrame): The repeat transaction data.
+        period_table (pd.DataFrame): The period table.
+        time_matrix (pd.DataFrame): The time matrix.
+        price_diff (pd.Series): The price differential.
+        estimator (str): The estimator to use.
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        coefficients (pd.DataFrame): The coefficients.
+        model_obj (Any): The model object.
+        periods (pd.DataFrame): The periods.
+        base_price (float): The base price.
+        params (dict[str, Any]): The parameters.
+
+    """
 
     def _create_model(
         self,
@@ -67,43 +85,77 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
         estimator: str,
         **kwargs: Any,
     ) -> LinearRegression:
-        """Create a repeat transaction house price model."""
-        if len(set([len(repeat_trans_df), len(time_matrix), len(price_diff)])) > 1:
-            raise ValueError(
+        """Create a repeat transaction house price model.
+
+        Args:
+            repeat_trans_df (pd.DataFrame): The repeat transaction data.
+            period_table (pd.DataFrame): The period table.
+            time_matrix (pd.DataFrame): The time matrix.
+            price_diff (pd.Series): The price differential.
+            estimator (str): The estimator to use.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            LinearRegression: The repeat transaction house price model.
+
+        """
+        if len({len(repeat_trans_df), len(time_matrix), len(price_diff)}) > 1:
+            msg = (
                 "Number of observations of 'repeat_trans_df', 'time_matrix' and 'price_diff' do "
                 "not match."
+            )
+            raise ValueError(
+                msg,
             )
 
         # Check for sparseness.
         if len(repeat_trans_df) < len(period_table):
             logging.info(
                 f"You have fewer observations ({len(repeat_trans_df)}) than number of periods "
-                f"({len(period_table)}). Results will likely be unreliable."
+                f"({len(period_table)}). Results will likely be unreliable.",
             )
 
         args = (time_matrix, price_diff)
         if estimator == "base":
             return self._model_base(*args)
-        elif estimator == "robust":
+        if estimator == "robust":
             return self._model_robust(*args)
-        elif estimator == "weighted":
+        if estimator == "weighted":
             return self._model_weighted(repeat_trans_df, *args, **kwargs)
+        return None
 
     def _model_base(
         self,
         time_matrix: pd.DataFrame,
         price_diff: pd.Series,
     ) -> LinearRegression:
-        """Fit a standard linear regression model."""
-        model = LinearRegression(fit_intercept=False).fit(time_matrix, price_diff)
-        return model
+        """Fit a standard linear regression model.
+
+        Args:
+            time_matrix (pd.DataFrame): The time matrix.
+            price_diff (pd.Series): The price differential.
+
+        Returns:
+            LinearRegression: The standard linear regression model.
+
+        """
+        return LinearRegression(fit_intercept=False).fit(time_matrix, price_diff)
 
     def _model_robust(
         self,
         time_matrix: pd.DataFrame,
         price_diff: pd.Series,
     ) -> LinearRegression:
-        """Fit a robust (Huber) linear regression model."""
+        """Fit a robust (Huber) linear regression model.
+
+        Args:
+            time_matrix (pd.DataFrame): The time matrix.
+            price_diff (pd.Series): The price differential.
+
+        Returns:
+            LinearRegression: The robust linear regression model.
+
+        """
         # Determine 'sparseness' of the data.
         # time_size = np.median(
         #     pd.DataFrame(
@@ -119,15 +171,13 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
         # TODO: Use different robust packages based on sparseness.
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=ConvergenceWarning)
-            model = HuberRegressor(
+            return HuberRegressor(
                 epsilon=1.345,
                 max_iter=20,
                 alpha=0,
                 fit_intercept=False,
                 tol=1e-4,
             ).fit(time_matrix, price_diff)
-
-        return model
 
     def _model_weighted(
         self,
@@ -136,14 +186,25 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
         price_diff: pd.Series,
         **kwargs: Any,
     ) -> LinearRegression:
-        """Fit a weighted linear regression model."""
+        """Fit a weighted linear regression model.
+
+        Args:
+            repeat_trans_df (pd.DataFrame): The repeat transaction data.
+            time_matrix (pd.DataFrame): The time matrix.
+            price_diff (pd.Series): The price differential.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            LinearRegression: The weighted linear regression model.
+
+        """
         if "weights" not in kwargs:
             # Run base model.
             lm_model = LinearRegression(fit_intercept=False).fit(time_matrix, price_diff)
 
             # Estimate impact of time diff on errors.
             time_diff = pd.DataFrame(
-                {"time_diff": repeat_trans_df["period_2"] - repeat_trans_df["period_1"]}
+                {"time_diff": repeat_trans_df["period_2"] - repeat_trans_df["period_1"]},
             )
             residuals = price_diff - lm_model.predict(time_matrix)
             err_fit = LinearRegression().fit(time_diff, residuals**2)
@@ -155,11 +216,11 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
             wgts = kwargs["weights"]
 
         # Re-run model.
-        model = LinearRegression(fit_intercept=False).fit(
-            time_matrix, price_diff, sample_weight=wgts
+        return LinearRegression(fit_intercept=False).fit(
+            time_matrix,
+            price_diff,
+            sample_weight=wgts,
         )
-
-        return model
 
     def fit(
         self,
@@ -175,6 +236,7 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
                 Defaults to "base".
             log_dep (bool, optional): Log transform the dependent variable.
                 Defaults to True.
+
         """
         # Create time matrix.
         time_matrix = self.create_time_matrix(self.hpi_df)
@@ -187,18 +249,19 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
 
         # If any NA, NaN, or Inf/-Inf.
         if np.any(~np.isfinite(price_diff)):
-            raise ValueError("NA, negative, zero or non-finite values in the price field.")
+            msg = "NA, negative, zero or non-finite values in the price field."
+            raise ValueError(msg)
 
         # Extract base period mean price.
         base_price = np.mean(
-            self.hpi_df["price_1"][self.hpi_df["period_1"] == min(self.hpi_df["period_1"])]
+            self.hpi_df["price_1"][self.hpi_df["period_1"] == min(self.hpi_df["period_1"])],
         )
 
         # Check for legal estimator type.
         if estimator not in ["base", "robust", "weighted"]:
             logging.warning(
                 "Provided estimator type is not supported. Allowed estimators are: "
-                "'base', 'robust' or 'weighted'. Defaulting to 'base'."
+                "'base', 'robust' or 'weighted'. Defaulting to 'base'.",
             )
             estimator = "base"
 
@@ -213,8 +276,9 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
         )
 
         # Check for successful model estimation.
-        if not isinstance(model, (LinearRegression, HuberRegressor)):
-            raise ValueError("Model estimator was unsuccessful.")
+        if not isinstance(model, LinearRegression | HuberRegressor):
+            msg = "Model estimator was unsuccessful."
+            raise ValueError(msg)
 
         # Create coefficient dataframe.
         model_df = pd.DataFrame(
@@ -224,7 +288,7 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
                     *[int(x[5:]) for x in time_matrix.columns],
                 ],
                 "coefficient": [0, *model.coef_],
-            }
+            },
         )
 
         self.coefficients = model_df
@@ -244,32 +308,55 @@ class HedonicModel(BaseHousePriceModel):
 
     def _create_model(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         estimator: str,
         **kwargs: Any,
     ) -> LinearRegression:
-        """Create a hedonic house price model."""
+        """Create a hedonic house price model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): The independent variables.
+            y (pd.Series): The dependent variable.
+            estimator (str): The estimator to use.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            LinearRegression: The hedonic house price model.
+
+        """
         return self._model_with_coefficients(X, y, estimator, **kwargs)
 
     def _model_with_coefficients(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         estimator: str,
         **kwargs: Any,
     ) -> LinearRegression:
-        """Fit model and populate coefficients to produce index."""
+        """Fit model and populate coefficients to produce index.
+
+        Args:
+            X (pd.DataFrame | pd.Series): The independent variables.
+            y (pd.Series): The dependent variable.
+            estimator (str): The estimator to use.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            LinearRegression: The hedonic house price model.
+
+        """
         if estimator == "base":
             return self._hed_model_base(X, y)
-        elif estimator == "robust":
+        if estimator == "robust":
             return self._hed_model_robust(X, y)
-        elif estimator == "weighted":
+        if estimator == "weighted":
             return self._hed_model_weighted(X, y, **kwargs)
+        return None
 
     def _hed_model_base(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
     ) -> LinearRegression:
         """Fit hedonic linear regression model."""
@@ -277,35 +364,53 @@ class HedonicModel(BaseHousePriceModel):
 
     def _hed_model_robust(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
     ) -> LinearRegression:
-        """Fit robust hedonic linear regression model."""
+        """Fit robust hedonic linear regression model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): The independent variables.
+            y (pd.Series): The dependent variable.
+
+        Returns:
+            LinearRegression: The robust hedonic linear regression model.
+
+        """
         # TODO: Use different robust packages based on sparseness.
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=ConvergenceWarning)
-            model = HuberRegressor(
+            return HuberRegressor(
                 epsilon=1.345,
                 max_iter=20,
                 alpha=0,
                 tol=1e-4,
             ).fit(X, y)
-        return model
 
     def _hed_model_weighted(
         self,
-        X: Union[pd.DataFrame, pd.Series],
+        X: pd.DataFrame | pd.Series,
         y: pd.Series,
         **kwargs: Any,
     ) -> LinearRegression:
-        """Fit weighted hedonic linear regression model."""
+        """Fit weighted hedonic linear regression model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): The independent variables.
+            y (pd.Series): The dependent variable.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            LinearRegression: The weighted hedonic linear regression model.
+
+        """
         # Extract weights.
         wgts = kwargs["weights"]
         if len(wgts) != X.shape[0]:
             wgts = np.repeat(1, X.shape[0])
             logging.warning(
                 "You have supplied a set of weights that do not match the data. "
-                "Model being run in base OLS format."
+                "Model being run in base OLS format.",
             )
         return LinearRegression().fit(X, y, sample_weight=wgts)
 
@@ -313,8 +418,8 @@ class HedonicModel(BaseHousePriceModel):
         self,
         estimator: str = "base",
         log_dep: bool = True,
-        dep_var: Optional[str] = None,
-        ind_var: Optional[list[str]] = None,
+        dep_var: str | None = None,
+        ind_var: list[str] | None = None,
         **kwargs: Any,
     ) -> Self:
         """Fit the hedonic model and generate index coefficients.
@@ -325,15 +430,20 @@ class HedonicModel(BaseHousePriceModel):
                 Defaults to "base".
             log_dep (bool, optional): Log transform the dependent variable.
                 Defaults to True.
-            dep_var (Optional[str], optional): Dependent variable.
+            dep_var (str | None, optional): Dependent variable.
                 Defaults to None.
-            ind_var (Optional[list[str]], optional): Independent variable(s).
+            ind_var (list[str] | None, optional): Independent variable(s).
                 Defaults to None.
+
+        Returns:
+            Self: The hedonic house price model.
+
         """
         hpi_df = self.hpi_df.copy()
 
         if dep_var is None or ind_var is None:
-            raise ValueError("'dep_var' and 'ind_var' must be supplied.")
+            msg = "'dep_var' and 'ind_var' must be supplied."
+            raise ValueError(msg)
 
         oh_enc = OneHotEncoder(drop="first")
         oh_enc.fit(hpi_df[["trans_period"]])
@@ -357,19 +467,20 @@ class HedonicModel(BaseHousePriceModel):
         if estimator not in ["base", "robust", "weighted"]:
             logging.warning(
                 "Provided estimator type is not supported. Allowed estimators are: "
-                "'base', 'robust' or 'weighted'.  Defaulting to 'base'."
+                "'base', 'robust' or 'weighted'.  Defaulting to 'base'.",
             )
             estimator = "base"
 
         # Check log dep vs data.
-        if log_dep and np.any(hpi_df["price"] <= 0) or (hpi_df["price"].isnull().sum() > 0):
-            raise ValueError("Your 'price' field includes invalid values.")
+        if (log_dep and np.any(hpi_df["price"] <= 0)) or (hpi_df["price"].isnull().sum() > 0):
+            msg = "Your 'price' field includes invalid values."
+            raise ValueError(msg)
 
         # Set estimator class, call method.
         if estimator == "weighted" and "weights" not in kwargs:
             logging.warning(
                 "You selected a weighted model but did not supply any weights. "
-                "'weights' argument is NULL. Model run in base OLS format."
+                "'weights' argument is NULL. Model run in base OLS format.",
             )
             estimator = "base"
 
@@ -380,8 +491,9 @@ class HedonicModel(BaseHousePriceModel):
             **kwargs,
         )
 
-        if not isinstance(model, (LinearRegression, HuberRegressor)):
-            raise ValueError("Model estimator was unsuccessful.")
+        if not isinstance(model, LinearRegression | HuberRegressor):
+            msg = "Model estimator was unsuccessful."
+            raise ValueError(msg)
 
         # Period names.
         p_names = [len(ind_var) + idx for idx in range(len(oh_enc.categories_[0]) - 1)]

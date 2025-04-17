@@ -1,12 +1,13 @@
 """Custom model layers."""
 
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator, Optional, Union
+from typing import Any
 
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn
 
 
 class MonotonicDense(nn.Linear):
@@ -18,17 +19,18 @@ class MonotonicDense(nn.Linear):
         [1] Runje, Davor, and Sharath M. Shankaranarayana. "Constrained
             Monotonic Neural Networks." International Conference on Machine
             Learning. PMLR, 2023.
+
     """
 
     def __init__(
         self,
         in_features: int,
         out_features: int,
-        activation: Optional[nn.Module] = None,
-        monotonicity_indicator: Optional[Union[int, list[int]]] = 1,
-        activation_weights: Optional[list[int]] = None,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        activation: nn.Module | None = None,
+        monotonicity_indicator: int | list[int] | None = 1,
+        activation_weights: list[int] | None = None,
+        device: torch.device | None = None,
+        dtype: torch.dtype | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the layer.
@@ -38,15 +40,20 @@ class MonotonicDense(nn.Linear):
             out_features (int): Size of each output sample.
             activation (Optional[nn.Module], optional): Activation function.
                 Defaults to None.
-            monotonicity_indicator (Optional[Union[int, list[int]]], optional):
+            monotonicity_indicator (int | list[int] | None, optional):
                 Vector to indicate which of the inputs are monotonically
                 increasing, monotonically decreasing, or non-monotonic. Has
                 value 1 for monotonically increasing, -1 for monotonically
                 decreasing, and 0 for non-monotonic variables.
                 Defaults to 1.
-            activation_weights (Optional[list[int]], optional): Activation
+            activation_weights (list[int] | None = None, optional): Activation
                 weights for convex, concave, and saturated units, respectively.
-                If None, defaults to [1, 1, 1].
+                Defaults to None. If None, defaults to [1, 1, 1].
+            device (torch.device | None, optional): Device on which to
+                initialize the layer. Defaults to None.
+            dtype (torch.dtype | None, optional): Data type of the layer.
+                Defaults to None.
+
         """
         factory_kwargs = {"device": device, "dtype": dtype}
         super().__init__(in_features, out_features, **factory_kwargs, **kwargs)  # type: ignore
@@ -65,14 +72,20 @@ class MonotonicDense(nn.Linear):
             activation_weights = [1, 1, 1]
         else:
             if len(activation_weights) != 3:
-                raise ValueError(
+                msg = (
                     "`activation_weights` must have exactly three components, got "
                     f"{activation_weights}."
                 )
-            if (np.array(activation_weights) < 0).any():
                 raise ValueError(
+                    msg,
+                )
+            if (np.array(activation_weights) < 0).any():
+                msg = (
                     "`activation_weights` values must be non-negative, got "
                     f"{activation_weights}."
+                )
+                raise ValueError(
+                    msg,
                 )
         self.activation_weights = torch.Tensor(activation_weights, device=device)
         self.activation_weights = self.activation_weights / self.activation_weights.sum(dim=0)
@@ -103,7 +116,7 @@ class MonotonicDense(nn.Linear):
 
     def _activation_selector(self, x: torch.Tensor) -> torch.Tensor:
         """Select activation sign."""
-        activation_selector = torch.cat(
+        return torch.cat(
             [
                 torch.ones((x.shape[0], self.n_convex), dtype=torch.int, device=x.device),
                 -torch.ones((x.shape[0], self.n_concave), dtype=torch.int, device=x.device),
@@ -111,7 +124,6 @@ class MonotonicDense(nn.Linear):
             ],
             dim=1,
         )
-        return activation_selector
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
@@ -121,6 +133,7 @@ class MonotonicDense(nn.Linear):
 
         Returns:
             Output data.
+
         """
         with self._replace_kernel():
             y = super().forward(x)
@@ -167,14 +180,19 @@ class OrdinalEmbedding(nn.Module):
         self,
         num_embeddings: int,
         embedding_dim: int,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        device: torch.device | None = None,
+        dtype: torch.dtype | None = None,
     ) -> None:
         """Initialize the layer.
 
         Args:
             num_embeddings (int): Size of the dictionary of embeddings.
             embedding_dim (int): Size of each embedding vector.
+            device (torch.device | None, optional): Device on which to
+                initialize the layer. Defaults to None.
+            dtype (torch.dtype | None, optional): Data type of the layer.
+                Defaults to None.
+
         """
         factory_kwargs = {"device": device, "dtype": dtype}
         super().__init__()
@@ -184,12 +202,12 @@ class OrdinalEmbedding(nn.Module):
             torch.empty(
                 (self.embedding_dim, self.num_embeddings),
                 **factory_kwargs,  # type: ignore
-            )
+            ),
         )
         self.bias: torch.Tensor | None
         self.register_parameter("bias", None)
         self.null_weight = nn.Parameter(
-            torch.empty(self.embedding_dim, **factory_kwargs)  # type: ignore
+            torch.empty(self.embedding_dim, **factory_kwargs),  # type: ignore
         )
         self.reset_parameters()
 
@@ -207,6 +225,7 @@ class OrdinalEmbedding(nn.Module):
 
         Returns:
             Output data.
+
         """
         x = x.reshape(-1, 1)
         nonnull_mask = x.any(dim=1)
@@ -221,6 +240,7 @@ class OrdinalEmbedding(nn.Module):
 
         Returns:
             String representation.
+
         """
         s = "{num_embeddings}, {embedding_dim}"
         return s.format(**self.__dict__)
