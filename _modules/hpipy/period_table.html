@@ -385,7 +385,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -397,25 +397,26 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">check_date</span><span class="p">(</span>
-    <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]],</span>
+    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span> <span class="o">|</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check and validate the provided date object.</span>
 
 <span class="sd">    Checks that the date is either of type datetime or convertible to</span>
 <span class="sd">    datetime. Provides error handling for incorrect date inputs.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">        date (Optional[Union[str, datetime.date, datetime.datetime,</span>
-<span class="sd">            pd.Series]]): Date object that needs validation.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        date (str | datetime.date | datetime.datetime | pd.Series | None):</span>
+<span class="sd">            Date object that needs validation.</span>
 <span class="sd">        name (str): Name for the &#39;date&#39; argument being checked.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Union[None, datetime.datetime]: Date converted to a datetime.datetime</span>
+<span class="sd">        None | datetime.datetime: Date converted to a datetime.datetime</span>
 <span class="sd">            object. If the input date is None, the function returns None.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If date cannot be converted to a datetime object.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># If None, return None.</span>
     <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -426,13 +427,14 @@
     <span class="c1">#     raise TypeError(&quot;Date must be a datetime type.&quot;)</span>
 
     <span class="c1"># If any form of date/time, convert to datetime.</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span> <span class="o">|</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Try to convert dates given as characters, such as &#39;2000-01-01&#39;.</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">date</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> argument must be a datetime type.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> argument must be a datetime type.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">date</span>
 
@@ -444,12 +446,6 @@
 
 <span class="sd">    Organizes transaction data into defined time periods.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        trans_df (pd.DataFrame): Transaction data.</span>
-<span class="sd">        period_table (Optional[pd.DataFrame]): Period table.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: If &#39;trans_df&#39; is not or does not inherit from a DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">trans_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
@@ -460,12 +456,22 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">trans_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">period_table</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize period table.&quot;&quot;&quot;</span>
+        <span class="n">period_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize period table.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_df (pd.DataFrame): Transaction data.</span>
+<span class="sd">            period_table (pd.DataFrame | None): Period table.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If &#39;trans_df&#39; is not or does not inherit from a DataFrame.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check that `trans_df` is a DataFrame.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;trans_df&#39; must be a DataFrame (or inherit from one).&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;trans_df&#39; must be a DataFrame (or inherit from one).&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span>
 
@@ -477,13 +483,27 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_date</span><span class="p">(</span>
         <span class="n">trans_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">min_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">max_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">adj_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check date fields and arguments.&quot;&quot;&quot;</span>
+        <span class="n">min_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">adj_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check date fields and arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_df (pd.DataFrame): Transaction data.</span>
+<span class="sd">            date (str): Date field.</span>
+<span class="sd">            min_date (str | None): Minimum date.</span>
+<span class="sd">            max_date (str | None): Maximum date.</span>
+<span class="sd">            adj_type (str | None): Adjustment type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[pd.DataFrame, datetime.datetime, datetime.datetime]:</span>
+<span class="sd">                Transformed transaction data, minimum date, and maximum date.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Date must be a datetime type.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Date must be a datetime type.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Check date fields.</span>
         <span class="n">trans_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">date</span><span class="p">]</span> <span class="o">=</span> <span class="n">check_date</span><span class="p">(</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="s2">&quot;date&quot;</span><span class="p">)</span>
@@ -493,36 +513,34 @@
         <span class="c1"># Set minimum date.</span>
         <span class="k">if</span> <span class="n">min_datetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">min_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">min_datetime</span> <span class="o">&gt;</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;Supplied &#39;min_date&#39; is greater than minimum of transactions. Adjusting.&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">min_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;Supplied &#39;min_date&#39; date is greater than minimum of transactions. &quot;</span>
-                        <span class="s2">&quot;Clipping transactions.&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_datetime</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">min_datetime</span> <span class="o">&gt;</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Supplied &#39;min_date&#39; is greater than minimum of transactions. Adjusting.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">min_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Supplied &#39;min_date&#39; date is greater than minimum of transactions. &quot;</span>
+                    <span class="s2">&quot;Clipping transactions.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_datetime</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Set maximum date.</span>
         <span class="k">if</span> <span class="n">max_datetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">max_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">max_datetime</span> <span class="o">&lt;</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;Supplied &#39;max_date&#39; is less than maximum of transactions. Adjusting.&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">max_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;Supplied &#39;max_date&#39; is less than maximum of transactions. &quot;</span>
-                        <span class="s2">&quot;Clipping transactions.&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_datetime</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">max_datetime</span> <span class="o">&lt;</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Supplied &#39;max_date&#39; is less than maximum of transactions. Adjusting.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">max_datetime</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">adj_type</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Supplied &#39;max_date&#39; is less than maximum of transactions. &quot;</span>
+                    <span class="s2">&quot;Clipping transactions.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_datetime</span><span class="p">]</span>
 
         <span class="c1"># Set standardized date field.</span>
         <span class="n">trans_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;trans_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
@@ -530,8 +548,16 @@
         <span class="k">return</span> <span class="n">trans_df</span><span class="p">,</span> <span class="n">min_datetime</span><span class="p">,</span> <span class="n">max_datetime</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_periodicity</span><span class="p">(</span><span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check periodicity argument.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_periodicity</span><span class="p">(</span><span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check periodicity argument.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            periodicity (str | None): Periodicity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Periodicity.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check for periodicity.</span>
         <span class="k">if</span> <span class="n">periodicity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No &#39;periodicity&#39; supplied, defaulting to &#39;annual&#39;.&quot;</span><span class="p">)</span>
@@ -555,23 +581,23 @@
         <span class="p">]</span>
         <span class="n">periodicity</span> <span class="o">=</span> <span class="n">periodicity</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">periodicity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">periodicity_options</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;&#39;periodicity&#39; must be one of: &#39;weekly&#39;, &#39;monthly&#39;, &#39;quarterly&#39;, &quot;</span>
                 <span class="s2">&quot;&#39;annual&#39;, &#39;equalfreq&#39; or &#39;equalsample&#39;.&quot;</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">periodicity</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;yearly&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">]:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span>
-            <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;quarterly&quot;</span>
-            <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span>
-            <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;weekly&quot;</span>
-            <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;ef&quot;</span><span class="p">:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;equalfreq&quot;</span>
-            <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;es&quot;</span><span class="p">:</span>
-                <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;equalsample&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">periodicity</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;yearly&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">]:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span>
+        <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;quarterly&quot;</span>
+        <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span>
+        <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;weekly&quot;</span>
+        <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;ef&quot;</span><span class="p">:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;equalfreq&quot;</span>
+        <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;es&quot;</span><span class="p">:</span>
+            <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;equalsample&quot;</span>
 
         <span class="k">return</span> <span class="n">periodicity</span>
 
@@ -579,13 +605,27 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_periods</span><span class="p">(</span>
         <span class="n">trans_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">nbr_periods</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">freq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">first_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">last_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nbr_periods</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">first_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">last_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create dataframe of periods of specified periodicity.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create dataframe of periods of specified periodicity.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_df (pd.DataFrame): Transaction data.</span>
+<span class="sd">            periodicity (str): Periodicity.</span>
+<span class="sd">            nbr_periods (int | None): Number of periods.</span>
+<span class="sd">            freq (int | None): Frequency.</span>
+<span class="sd">            start (str | None): Start.</span>
+<span class="sd">            first_date (str | None): First date.</span>
+<span class="sd">            last_date (str | None): Last date.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: Period table.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;annual&quot;</span><span class="p">:</span>
             <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
                 <span class="n">trans_df</span><span class="p">[</span><span class="s2">&quot;trans_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">(),</span>
@@ -636,7 +676,7 @@
             <span class="n">period</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">name</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="sa">f</span><span class="s2">&quot;week: </span><span class="si">{</span><span class="n">x_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">x_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="p">]</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
         <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;equalfreq&quot;</span><span class="p">:</span>
@@ -657,14 +697,14 @@
                 <span class="n">freq</span> <span class="o">=</span> <span class="mi">30</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;You did not supply a frequency (&#39;freq = &#39;). &quot;</span>
-                    <span class="s2">&quot;Running at the default of 30 days.&quot;</span>
+                    <span class="s2">&quot;Running at the default of 30 days.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="s2">&quot;first&quot;</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;You did not specify when you wanted to start counting (&#39;start = &quot;</span>
-                    <span class="s2">&quot;[&#39;first&#39; | &#39;last&#39;]). Defaulting to starting from the first sale.&quot;</span>
+                    <span class="s2">&quot;[&#39;first&#39; | &#39;last&#39;]). Defaulting to starting from the first sale.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
@@ -696,20 +736,20 @@
             <span class="n">name</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="sa">f</span><span class="s2">&quot;equalfreq (</span><span class="si">{</span><span class="n">freq</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">x_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> to &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">for</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="p">]</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
         <span class="k">elif</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="s2">&quot;equalsample&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">nbr_periods</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span>
             <span class="c1"># Set quantiles.</span>
-            <span class="n">period_qtls</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">/</span> <span class="n">nbr_periods</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nbr_periods</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="n">period_qtls</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">/</span> <span class="n">nbr_periods</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbr_periods</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
             <span class="n">date_qtls</span> <span class="o">=</span> <span class="n">trans_df</span><span class="p">[</span><span class="s2">&quot;trans_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">period_qtls</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">values</span>
             <span class="n">date_qtls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_qtls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="n">start_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
                 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-                    <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date_qtls</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;1970-01-01&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date_qtls</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;1970-01-01&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">),</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
             <span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">end_date</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
@@ -719,7 +759,7 @@
                             <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">trans_df</span><span class="p">[</span><span class="s2">&quot;trans_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())),</span>
                         <span class="p">],</span>
                         <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
@@ -727,50 +767,56 @@
             <span class="n">name</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;period </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbr_periods</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))]</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
 
-        <span class="n">periods_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">periods_df</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PeriodTable.create_period_table">
 <a class="viewcode-back" href="../../api/_autosummary/hpipy.period_table.PeriodTable.create_period_table.html#hpipy.period_table.PeriodTable.create_period_table">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_period_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">nbr_periods</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">freq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">min_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">max_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">adj_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;move&quot;</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nbr_periods</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">min_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">adj_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;move&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a period table from a transaction dataframe.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            date (str): Date field.</span>
-<span class="sd">            periodicity (Optional[str], optional): Periodicity of the table.</span>
+<span class="sd">            periodicity (str | None, optional): Periodicity of the table.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            nbr_periods (Optional[int], optional): Number of periods (only</span>
+<span class="sd">            nbr_periods (int | None, optional): Number of periods (only</span>
 <span class="sd">                used if `periodicity` is &quot;equalsample&quot;).</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            freq (Optional[int], optional): Frequency in days (only used if</span>
+<span class="sd">            freq (int | None, optional): Frequency in days (only used if</span>
 <span class="sd">                `periodicity` is &quot;equalfreq&quot;).</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            start (Optional[str], optional): Starting position (only used if</span>
+<span class="sd">            start (str | None, optional): Starting position (only used if</span>
 <span class="sd">                `periodicity` is &quot;equalfreq&quot;). One of &quot;first&quot; or &quot;last&quot;.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            min_date (Optional[str], optional): Minimum date.</span>
+<span class="sd">            min_date (str | None, optional): Minimum date.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            max_date (Optional[str], optional): Maximum dare.</span>
+<span class="sd">            max_date (str | None, optional): Maximum dare.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            adj_type (ptional[str], optional): Adjustment type.</span>
+<span class="sd">            adj_type (str | None, optional): Adjustment type.</span>
 <span class="sd">                Defaults to &quot;move&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Period table.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">trans_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trans_df</span>
 
         <span class="n">trans_df</span><span class="p">,</span> <span class="n">min_datetime</span><span class="p">,</span> <span class="n">max_datetime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_date</span><span class="p">(</span>
-            <span class="n">trans_df</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">min_date</span><span class="p">,</span> <span class="n">max_date</span><span class="p">,</span> <span class="n">adj_type</span>
+            <span class="n">trans_df</span><span class="p">,</span>
+            <span class="n">date</span><span class="p">,</span>
+            <span class="n">min_date</span><span class="p">,</span>
+            <span class="n">max_date</span><span class="p">,</span>
+            <span class="n">adj_type</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">periodicity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_periodicity</span><span class="p">(</span><span class="n">periodicity</span><span class="p">)</span>
 
@@ -807,12 +853,12 @@
         <span class="k">if</span> <span class="n">num_periods</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Your choice of periodicity resulted in </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">num_periods</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;empty periods out of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">)</span><span class="si">}</span><span class="s2"> total periods.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;empty periods out of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">)</span><span class="si">}</span><span class="s2"> total periods.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_periods</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_table</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;You may wish to set a coarser periodicity &quot;</span>
-                    <span class="s2">&quot;or set different start and end dates.&quot;</span>
+                    <span class="s2">&quot;or set different start and end dates.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">trans_df</span> <span class="o">=</span> <span class="n">trans_df</span>

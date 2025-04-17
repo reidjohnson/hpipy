@@ -384,7 +384,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Random forest HPI extensions.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -423,26 +423,50 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_model</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a random forest house price model.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a random forest house price model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Independent variables.</span>
+<span class="sd">            y (pd.Series): Dependent variable.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_with_coefficients</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_model_with_coefficients</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit model and populate coefficients to produce index.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit model and populate coefficients to produce index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Independent variables.</span>
+<span class="sd">            y (pd.Series): Dependent variable.</span>
+<span class="sd">            estimator (str): Estimator type.</span>
+<span class="sd">            n_estimators (int): Number of estimators.</span>
+<span class="sd">            random_seed (int): Random seed.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Fit the model.</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+            <span class="n">X</span><span class="p">,</span>
+            <span class="n">y</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># model = RangerForestRegressor(</span>
         <span class="c1">#    n_estimators=n_estimators,</span>
@@ -455,14 +479,28 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_model_pdp</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">],</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from partial dependence plot (PDP) values.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from partial dependence plot (PDP) values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (RandomForestRegressor | RandomForestQuantileRegressor): Random forest model.</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Independent variables.</span>
+<span class="sd">            y (pd.Series): Dependent variable.</span>
+<span class="sd">            log_dep (bool, optional): Log transform the dependent variable.</span>
+<span class="sd">                Defaults to False.</span>
+<span class="sd">            random_seed (int): Random seed.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RandomForestRegressor | RandomForestQuantileRegressor: Random forest model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get simulation dataframe.</span>
         <span class="n">sim_X</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sim_df</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -486,11 +524,10 @@
             <span class="o">.</span><span class="n">bfill</span><span class="p">()</span>
         <span class="p">)</span>
 
+        <span class="n">base_yhat</span> <span class="o">=</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="c1"># Add coefficients.</span>
-        <span class="k">if</span> <span class="n">log_dep</span><span class="p">:</span>
-            <span class="n">coefs</span> <span class="o">=</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">coefs</span> <span class="o">=</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coefs</span> <span class="o">=</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_yhat</span> <span class="k">if</span> <span class="n">log_dep</span> <span class="k">else</span> <span class="n">pdp_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">base_yhat</span>
 
         <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">coefs</span>
 
@@ -498,15 +535,28 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_sim_df</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">sim_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sim_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sim_per</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sim_ids</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sim_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sim_per</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create simulation data.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create simulation data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Independent variables.</span>
+<span class="sd">            y (pd.Series): Dependent variable.</span>
+<span class="sd">            random_seed (int): Random seed.</span>
+<span class="sd">            sim_ids (int | None, optional): Simulation IDs.</span>
+<span class="sd">            sim_count (int | None, optional): Simulation count.</span>
+<span class="sd">            sim_per (float | None, optional): Simulation percentage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[pd.DataFrame | pd.Series, pd.Series]: Simulation data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If no filters.</span>
         <span class="k">if</span> <span class="n">sim_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sim_count</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sim_per</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
@@ -517,10 +567,7 @@
 
         <span class="c1"># If a sim percentage is provided.</span>
         <span class="k">if</span> <span class="n">sim_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">sim_per</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">sim_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">sim_per</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">sim_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">sim_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">sim_per</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span> <span class="k">if</span> <span class="n">sim_per</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="c1"># Take sample.</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
@@ -534,8 +581,8 @@
 <a class="viewcode-back" href="../../../../api/_autosummary/hpipy.extensions.RandomForestModel.fit.html#hpipy.extensions.RandomForestModel.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dep_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ind_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dep_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ind_var</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pdp&quot;</span><span class="p">,</span>
         <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
@@ -545,9 +592,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the random forest model and generate index coefficients.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            dep_var (Optional[str], optional): Dependent variable.</span>
+<span class="sd">            dep_var (str | None, optional): Dependent variable.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            ind_var (Optional[list[str]], optional): Independent variable(s).</span>
+<span class="sd">            ind_var (list[str] | None, optional): Independent variable(s).</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            estimator (str, optional): Estimator type.</span>
 <span class="sd">                Defaults to &quot;pdp&quot;.</span>
@@ -557,11 +604,16 @@
 <span class="sd">                Defaults to 100.</span>
 <span class="sd">            random_seed (int, optional): Random seed to use.</span>
 <span class="sd">                Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Fitted model.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hpi_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">dep_var</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ind_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;dep_var&#39; and &#39;ind_var&#39; must be supplied.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;dep_var&#39; and &#39;ind_var&#39; must be supplied.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># oh_enc = OneHotEncoder(drop=&quot;first&quot;)</span>
         <span class="c1"># oh_enc.fit(hpi_df[[&quot;trans_period&quot;]])</span>
@@ -576,8 +628,8 @@
                 <span class="n">hpi_df</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi_df</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
                 <span class="n">hpi_df</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi_df</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span>
 
-        <span class="n">X</span> <span class="o">=</span> <span class="n">hpi_df</span><span class="p">[</span><span class="n">ind_var</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="n">dep_var</span><span class="p">])</span> <span class="k">if</span> <span class="n">log_dep</span> <span class="k">else</span> <span class="n">hpi_df</span><span class="p">[</span><span class="n">dep_var</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">hpi_df</span><span class="p">[[</span><span class="o">*</span><span class="n">ind_var</span><span class="p">,</span> <span class="s2">&quot;trans_period&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="n">dep_var</span><span class="p">])</span> <span class="k">if</span> <span class="n">log_dep</span> <span class="k">else</span> <span class="n">hpi_df</span><span class="p">[</span><span class="n">dep_var</span><span class="p">]</span>
 
         <span class="c1"># Extract base period mean price.</span>
         <span class="n">base_price</span> <span class="o">=</span> <span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">][</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -586,13 +638,14 @@
         <span class="k">if</span> <span class="n">estimator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pdp&quot;</span><span class="p">]:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Provided estimator type is not supported. Allowed estimators are: &quot;</span>
-                <span class="s2">&quot;&#39;pdp&#39;. Defaulting to &#39;pdp&#39;.&quot;</span>
+                <span class="s2">&quot;&#39;pdp&#39;. Defaulting to &#39;pdp&#39;.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="s2">&quot;pdp&quot;</span>
 
         <span class="c1"># Check log dep vs data.</span>
-        <span class="k">if</span> <span class="n">log_dep</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Your &#39;price&#39; field includes invalid values.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">log_dep</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Your &#39;price&#39; field includes invalid values.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_model</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
@@ -605,8 +658,9 @@
         <span class="p">)</span>
 
         <span class="c1"># Check for successful model estimation.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="n">RandomForestRegressor</span><span class="p">,</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model estimator was unsuccessful.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">)):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Model estimator was unsuccessful.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Period names.</span>
         <span class="c1"># p_names = [len(ind_var) + idx for idx in range(len(oh_enc.categories_[0]) - 1)]</span>

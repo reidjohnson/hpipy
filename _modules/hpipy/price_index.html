@@ -386,7 +386,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -419,7 +419,7 @@
     <span class="n">revision</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="n">revision_smooth</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize base house price index.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -428,15 +428,19 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">coef_to_index</span><span class="p">(</span>
         <span class="n">coef_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="n">base_price</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="n">base_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert coefficients to an index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            coef_df (pd.DataFrame): Coefficients.</span>
 <span class="sd">            log_dep (bool): Log dependent variable.</span>
-<span class="sd">            base_price (Union[int, float], optional): Base price.</span>
+<span class="sd">            base_price (float, optional): Base price.</span>
 <span class="sd">                Defaults to 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[np.ndarray, np.ndarray]: Index and imputed values.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coef_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-15</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">coef_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">coef_df</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -473,7 +477,7 @@
 
             <span class="c1"># coef_df[&quot;coefficient&quot;] = coef_df[&quot;coefficient&quot;].interpolate(method=&quot;linear&quot;)</span>
             <span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">interpolate_stineman</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">interpolate_stineman</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">)),</span>
             <span class="p">)</span>
 
             <span class="n">n_imp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">na_coef</span><span class="p">[</span><span class="n">na_coef</span><span class="p">])</span>
@@ -482,12 +486,12 @@
         <span class="n">max_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
         <span class="c1"># Convert estimate to an index value.</span>
-        <span class="k">if</span> <span class="n">log_dep</span><span class="p">:</span>
-            <span class="n">estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">])</span>
-            <span class="n">index_value</span> <span class="o">=</span> <span class="p">((</span><span class="n">estimate</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)[:</span><span class="n">max_period</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">log_dep</span><span class="p">:</span>  <span class="c1"># coefficients represent log-ratio: log(Pt / P0)</span>
+            <span class="n">estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">])</span>
+            <span class="n">index_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">estimate</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)[:</span><span class="n">max_period</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># coefficients represent price delta: Pt - P0</span>
             <span class="n">estimate</span> <span class="o">=</span> <span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;coefficient&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">base_price</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_price</span>
-            <span class="n">index_value</span> <span class="o">=</span> <span class="p">((</span><span class="n">estimate</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)[:</span><span class="n">max_period</span><span class="p">]</span>
+            <span class="n">index_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">estimate</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)[:</span><span class="n">max_period</span><span class="p">]</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">index_value</span>
 
         <span class="k">return</span> <span class="n">index</span><span class="p">,</span> <span class="n">is_imputed</span>
@@ -496,8 +500,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_model</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span>
-        <span class="n">trans_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">max_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
@@ -505,28 +509,33 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            model (BaseHousePriceModel): House price model object.</span>
-<span class="sd">            trans_data (Optional[TransactionData], optional): Transaction data</span>
+<span class="sd">            trans_data (TransactionData | None, optional): Transaction data</span>
 <span class="sd">                object.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            max_period (Optional[int], optional): Maximum period for the</span>
-<span class="sd">                index.</span>
+<span class="sd">            max_period (int | None, optional): Maximum period for the index.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            smooth (bool, optional): Smooth the index.</span>
 <span class="sd">                Defaults to False.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Index object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_period</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">max_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
         <span class="c1"># Check max period.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_period</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;max_period&#39; argument must be numeric/integer.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_period</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;max_period&#39; argument must be numeric/integer.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Extract coefficients.</span>
         <span class="n">coef_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_period</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))})</span>
         <span class="n">coef_df</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
 
         <span class="n">log_dep</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="s2">&quot;log_dep&quot;</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;log_dep&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_dep&quot;</span><span class="p">):</span>
             <span class="n">log_dep</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">coef_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">]</span>
@@ -538,7 +547,9 @@
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">unique_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
                 <span class="n">coef_df_i</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">partition_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
                 <span class="n">index_i</span><span class="p">,</span> <span class="n">is_imputed_i</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">coef_to_index</span><span class="p">(</span>
-                    <span class="n">coef_df_i</span><span class="p">,</span> <span class="n">log_dep</span><span class="p">,</span> <span class="n">base_price</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">base_price</span>
+                    <span class="n">coef_df_i</span><span class="p">,</span>
+                    <span class="n">log_dep</span><span class="p">,</span>
+                    <span class="n">base_price</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">base_price</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">index_i_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">index_i</span><span class="p">})</span>
                 <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">partition_cols</span><span class="p">:</span>
@@ -558,17 +569,16 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">BaseHousePriceIndex</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Converting model results to index failed.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Converting model results to index failed.&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;smooth_order&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">smooth_order</span> <span class="o">=</span> <span class="mi">3</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">smooth_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;smooth_order&quot;</span><span class="p">]</span>
+            <span class="n">smooth_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;smooth_order&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
             <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">smooth_index</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">smooth_order</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Smoothing index failed.&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Smoothing index failed.&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">trans_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">trans_data</span>
@@ -594,9 +604,22 @@
     <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_transactions</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract transaction data creation method.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract transaction data creation method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_data (TransactionData): Transaction data.</span>
+<span class="sd">            *args: Additional arguments.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TransactionData: Transaction data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@classmethod</span>
@@ -608,52 +631,59 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">trans_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TransactionData</span><span class="p">,</span> <span class="n">PeriodTable</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
-        <span class="n">prop_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">trans_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">|</span> <span class="n">PeriodTable</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">prop_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">seq_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">max_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">min_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">max_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">adj_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">min_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">adj_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the index.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            trans_data (TransactionData): Input transaction data.</span>
-<span class="sd">            prop_id (Optional[str], optional): Property identifier.</span>
+<span class="sd">            trans_data (TransactionData | PeriodTable | pd.DataFrame): Input</span>
+<span class="sd">                transaction data.</span>
+<span class="sd">            prop_id (str | None, optional): Property identifier.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            trans_id (Optional[str], optional): Transaction identifier.</span>
+<span class="sd">            trans_id (str | None, optional): Transaction identifier.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            price (Optional[str], optional): Price column name.</span>
+<span class="sd">            price (str | None, optional): Price column name.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            seq_only (bool, optional): Sequential only.</span>
 <span class="sd">                Defaults to True.</span>
-<span class="sd">            max_period (Optional[int], optional): Maximum index period.</span>
+<span class="sd">            max_period (int | None, optional): Maximum index period.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            smooth (bool, optional): Smooth the index.</span>
 <span class="sd">                Defaults to False.</span>
-<span class="sd">            periodicity (Optional[str], optional): Periodicity of the index.</span>
+<span class="sd">            periodicity (str | None, optional): Periodicity of the index.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            min_date (Optional[str], optional): Minimum date for the index.</span>
+<span class="sd">            min_date (str | None, optional): Minimum date for the index.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            max_date (Optional[str], optional): Maximum date for the index.</span>
+<span class="sd">            max_date (str | None, optional): Maximum date for the index.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            adj_type (Optional[str], optional): Adjustment type.</span>
+<span class="sd">            adj_type (str | None, optional): Adjustment type.</span>
 <span class="sd">                Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Index object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if trans_data has a trans_df object.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_data</span><span class="p">,</span> <span class="n">TransactionData</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_data</span><span class="p">,</span> <span class="n">PeriodTable</span><span class="p">):</span>
                 <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="s2">&quot;When supplying a raw dataframe to the &#39;trans_df&#39; object, a valid &#39;date&#39; &quot;</span>
                         <span class="s2">&quot;argument must be supplied.&quot;</span>
                     <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
                 <span class="c1"># Create period table object.</span>
                 <span class="n">trans_data</span> <span class="o">=</span> <span class="n">PeriodTable</span><span class="p">(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_period_table</span><span class="p">(</span>
@@ -665,21 +695,24 @@
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">trans_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;When not supplying an &#39;hpidata&#39; object, a &#39;trans_id&#39; argument must be &quot;</span>
                     <span class="s2">&quot;supplied.&quot;</span>
                 <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">prop_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;When not supplying an &#39;hpidata&#39; object, a &#39;prop_id&#39; argument must be &quot;</span>
                     <span class="s2">&quot;supplied.&quot;</span>
                 <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;When not supplying an &#39;hpidata&#39; object, a &#39;price&#39; argument must be supplied.&quot;</span>
                 <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># Create transaction data object.</span>
             <span class="n">trans_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_transactions</span><span class="p">(</span>
@@ -693,15 +726,17 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trans_data</span><span class="p">,</span> <span class="s2">&quot;trans_df&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Converting sales data to sales object failed.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Converting sales data to sales object failed.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_model</span><span class="p">(</span><span class="n">trans_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">BaseHousePriceModel</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Estimating model failed.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Estimating model failed.&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Convert to an index.</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span>
             <span class="n">model</span><span class="p">,</span>
             <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
             <span class="n">max_period</span><span class="o">=</span><span class="n">max_period</span><span class="p">,</span>
@@ -709,12 +744,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">index</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">create_series</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
-        <span class="n">max_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a series from the index.</span>
@@ -722,9 +755,13 @@
 <span class="sd">        Args:</span>
 <span class="sd">            train_period (int, optional): Train period for the series.</span>
 <span class="sd">                Defaults to 12.</span>
-<span class="sd">            max_period (Optional[int], optional): Maximum period for the</span>
-<span class="sd">                series.</span>
+<span class="sd">            max_period (int | None, optional): Maximum period for the series.</span>
 <span class="sd">                Defaults to None.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Index object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
@@ -732,8 +769,9 @@
             <span class="k">raise</span> <span class="ne">ValueError</span>
 
         <span class="c1"># Check training period.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_period</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;train_period&#39; must be a single numeric value.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_period</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;train_period&#39; must be a single numeric value.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">train_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_period</span><span class="p">)</span>
 
@@ -746,10 +784,11 @@
 
         <span class="c1"># Ensure training period is no greater than specified max or index max.</span>
         <span class="k">if</span> <span class="n">train_period</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">periods</span><span class="o">.</span><span class="n">period</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">max_period</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;&#39;train_period&#39; is greater than the length of the &quot;</span>
                 <span class="s2">&quot;index and/or the &#39;max_period&#39; argument.&quot;</span>
             <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Trim by time.</span>
         <span class="n">time_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">train_period</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_period</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
@@ -778,7 +817,7 @@
                     <span class="n">model_i</span><span class="p">,</span>
                     <span class="n">trans_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                     <span class="n">max_period</span><span class="o">=</span><span class="n">time_range</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">is_hpis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index_i</span><span class="p">)</span>
 
@@ -788,19 +827,20 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">smooth_index</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">order</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Smooth the index.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            order (Union[list[int], int], optional): Smoothing order.</span>
+<span class="sd">            order (list[int] | int, optional): Smoothing order.</span>
 <span class="sd">                Defaults to 3.</span>
 <span class="sd">            in_place (bool, optional): Smooth in place or return new object.</span>
 <span class="sd">                Defaults to False.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Self with smoothed index or new smoothed index object.</span>
+<span class="sd">            Self | pd.Series: Smoothed index or new smoothed index object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="n">order</span><span class="p">]</span>
@@ -811,17 +851,18 @@
         <span class="c1"># Check order.</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">o_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">o_i</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">o_i</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">o_i</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="n">o_i</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                <span class="ow">and</span> <span class="n">o_i</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="n">o_i</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">order</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">o_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;&#39;order&#39; argument must be a positive integer or list of positive integers &quot;</span>
                     <span class="s2">&quot; less than half the length of the index.&quot;</span>
                 <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Create smoothed index (retain existing).</span>
         <span class="n">s_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
@@ -865,6 +906,10 @@
 <span class="sd">        Args:</span>
 <span class="sd">            order (int) Smoothing order.</span>
 <span class="sd">                Defaults to 3.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Index object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">hpi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpis</span><span class="p">:</span>
             <span class="n">hpi</span> <span class="o">=</span> <span class="n">hpi</span><span class="o">.</span><span class="n">smooth_index</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -876,78 +921,54 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RepeatTransactionIndex</span><span class="p">(</span><span class="n">BaseHousePriceIndex</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Repeat transaction house price index.</span>
 
-<span class="sd">    This class implements the repeat transaction methodology for constructing</span>
-<span class="sd">    house price indices. It uses pairs of transactions for the same property</span>
-<span class="sd">    to estimate price changes over time, controlling for property-specific</span>
-<span class="sd">    characteristics that remain constant between sales.</span>
+<span class="sd">    Implements the repeat transaction methodology for constructing</span>
+<span class="sd">    house price indices. It uses pairs of transactions for the same</span>
+<span class="sd">    property to estimate price changes over time, controlling for</span>
+<span class="sd">    property-specific characteristics that remain constant between sales.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data : TransactionData</span>
-<span class="sd">        The transaction data used to construct the index.</span>
-<span class="sd">    model : BaseHousePriceModel</span>
-<span class="sd">        The underlying price model used to estimate the index.</span>
-<span class="sd">    name : pd.Series</span>
-<span class="sd">        The names of the time periods in the index.</span>
-<span class="sd">    periods : pd.Series</span>
-<span class="sd">        The time periods covered by the index.</span>
-<span class="sd">    value : pd.Series</span>
-<span class="sd">        The index values.</span>
-<span class="sd">    index : Any</span>
-<span class="sd">        The index values in a different format.</span>
-<span class="sd">    imputed : np.ndarray</span>
-<span class="sd">        Boolean array indicating which periods were imputed.</span>
-<span class="sd">    smooth : Any</span>
-<span class="sd">        Smoothed version of the index values.</span>
-<span class="sd">    volatility : pd.DataFrame</span>
-<span class="sd">        Volatility measures for the index.</span>
-<span class="sd">    volatility_smooth : pd.DataFrame</span>
-<span class="sd">        Smoothed volatility measures.</span>
-<span class="sd">    revision : pd.DataFrame</span>
-<span class="sd">        Revision measures for the index.</span>
-<span class="sd">    revision_smooth : pd.DataFrame</span>
-<span class="sd">        Smoothed revision measures.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data: TransactionData. The transaction data used to construct the</span>
+<span class="sd">            index.</span>
+<span class="sd">        model: BaseHousePriceModel. The underlying price model used to</span>
+<span class="sd">            estimate the index.</span>
 
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    get_data()</span>
-<span class="sd">        Returns the appropriate transaction data class.</span>
-<span class="sd">    get_model()</span>
-<span class="sd">        Returns the appropriate price model class.</span>
-<span class="sd">    _create_transactions(trans_data, *args, **kwargs)</span>
-<span class="sd">        Creates transaction data from input data.</span>
-<span class="sd">    _create_model(trans_data, estimator, log_dep, **kwargs)</span>
-<span class="sd">        Creates a price model from transaction data.</span>
-<span class="sd">    create_index(trans_data, *args, **kwargs)</span>
-<span class="sd">        Creates a new index from transaction data.</span>
-<span class="sd">    create_series(train_period=12, max_period=None, **kwargs)</span>
-<span class="sd">        Creates a series of indices for different time periods.</span>
-<span class="sd">    smooth_index(order=3, in_place=False)</span>
-<span class="sd">        Smooths the index values.</span>
-<span class="sd">    smooth_series(order=3)</span>
-<span class="sd">        Smooths a series of indices.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: pd.Series. The names of the time periods in the index.</span>
+<span class="sd">        periods: pd.Series. The time periods covered by the index.</span>
+<span class="sd">        value: pd.Series. The index values.</span>
+<span class="sd">        index: Any. The index values in an alternate format.</span>
+<span class="sd">        imputed: np.ndarray. Boolean array indicating which periods were</span>
+<span class="sd">            imputed.</span>
+<span class="sd">        smooth: Any. Smoothed version of the index values.</span>
+<span class="sd">        volatility: pd.DataFrame. Volatility measures for the index.</span>
+<span class="sd">        volatility_smooth: pd.DataFrame. Smoothed volatility measures.</span>
+<span class="sd">        revision: pd.DataFrame. Revision measures for the index.</span>
+<span class="sd">        revision_smooth: pd.DataFrame. Smoothed revision measures.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
-<span class="sd">    &gt;&gt;&gt; from hpipy.price_index import RepeatTransactionIndex</span>
-<span class="sd">    &gt;&gt;&gt; # Create sample transaction data.</span>
-<span class="sd">    &gt;&gt;&gt; data = pd.DataFrame({</span>
-<span class="sd">    ...     &quot;property_id&quot;: [1, 1, 2, 2],</span>
-<span class="sd">    ...     &quot;transaction_id&quot;: [1, 2, 3, 4],</span>
-<span class="sd">    ...     &quot;price&quot;: [200000, 250000, 300000, 350000],</span>
-<span class="sd">    ...     &quot;date&quot;: [&quot;2020-01&quot;, &quot;2021-01&quot;, &quot;2020-02&quot;, &quot;2021-02&quot;],</span>
-<span class="sd">    ... })</span>
-<span class="sd">    &gt;&gt;&gt; # Create index.</span>
-<span class="sd">    &gt;&gt;&gt; index = RepeatTransactionIndex.create_index(</span>
-<span class="sd">    ...     data,</span>
-<span class="sd">    ...     prop_id=&quot;property_id&quot;,</span>
-<span class="sd">    ...     trans_id=&quot;transaction_id&quot;,</span>
-<span class="sd">    ...     price=&quot;price&quot;,</span>
-<span class="sd">    ...     periodicity=&quot;M&quot;,</span>
-<span class="sd">    ...     min_date=&quot;2020-01&quot;,</span>
-<span class="sd">    ...     max_date=&quot;2021-02&quot;,</span>
-<span class="sd">    ... )</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">        &gt;&gt;&gt; from hpipy.price_index import RepeatTransactionIndex</span>
+<span class="sd">        &gt;&gt;&gt; # Create sample transaction data.</span>
+<span class="sd">        &gt;&gt;&gt; data = pd.DataFrame({</span>
+<span class="sd">        ...     &quot;property_id&quot;: [1, 1, 2],</span>
+<span class="sd">        ...     &quot;transaction_id&quot;: [1, 2, 3],</span>
+<span class="sd">        ...     &quot;price&quot;: [200000, 250000, 300000],</span>
+<span class="sd">        ...     &quot;date&quot;: pd.to_datetime([&quot;2020-01&quot;, &quot;2021-01&quot;, &quot;2020-02&quot;]),</span>
+<span class="sd">        ... })</span>
+<span class="sd">        &gt;&gt;&gt; # Create index.</span>
+<span class="sd">        &gt;&gt;&gt; index = RepeatTransactionIndex.create_index(</span>
+<span class="sd">        ...     data,</span>
+<span class="sd">        ...     prop_id=&quot;property_id&quot;,</span>
+<span class="sd">        ...     trans_id=&quot;transaction_id&quot;,</span>
+<span class="sd">        ...     price=&quot;price&quot;,</span>
+<span class="sd">        ...     date=&quot;date&quot;,</span>
+<span class="sd">        ...     periodicity=&quot;Y&quot;,</span>
+<span class="sd">        ...     min_date=&quot;2020-01&quot;,</span>
+<span class="sd">        ...     max_date=&quot;2021-02&quot;,</span>
+<span class="sd">        ...     estimator=&quot;robust&quot;,</span>
+<span class="sd">        ...     log_dep=True,</span>
+<span class="sd">        ... )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RepeatTransactionIndex.get_data">
@@ -966,8 +987,6 @@
         <span class="k">return</span> <span class="n">RepeatTransactionModel</span></div>
 
 
-<div class="viewcode-block" id="RepeatTransactionIndex._create_transactions">
-<a class="viewcode-back" href="../../api/_autosummary/hpipy.price_index.RepeatTransactionIndex.html#hpipy.price_index.RepeatTransactionIndex._create_transactions">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_transactions</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -975,12 +994,20 @@
         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create repeat transaction data.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_data</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create repeat transaction data.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            trans_data (pd.DataFrame): The transaction data used to construct</span>
+<span class="sd">                the index.</span>
+<span class="sd">            *args: Additional arguments.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
 
-<div class="viewcode-block" id="RepeatTransactionIndex._create_model">
-<a class="viewcode-back" href="../../api/_autosummary/hpipy.price_index.RepeatTransactionIndex.html#hpipy.price_index.RepeatTransactionIndex._create_model">[docs]</a>
+<span class="sd">        Returns:</span>
+<span class="sd">            TransactionData: The repeat transaction data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_data</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_model</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -989,9 +1016,20 @@
         <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceModel</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a repeat transaction house price model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a repeat transaction house price model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_data (TransactionData): The transaction data used to</span>
+<span class="sd">                construct the index.</span>
+<span class="sd">            estimator (str): The estimator to use.</span>
+<span class="sd">            log_dep (bool): Whether to use a log-dependent variable.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseHousePriceModel: The repeat transaction house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_model</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span> <span class="n">log_dep</span><span class="o">=</span><span class="n">log_dep</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-</div>
 
 
 
@@ -1000,81 +1038,56 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">HedonicIndex</span><span class="p">(</span><span class="n">BaseHousePriceIndex</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hedonic house price index.</span>
 
-<span class="sd">    This class implements the hedonic methodology for constructing house price</span>
+<span class="sd">    Implements the hedonic methodology for constructing house price</span>
 <span class="sd">    indices. It uses property characteristics to control for quality</span>
-<span class="sd">    differences between properties and estimates the pure price change over</span>
-<span class="sd">    time.</span>
+<span class="sd">    differences between properties and estimates the pure price change</span>
+<span class="sd">    over time.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data : TransactionData</span>
-<span class="sd">        The transaction data used to construct the index.</span>
-<span class="sd">    model : BaseHousePriceModel</span>
-<span class="sd">        The underlying price model used to estimate the index.</span>
-<span class="sd">    name : pd.Series</span>
-<span class="sd">        The names of the time periods in the index.</span>
-<span class="sd">    periods : pd.Series</span>
-<span class="sd">        The time periods covered by the index.</span>
-<span class="sd">    value : pd.Series</span>
-<span class="sd">        The index values.</span>
-<span class="sd">    index : Any</span>
-<span class="sd">        The index values in a different format.</span>
-<span class="sd">    imputed : np.ndarray</span>
-<span class="sd">        Boolean array indicating which periods were imputed.</span>
-<span class="sd">    smooth : Any</span>
-<span class="sd">        Smoothed version of the index values.</span>
-<span class="sd">    volatility : pd.DataFrame</span>
-<span class="sd">        Volatility measures for the index.</span>
-<span class="sd">    volatility_smooth : pd.DataFrame</span>
-<span class="sd">        Smoothed volatility measures.</span>
-<span class="sd">    revision : pd.DataFrame</span>
-<span class="sd">        Revision measures for the index.</span>
-<span class="sd">    revision_smooth : pd.DataFrame</span>
-<span class="sd">        Smoothed revision measures.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data: TransactionData. The transaction data used to construct the</span>
+<span class="sd">            index.</span>
+<span class="sd">        model: BaseHousePriceModel. The underlying price model used to</span>
+<span class="sd">            estimate the index.</span>
 
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    get_data()</span>
-<span class="sd">        Returns the appropriate transaction data class.</span>
-<span class="sd">    get_model()</span>
-<span class="sd">        Returns the appropriate price model class.</span>
-<span class="sd">    _create_transactions(trans_data, *args, **kwargs)</span>
-<span class="sd">        Creates transaction data from input data.</span>
-<span class="sd">    _create_model(trans_data, dep_var, ind_var, **kwargs)</span>
-<span class="sd">        Creates a price model from transaction data.</span>
-<span class="sd">    create_index(trans_data, *args, **kwargs)</span>
-<span class="sd">        Creates a new index from transaction data.</span>
-<span class="sd">    create_series(train_period=12, max_period=None, **kwargs)</span>
-<span class="sd">        Creates a series of indices for different time periods.</span>
-<span class="sd">    smooth_index(order=3, in_place=False)</span>
-<span class="sd">        Smooths the index values.</span>
-<span class="sd">    smooth_series(order=3)</span>
-<span class="sd">        Smooths a series of indices.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: pd.Series. The names of the time periods in the index.</span>
+<span class="sd">        periods: pd.Series. The time periods covered by the index.</span>
+<span class="sd">        value: pd.Series. The index values.</span>
+<span class="sd">        index: Any. The index values in an alternate format.</span>
+<span class="sd">        imputed: np.ndarray. Boolean array indicating which periods were</span>
+<span class="sd">            imputed.</span>
+<span class="sd">        smooth: Any. Smoothed version of the index values.</span>
+<span class="sd">        volatility: pd.DataFrame. Volatility measures for the index.</span>
+<span class="sd">        volatility_smooth: pd.DataFrame. Smoothed volatility measures.</span>
+<span class="sd">        revision: pd.DataFrame. Revision measures for the index.</span>
+<span class="sd">        revision_smooth: pd.DataFrame. Smoothed revision measures.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
-<span class="sd">    &gt;&gt;&gt; from hpipy.price_index import HedonicIndex</span>
-<span class="sd">    &gt;&gt;&gt; # Create sample transaction data.</span>
-<span class="sd">    &gt;&gt;&gt; data = pd.DataFrame({</span>
-<span class="sd">    ...     &quot;property_id&quot;: [1, 2, 3, 4],</span>
-<span class="sd">    ...     &quot;transaction_id&quot;: [1, 2, 3, 4],</span>
-<span class="sd">    ...     &quot;price&quot;: [200000, 250000, 300000, 350000],</span>
-<span class="sd">    ...     &quot;date&quot;: [&quot;2020-01&quot;, &quot;2020-01&quot;, &quot;2021-01&quot;, &quot;2021-01&quot;],</span>
-<span class="sd">    ...     &quot;sqft&quot;: [1500, 1800, 2000, 2200],</span>
-<span class="sd">    ...     &quot;bedrooms&quot;: [3, 3, 4, 4],</span>
-<span class="sd">    ... })</span>
-<span class="sd">    &gt;&gt;&gt; # Create index.</span>
-<span class="sd">    &gt;&gt;&gt; index = HedonicIndex.create_index(</span>
-<span class="sd">    ...     data,</span>
-<span class="sd">    ...     prop_id=&quot;property_id&quot;,</span>
-<span class="sd">    ...     trans_id=&quot;transaction_id&quot;,</span>
-<span class="sd">    ...     price=&quot;price&quot;,</span>
-<span class="sd">    ...     periodicity=&quot;M&quot;,</span>
-<span class="sd">    ...     min_date=&quot;2020-01&quot;,</span>
-<span class="sd">    ...     max_date=&quot;2021-01&quot;,</span>
-<span class="sd">    ...     ind_var=[&quot;sqft&quot;, &quot;bedrooms&quot;],</span>
-<span class="sd">    ... )</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">        &gt;&gt;&gt; from hpipy.price_index import HedonicIndex</span>
+<span class="sd">        &gt;&gt;&gt; # Create sample transaction data.</span>
+<span class="sd">        &gt;&gt;&gt; data = pd.DataFrame({</span>
+<span class="sd">        ...     &quot;property_id&quot;: [1, 2, 3],</span>
+<span class="sd">        ...     &quot;transaction_id&quot;: [1, 2, 3],</span>
+<span class="sd">        ...     &quot;price&quot;: [200000, 250000, 300000],</span>
+<span class="sd">        ...     &quot;date&quot;: pd.to_datetime([&quot;2020-01&quot;, &quot;2021-01&quot;, &quot;2020-02&quot;]),</span>
+<span class="sd">        ...     &quot;sqft&quot;: [1500, 1800, 2000],</span>
+<span class="sd">        ...     &quot;bedrooms&quot;: [3, 3, 4],</span>
+<span class="sd">        ... })</span>
+<span class="sd">        &gt;&gt;&gt; # Create index.</span>
+<span class="sd">        &gt;&gt;&gt; index = HedonicIndex.create_index(</span>
+<span class="sd">        ...     data,</span>
+<span class="sd">        ...     prop_id=&quot;property_id&quot;,</span>
+<span class="sd">        ...     trans_id=&quot;transaction_id&quot;,</span>
+<span class="sd">        ...     price=&quot;price&quot;,</span>
+<span class="sd">        ...     date=&quot;date&quot;,</span>
+<span class="sd">        ...     periodicity=&quot;A&quot;,</span>
+<span class="sd">        ...     min_date=&quot;2020-01&quot;,</span>
+<span class="sd">        ...     max_date=&quot;2021-01&quot;,</span>
+<span class="sd">        ...     dep_var=&quot;price&quot;,</span>
+<span class="sd">        ...     ind_var=[&quot;sqft&quot;, &quot;bedrooms&quot;],</span>
+<span class="sd">        ... )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HedonicIndex.get_data">
@@ -1093,8 +1106,6 @@
         <span class="k">return</span> <span class="n">HedonicModel</span></div>
 
 
-<div class="viewcode-block" id="HedonicIndex._create_transactions">
-<a class="viewcode-back" href="../../api/_autosummary/hpipy.price_index.HedonicIndex.html#hpipy.price_index.HedonicIndex._create_transactions">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_transactions</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -1102,12 +1113,20 @@
         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create hedonic transaction data.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_data</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create hedonic transaction data.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            trans_data (pd.DataFrame): The transaction data used to construct</span>
+<span class="sd">                the index.</span>
+<span class="sd">            *args: Additional arguments.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
 
-<div class="viewcode-block" id="HedonicIndex._create_model">
-<a class="viewcode-back" href="../../api/_autosummary/hpipy.price_index.HedonicIndex.html#hpipy.price_index.HedonicIndex._create_model">[docs]</a>
+<span class="sd">        Returns:</span>
+<span class="sd">            TransactionData: The hedonic transaction data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_data</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_transactions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_model</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -1116,13 +1135,23 @@
         <span class="n">ind_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceModel</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a hedonic house price model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a hedonic house price model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trans_data (TransactionData): The transaction data used to construct</span>
+<span class="sd">                the index.</span>
+<span class="sd">            dep_var (str): The dependent variable.</span>
+<span class="sd">            ind_var (str): The independent variables.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseHousePriceModel: The hedonic house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">dep_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ind_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_model</span><span class="p">()(</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">,</span> <span class="n">ind_var</span><span class="o">=</span><span class="n">ind_var</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;A dependent (dep_var) and independent variables (ind_var) must be provided.&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div>
-</div>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;A dependent (dep_var) and independent variables (ind_var) must be provided.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 </pre></div>
 

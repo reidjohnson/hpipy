@@ -386,7 +386,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -405,68 +405,92 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transaction data class.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        trans_data (Union[PeriodTable, pd.DataFrame]): Data from which to</span>
+<span class="sd">        trans_data (PeriodTable | pd.DataFrame): Data from which to</span>
 <span class="sd">            create transactions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        trans_data (PeriodTable | pd.DataFrame): Data from which to</span>
+<span class="sd">            create transactions.</span>
+<span class="sd">        trans_df (pd.DataFrame): Transaction data.</span>
+<span class="sd">        period_table (pd.DataFrame): Period table.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">        &gt;&gt;&gt; from hpipy.trans_data import TransactionData</span>
+<span class="sd">        &gt;&gt;&gt; trans_data = pd.DataFrame({</span>
+<span class="sd">        ...     &quot;prop_id&quot;: [1, 2, 3],</span>
+<span class="sd">        ...     &quot;trans_id&quot;: [1, 2, 3],</span>
+<span class="sd">        ...     &quot;price&quot;: [100, 200, 300],</span>
+<span class="sd">        ...     &quot;date&quot;: pd.to_datetime([&quot;2020-01&quot;, &quot;2021-01&quot;, &quot;2020-02&quot;]),</span>
+<span class="sd">        ... })</span>
+<span class="sd">        &gt;&gt;&gt; trans_data = TransactionData(trans_data)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">trans_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PeriodTable</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+    <span class="n">trans_data</span><span class="p">:</span> <span class="n">PeriodTable</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="n">trans_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="n">period_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
 
 <div class="viewcode-block" id="TransactionData.__init__">
 <a class="viewcode-back" href="../../api/_autosummary/hpipy.trans_data.TransactionData.__init__.html#hpipy.trans_data.TransactionData.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trans_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PeriodTable</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trans_data</span><span class="p">:</span> <span class="n">PeriodTable</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize transaction data.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trans_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PeriodTable</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans_data</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_data</span><span class="p">:</span> <span class="n">PeriodTable</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">trans_data</span></div>
 
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_fields</span><span class="p">(</span>
-        <span class="n">prop_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">trans_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">prop_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check necessary fields.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            prop_id (Optional[str]): Property identifier.</span>
-<span class="sd">            trans_id (Optional[str]): Transaction identifier.</span>
-<span class="sd">            price (Optional[str]): Price column name.</span>
+<span class="sd">            prop_id (str | None): Property identifier.</span>
+<span class="sd">            trans_id (str | None): Transaction identifier.</span>
+<span class="sd">            price (str | None): Price column name.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">prop_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;prop_id&#39; field not found.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;prop_id&#39; field not found.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">trans_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;trans_id&#39; field not found.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;trans_id&#39; field not found.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;price&#39; field not found.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;price&#39; field not found.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_period_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create period table.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            date (Optional[str]): Date column name.</span>
-<span class="sd">            periodicity (Optional[str], optional): Period frequency.</span>
+<span class="sd">            date (str | None): Date column name.</span>
+<span class="sd">            periodicity (str | None, optional): Period frequency.</span>
 <span class="sd">                Defaults to None.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create the `trans_df` if not provided.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_data</span><span class="p">,</span> <span class="n">PeriodTable</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;You must provide the name of a field with date of transaction (date=).&quot;</span>
-                <span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;You must provide the name of a field with date of transaction (date=).&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">periodicity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No periodicity (periodicity=) provided, defaulting to yearly.&quot;</span><span class="p">)</span>
                 <span class="n">periodicity</span> <span class="o">=</span> <span class="s2">&quot;yearly&quot;</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">trans_data</span> <span class="o">=</span> <span class="n">PeriodTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_data</span><span class="p">)</span><span class="o">.</span><span class="n">create_period_table</span><span class="p">(</span>
-                <span class="n">date</span><span class="p">,</span> <span class="n">periodicity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="n">date</span><span class="p">,</span>
+                <span class="n">periodicity</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
@@ -490,6 +514,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Forecasts as a NumPy array.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_cut</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">time_cut</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
@@ -507,11 +532,11 @@
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_transactions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prop_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">trans_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prop_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract transaction creation method.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -532,29 +557,30 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_transactions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prop_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">trans_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prop_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">seq_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">min_period_dist</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">min_period_dist</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create repeat transaction data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            prop_id (Optional[str]): Property identifier.</span>
-<span class="sd">            trans_id (Optional[str]): Transaction identifier.</span>
-<span class="sd">            price (Optional[str]): Price column name.</span>
-<span class="sd">            date (Optional[str], optional): Date column name.</span>
+<span class="sd">            prop_id (str | None): Property identifier.</span>
+<span class="sd">            trans_id (str | None): Transaction identifier.</span>
+<span class="sd">            price (str | None): Price column name.</span>
+<span class="sd">            date (str | None, optional): Date column name.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            periodicity (Optional[str], optional): Periodicity of the data.</span>
+<span class="sd">            periodicity (str | None, optional): Periodicity of the data.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            seq_only (Optional[bool], optional): Sequential only.</span>
+<span class="sd">            seq_only (bool, optional): Sequential only.</span>
 <span class="sd">                Defaults to False.</span>
-<span class="sd">            min_period_dist (Optional[int], optional): Minimum period distance.</span>
+<span class="sd">            min_period_dist (int | None, optional): Minimum period distance.</span>
 <span class="sd">                Defaults to None.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fields</span><span class="p">(</span><span class="n">prop_id</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_period_table</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">periodicity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -571,10 +597,8 @@
                 <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="o">.</span><span class="n">assign</span><span class="p">(</span>
-                <span class="o">**</span><span class="p">{</span>
-                    <span class="s2">&quot;trans_period&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-                    <span class="s2">&quot;temp&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;prop_id&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
-                <span class="p">}</span>
+                <span class="n">trans_period</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                <span class="n">temp</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;prop_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">&quot;temp&quot;</span><span class="p">)</span>  <span class="c1"># remove any properties that sold twice in same time period</span>
             <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;temp&quot;</span><span class="p">)</span>
@@ -591,7 +615,8 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeat_trans_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No repeat sales found.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No repeat sales found.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Split into 2 sales and greater than two sales per property.</span>
         <span class="n">rt2</span> <span class="o">=</span> <span class="n">repeat_trans_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;count == 2&quot;</span><span class="p">)</span>
@@ -601,7 +626,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rt2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Extract original sales and sort by id, then time.</span>
             <span class="n">x_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prop_id in </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">rt2</span><span class="p">[</span><span class="s1">&#39;prop_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_period&quot;</span><span class="p">]</span>
+                <span class="p">[</span><span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_period&quot;</span><span class="p">],</span>
             <span class="p">)</span>
 
             <span class="c1"># Separate into first and second sale.</span>
@@ -618,7 +643,7 @@
                     <span class="s2">&quot;price_2&quot;</span><span class="p">:</span> <span class="n">x_df</span><span class="p">[</span><span class="n">id_2</span><span class="p">][</span><span class="s2">&quot;price&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                     <span class="s2">&quot;trans_id1&quot;</span><span class="p">:</span> <span class="n">x_df</span><span class="p">[</span><span class="n">id_1</span><span class="p">][</span><span class="s2">&quot;trans_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                     <span class="s2">&quot;trans_id2&quot;</span><span class="p">:</span> <span class="n">x_df</span><span class="p">[</span><span class="n">id_2</span><span class="p">][</span><span class="s2">&quot;trans_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                <span class="p">}</span>
+                <span class="p">},</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">d2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
@@ -628,10 +653,11 @@
 
             <span class="c1"># Create a dataframe of combinations of repeat sales.</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">x_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;prop_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_id&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">include_groups</span><span class="o">=</span><span class="kc">False</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;trans_id&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)),</span>
+                <span class="n">include_groups</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">d3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([[[</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">x_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">)]),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([[[</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">x_i</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">)]),</span>
                 <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_id1&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_id2&quot;</span><span class="p">],</span>
             <span class="p">)</span>
 
@@ -679,7 +705,8 @@
         <span class="n">repeat_trans_df</span> <span class="o">=</span> <span class="n">repeat_trans_df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">pair_id</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeat_trans_df</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
 
         <span class="k">if</span> <span class="n">repeat_trans_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeat_trans_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No repeat transactions created.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No repeat transactions created.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">repeat_trans_df</span> <span class="o">=</span> <span class="n">repeat_trans_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_id1&quot;</span><span class="p">])</span>
 
@@ -693,6 +720,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: Forecast periods as an array.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_forecast_periods</span><span class="p">(</span><span class="s2">&quot;period_2&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -702,23 +730,24 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_transactions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prop_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">trans_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">periodicity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prop_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trans_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create hedonic transaction data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            prop_id (Optional[str]): Property identifier.</span>
-<span class="sd">            trans_id (Optional[str]): Transaction identifier.</span>
-<span class="sd">            price (Optional[str]): Price column name.</span>
-<span class="sd">            date (Optional[str], optional): Date column name.</span>
+<span class="sd">            prop_id (str | None): Property identifier.</span>
+<span class="sd">            trans_id (str | None): Transaction identifier.</span>
+<span class="sd">            price (str | None): Price column name.</span>
+<span class="sd">            date (str | None, optional): Date column name.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">            periodicity (Optional[str], optional): Periodicity of the data.</span>
+<span class="sd">            periodicity (str | None, optional): Periodicity of the data.</span>
 <span class="sd">                Defaults to None.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fields</span><span class="p">(</span><span class="n">prop_id</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_period_table</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">periodicity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -728,7 +757,7 @@
 
         <span class="c1"># Prepare input data.</span>
         <span class="n">hedonic_trans_df</span> <span class="o">=</span> <span class="n">trans_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-            <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">prop_id</span><span class="p">:</span> <span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">:</span> <span class="s2">&quot;trans_id&quot;</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="s2">&quot;price&quot;</span><span class="p">}</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">prop_id</span><span class="p">:</span> <span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">:</span> <span class="s2">&quot;trans_id&quot;</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="s2">&quot;price&quot;</span><span class="p">},</span>
         <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;prop_id&quot;</span><span class="p">,</span> <span class="s2">&quot;trans_period&quot;</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
 
         <span class="c1"># Remove any properties that sold twice in same time period.</span>
@@ -750,6 +779,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: Forecast periods as an array.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_forecast_periods</span><span class="p">(</span><span class="s2">&quot;trans_period&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>

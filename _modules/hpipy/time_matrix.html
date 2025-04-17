@@ -395,6 +395,12 @@
 <span class="sd">    The class provides a method to create a time matrix from a dataframe</span>
 <span class="sd">    consisting of repeat transaction data. The method utilizes datetime data</span>
 <span class="sd">    represented as periods and constructs a chronologically ordered matrix.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        repeat_trans_df (pd.DataFrame): Input DataFrame. Must contain</span>
+<span class="sd">            &quot;period_1&quot; and &quot;period_2&quot; columns containing integer values</span>
+<span class="sd">            representing periods (i.e., time series expressed as integer).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TimeMatrixMixin.create_time_matrix">
@@ -417,6 +423,7 @@
 <span class="sd">            pd.DataFrame: DataFrame with columns &#39;time_x&#39;, where each row</span>
 <span class="sd">                represents a transaction pair and &#39;x&#39; is a time period between</span>
 <span class="sd">                the minimum and maximum periods in the input data.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Extract start/end/diff.</span>
         <span class="n">time_start</span> <span class="o">=</span> <span class="n">repeat_trans_df</span><span class="p">[</span><span class="s2">&quot;period_1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
@@ -432,11 +439,10 @@
             <span class="n">time_matrix</span><span class="p">[</span><span class="n">repeat_trans_df</span><span class="p">[</span><span class="s2">&quot;period_2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tm</span><span class="p">,</span> <span class="n">tm</span> <span class="o">-</span> <span class="n">time_start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="c1"># Create time matrix dataframe.</span>
-        <span class="n">time_matrix_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">time_matrix</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">time_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">time_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">time_matrix_df</span></div>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">time_matrix</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">time_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">time_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

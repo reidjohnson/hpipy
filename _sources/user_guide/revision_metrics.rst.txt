@@ -29,7 +29,7 @@ Revision metrics assess how index values change as new data becomes available:
     >>> rev.head()
        period      mean    median
     0       1  0.000000  0.000000
-    1       2 -0.161152 -0.242498
-    2       3 -1.107651  0.037718
-    3       4 -2.158951 -1.220065
-    4       5 -1.570458 -1.096670
+    1       2 -0.161268 -0.242763
+    2       3 -1.107773  0.037327
+    3       4 -2.159030 -1.220268
+    4       5 -1.570491 -1.096907

@@ -95,5 +95,5 @@ Once you've created your indices, use the following tools to evaluate and compar
    accuracy_metrics
    volatility_metrics
    revision_metrics
-   comparative_analysis
    time_window_analysis
+   comparative_analysis

@@ -404,7 +404,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -459,22 +459,44 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_model</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NeuralAVMWithCoef</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a neural network house price model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a neural network house price model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Input data.</span>
+<span class="sd">            y (pd.Series): Target data.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            NeuralAVMWithCoef: Neural network house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_with_coefficients</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_model_with_coefficients</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">partition_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NeuralAVMWithCoef</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit model and populate coefficients to produce index.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit model and populate coefficients to produce index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame | pd.Series): Input data.</span>
+<span class="sd">            y (pd.Series): Target data.</span>
+<span class="sd">            estimator (str): Estimator type.</span>
+<span class="sd">            partition_cols (list | None, optional): Partition columns.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            NeuralAVMWithCoef: Neural network house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">NeuralAVMWithCoef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;init&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;fit&quot;</span><span class="p">])</span>
         <span class="n">periods</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">partition_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -484,30 +506,27 @@
                 <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_attributional</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span>
-            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">periods</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">})</span>  <span class="c1"># type: ignore</span>
+            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">periods</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">})</span>
             <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">model_df</span>
             <span class="k">return</span> <span class="n">model</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">input_df</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">][</span><span class="s2">&quot;input_df&quot;</span><span class="p">])</span>
-            <span class="n">coef</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">unique_df</span> <span class="o">=</span> <span class="n">input_df</span><span class="p">[</span><span class="n">partition_cols</span><span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">unique_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-                <span class="n">input_df_i</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">partition_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">][</span><span class="s2">&quot;input_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_df_i</span>
-                <span class="k">if</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;residual&quot;</span><span class="p">:</span>
-                    <span class="n">model_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_residual</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">])</span>
-                <span class="k">elif</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;attributional&quot;</span><span class="p">:</span>
-                    <span class="n">model_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_attributional</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span>
-                <span class="n">model_i_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">periods</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">:</span> <span class="n">model_i</span><span class="o">.</span><span class="n">coef_</span><span class="p">}</span>
-                <span class="p">)</span>  <span class="c1"># type: ignore</span>
-                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">partition_cols</span><span class="p">:</span>
-                    <span class="n">model_i_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">coef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_i_df</span><span class="p">)</span>
-            <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">model</span>
+        <span class="n">input_df</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">][</span><span class="s2">&quot;input_df&quot;</span><span class="p">])</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unique_df</span> <span class="o">=</span> <span class="n">input_df</span><span class="p">[</span><span class="n">partition_cols</span><span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">unique_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">input_df_i</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">partition_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">][</span><span class="s2">&quot;input_df&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_df_i</span>
+            <span class="k">if</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;residual&quot;</span><span class="p">:</span>
+                <span class="n">model_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_residual</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;attributional&quot;</span><span class="p">:</span>
+                <span class="n">model_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_attributional</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="n">model_i_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">periods</span><span class="p">,</span> <span class="s2">&quot;coefficient&quot;</span><span class="p">:</span> <span class="n">model_i</span><span class="o">.</span><span class="n">coef_</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">partition_cols</span><span class="p">:</span>
+                <span class="n">model_i_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">coef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_i_df</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">model</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_explainer_input_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -515,11 +534,22 @@
         <span class="n">input_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">data_pipeline</span><span class="p">:</span> <span class="n">DataPipeline</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create explainer input for each date in the period table range.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create explainer input for each date in the period table range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (NeuralAVMWithCoef): Neural network house price model.</span>
+<span class="sd">            input_df (pd.DataFrame): Input data.</span>
+<span class="sd">            date (str): Date column name.</span>
+<span class="sd">            data_pipeline (DataPipeline): Data pipeline.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[pd.DataFrame, pd.DataFrame]: Explainable input data and</span>
+<span class="sd">                transformed input data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">min_pred_datetime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_table</span><span class="p">[</span><span class="s2">&quot;start_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="n">max_pred_datetime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_table</span><span class="p">[</span><span class="s2">&quot;end_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-
         <span class="n">total_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_pred_datetime</span> <span class="o">-</span> <span class="n">min_pred_datetime</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
 
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -550,36 +580,41 @@
             <span class="n">coef_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">after_start</span> <span class="o">&amp;</span> <span class="n">before_end</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;period&quot;</span><span class="p">]</span>
 
         <span class="c1"># Calculate average value for each period and filter to needed periods.</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;period&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="c1"># coef_df = coef_df[coef_df[&quot;period&quot;].isin(self.hpi_df[&quot;trans_period&quot;].unique())]</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()}),</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+        <span class="n">period_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()})</span>
+        <span class="n">coef_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">coef_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;period&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;yhat&quot;</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">period_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="n">date</span><span class="p">])</span>
         <span class="p">)</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="n">date</span><span class="p">])</span>
 
         <span class="c1"># Normalize coefficients by baseline value.</span>
-        <span class="n">base_coef</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">coef_df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">base_coef</span><span class="p">)</span>
-
-        <span class="n">coef</span> <span class="o">=</span> <span class="n">coef_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-
-        <span class="k">return</span> <span class="n">coef</span>
+        <span class="n">base_coef</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">coef_df</span><span class="p">[</span><span class="s2">&quot;yhat&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_coef</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_model_inputs_to_features</span><span class="p">(</span>
         <span class="n">data_pipeline</span><span class="p">:</span> <span class="n">DataPipeline</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get transformed feature names for input feature columns.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="n">inputs</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">features</span> <span class="o">=</span> <span class="n">inputs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get transformed feature names for input feature columns.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_pipeline (DataPipeline): The data pipeline.</span>
+<span class="sd">            inputs (str | list[str]): The input feature columns.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: The transformed feature names.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="n">inputs</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">inputs</span>
         <span class="k">if</span> <span class="n">data_pipeline</span><span class="o">.</span><span class="n">feature_preprocessors_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">data_pipeline</span><span class="o">.</span><span class="n">feature_preprocessors_</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">input_cols</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                        <span class="n">new_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">output_cols</span><span class="p">]))</span>
+                        <span class="n">new_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">f</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">output_cols</span><span class="p">})</span>
                         <span class="n">features</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
                         <span class="n">features</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_features</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">features</span>
@@ -590,12 +625,27 @@
         <span class="n">input_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">data_pipeline</span><span class="p">:</span> <span class="n">DataPipeline</span><span class="p">,</span>
-        <span class="n">min_pred_epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">min_pred_epoch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">partition_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NeuralAVMWithCoef</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from index-pathway output component.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from index-pathway output component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (NeuralAVMWithCoef): Neural network house price model.</span>
+<span class="sd">            input_df (pd.DataFrame): Input data.</span>
+<span class="sd">            date (str): Date column name.</span>
+<span class="sd">            data_pipeline (DataPipeline): Data pipeline.</span>
+<span class="sd">            min_pred_epoch (int | None): Minimum prediction epoch.</span>
+<span class="sd">            quantile (float, optional): Quantile to estimate.</span>
+<span class="sd">            partition_cols (list | None, optional): Partition columns.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            NeuralAVMWithCoef: Neural network house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">input_features</span> <span class="o">=</span> <span class="p">[</span><span class="n">date</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">partition_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">input_features</span> <span class="o">+=</span> <span class="n">partition_cols</span>
@@ -620,11 +670,13 @@
         <span class="p">)</span>
         <span class="n">X2</span> <span class="o">=</span> <span class="n">X2</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">X_input</span><span class="p">)</span> <span class="p">:,</span> <span class="p">:]</span>
 
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">X2</span><span class="p">))</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">explain_df</span><span class="p">[[</span><span class="n">date</span><span class="p">]],</span> <span class="n">coef_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">coef_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">coef_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X2</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">explain_df</span><span class="p">[[</span><span class="n">date</span><span class="p">]],</span> <span class="n">x</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">date</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)})</span>
+        <span class="p">)</span>
 
-        <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explainer_output_to_coef</span><span class="p">(</span><span class="n">coef_df</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explainer_output_to_coef</span><span class="p">(</span><span class="n">coef_df</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">model</span>
 
@@ -634,12 +686,27 @@
         <span class="n">input_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">data_pipeline</span><span class="p">:</span> <span class="n">DataPipeline</span><span class="p">,</span>
-        <span class="n">min_pred_epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">min_pred_epoch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">partition_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">partition_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NeuralAVMWithCoef</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from attribution of property estimate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate explanation from attribution of property estimate.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (NeuralAVMWithCoef): Neural network house price model.</span>
+<span class="sd">            input_df (pd.DataFrame): Input data.</span>
+<span class="sd">            date (str): Date column name.</span>
+<span class="sd">            data_pipeline (DataPipeline): Data pipeline.</span>
+<span class="sd">            min_pred_epoch (int | None): Minimum prediction epoch.</span>
+<span class="sd">            quantile (float, optional): Quantile to estimate.</span>
+<span class="sd">            partition_cols (list | None, optional): Partition columns.</span>
+<span class="sd">            **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            NeuralAVMWithCoef: Neural network house price model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_background</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">input_features</span> <span class="o">=</span> <span class="p">[</span><span class="n">date</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">partition_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -653,7 +720,9 @@
         <span class="p">)</span>
 
         <span class="n">X_baseline</span> <span class="o">=</span> <span class="n">data_pipeline</span><span class="o">.</span><span class="n">predict_transform</span><span class="p">(</span>
-            <span class="n">input_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">num_background</span><span class="p">,</span> <span class="p">:],</span> <span class="n">override_date</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_y</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">input_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">num_background</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">override_date</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">return_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_inputs_to_features</span><span class="p">(</span><span class="n">data_pipeline</span><span class="p">,</span> <span class="n">input_features</span><span class="p">)</span>
@@ -662,15 +731,23 @@
         <span class="n">X_baseline</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">X_baseline</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">features</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># type: ignore</span>
 
         <span class="n">df_attrs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span>
-            <span class="n">X_input</span><span class="p">,</span> <span class="n">X_baseline</span><span class="p">,</span> <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">,</span> <span class="n">min_epoch</span><span class="o">=</span><span class="n">min_pred_epoch</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">X_input</span><span class="p">,</span>
+            <span class="n">X_baseline</span><span class="p">,</span>
+            <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">,</span>
+            <span class="n">min_epoch</span><span class="o">=</span><span class="n">min_pred_epoch</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">df_attrs</span><span class="p">[</span><span class="n">features</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;_quantile&quot;</span><span class="p">]]</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">explain_df</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="n">coef_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">coef_df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">coef_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="n">coef_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">coef_df</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">coef_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df_attrs</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="o">*</span><span class="n">features</span><span class="p">,</span> <span class="s2">&quot;_quantile&quot;</span><span class="p">]]</span>
+            <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">explain_df</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="n">x</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">date</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">date</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)})</span>
+        <span class="p">)</span>
 
-        <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explainer_output_to_coef</span><span class="p">(</span><span class="n">coef_df</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">coef_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explainer_output_to_coef</span><span class="p">(</span><span class="n">coef_df</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">model</span>
 
@@ -682,29 +759,46 @@
         <span class="n">feature_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">preprocess_time</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">preprocess_geo</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="n">geo_resolutions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataPipeline</span><span class="p">,</span> <span class="n">FeatureTransformer</span><span class="p">]:</span>
+        <span class="n">geo_resolutions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DataPipeline</span><span class="p">,</span> <span class="n">FeatureTransformer</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get data transformers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (pd.DataFrame): Input data.</span>
+<span class="sd">            dep_var (str): Dependent variable.</span>
+<span class="sd">            date (str): Date column name.</span>
+<span class="sd">            feature_dict (dict[str, list[str]]): Feature dictionary.</span>
+<span class="sd">            preprocess_time (bool): Preprocess time.</span>
+<span class="sd">            preprocess_geo (bool): Preprocess geospatial.</span>
+<span class="sd">            geo_resolutions (int | list[int]): Geospatial resolutions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[DataPipeline, FeatureTransformer]: Data pipeline and feature</span>
+<span class="sd">                transformer.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check data.</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Your &#39;price&#39; field includes invalid values.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Your &#39;price&#39; field includes invalid values.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">min_train_datetime</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="n">max_train_datetime</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 
         <span class="n">feature_preprocessors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseFeaturePreprocessor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">preprocess_geo</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="p">{</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
                 <span class="n">feature_preprocessors</span> <span class="o">+=</span> <span class="p">[</span>
                     <span class="n">GeospatialPreprocessor</span><span class="p">(</span>
                         <span class="n">resolutions</span><span class="o">=</span><span class="n">geo_resolutions</span><span class="p">,</span>
                         <span class="n">latitude_col</span><span class="o">=</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span>
                         <span class="n">longitude_col</span><span class="o">=</span><span class="s2">&quot;longitude&quot;</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="p">),</span>
                 <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;Cannot preprocess geospatial features because &#39;latitude&#39; and/or &#39;longitude&#39; &quot;</span>
-                    <span class="s2">&quot;columns are missing. Skipping geospatial preprocessing.&quot;</span>
+                    <span class="s2">&quot;columns are missing. Skipping geospatial preprocessing.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="n">preprocess_time</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">date</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
@@ -718,7 +812,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;Cannot preprocess temporal features because &#39;date&#39; column is missing. &quot;</span>
-                    <span class="s2">&quot;Skipping temporal preprocessing.&quot;</span>
+                    <span class="s2">&quot;Skipping temporal preprocessing.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
         <span class="n">feature_transformer</span> <span class="o">=</span> <span class="n">FeatureTransformer</span><span class="p">(</span><span class="n">feature_dict</span><span class="p">)</span>
@@ -742,18 +836,19 @@
         <span class="n">ind_var</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;residual&quot;</span><span class="p">,</span>
-        <span class="n">feature_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">feature_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">num_models</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">num_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
-        <span class="n">hidden_dims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hidden_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">emb_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">dropout_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">do_mixup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">preprocess_time</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">preprocess_geo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">geo_resolutions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">geo_resolutions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">min_pred_epoch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
         <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -787,7 +882,9 @@
 <span class="sd">                &quot;residual&quot; (extracts index from market pathway) or</span>
 <span class="sd">                &quot;attributional&quot; (derives index  through explainability).</span>
 <span class="sd">                Defaults to &quot;residual&quot;.</span>
-<span class="sd">            feature_dict (Optional[dict[str, list[str]]], optional): Feature</span>
+<span class="sd">            log_dep (bool, optional): Log transform the dependent variable.</span>
+<span class="sd">                Defaults to True.</span>
+<span class="sd">            feature_dict (dict[str, list[str]] | None, optional): Feature</span>
 <span class="sd">                dictionary.</span>
 <span class="sd">                Defaults to None.</span>
 <span class="sd">            num_models (int, optional): Number of models in the ensemble.</span>
@@ -796,7 +893,7 @@
 <span class="sd">                Defaults to 20.</span>
 <span class="sd">            batch_size (int, optional): Batch size for training.</span>
 <span class="sd">                Defaults to 1024.</span>
-<span class="sd">            hidden_dims (Optional[Union[int, list[int]]], optional): Hidden</span>
+<span class="sd">            hidden_dims (int | list[int] | None, optional): Hidden</span>
 <span class="sd">                layer sizes.</span>
 <span class="sd">                If None, defaults to [128, 32].</span>
 <span class="sd">            emb_size (int, optional): Output size for each embedding.</span>
@@ -813,7 +910,7 @@
 <span class="sd">            preprocess_geo (bool, optional): Preprocess geospatial features</span>
 <span class="sd">                from latitude and longitude columns.</span>
 <span class="sd">                Defaults to True.</span>
-<span class="sd">            geo_resolutions (Optional[Union[int, list[int]]], optional):</span>
+<span class="sd">            geo_resolutions (int | list[int] | None, optional):</span>
 <span class="sd">                Geospatial (H3) cell resolutions.</span>
 <span class="sd">                If None, defaults to [6, 7].</span>
 <span class="sd">            min_pred_epoch (int, optional): Minimum prediction epoch.</span>
@@ -824,7 +921,14 @@
 <span class="sd">                Defaults to 0.</span>
 <span class="sd">            verbose (bool, optional): Verbose output.</span>
 <span class="sd">                Defaults to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self: Fitted model.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log_dep</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
         <span class="k">if</span> <span class="n">feature_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">feature_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;log_numerics&quot;</span><span class="p">:</span> <span class="n">ind_var</span><span class="p">,</span> <span class="s2">&quot;hpi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">date</span><span class="p">]}</span>
 
@@ -838,7 +942,7 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geo_resolutions</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">geo_resolutions</span> <span class="o">=</span> <span class="p">[</span><span class="n">geo_resolutions</span><span class="p">]</span>
 
-        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="n">ind_var</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;trans_period&quot;</span><span class="p">,</span> <span class="n">date</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[[</span><span class="o">*</span><span class="n">ind_var</span><span class="p">,</span> <span class="s2">&quot;trans_period&quot;</span><span class="p">,</span> <span class="n">date</span><span class="p">]]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hpi_df</span><span class="p">[</span><span class="n">dep_var</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">data_pipeline</span><span class="p">,</span> <span class="n">feature_transformer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_transformers</span><span class="p">(</span>
@@ -867,7 +971,7 @@
         <span class="k">if</span> <span class="n">estimator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;residual&quot;</span><span class="p">,</span> <span class="s2">&quot;attributional&quot;</span><span class="p">]:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Provided estimator type is not supported. Allowed estimators are: &quot;</span>
-                <span class="s2">&quot;&#39;residual&#39; and &#39;attributional&#39;. Defaulting to &#39;residual&#39;.&quot;</span>
+                <span class="s2">&quot;&#39;residual&#39; and &#39;attributional&#39;. Defaulting to &#39;residual&#39;.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="s2">&quot;residual&quot;</span>
 
@@ -916,6 +1020,7 @@
             <span class="s2">&quot;dep_var&quot;</span><span class="p">:</span> <span class="n">dep_var</span><span class="p">,</span>
             <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
             <span class="s2">&quot;estimator&quot;</span><span class="p">:</span> <span class="n">estimator</span><span class="p">,</span>
+            <span class="s2">&quot;log_dep&quot;</span><span class="p">:</span> <span class="n">log_dep</span><span class="p">,</span>
             <span class="s2">&quot;feature_dict&quot;</span><span class="p">:</span> <span class="n">feature_dict</span><span class="p">,</span>
             <span class="s2">&quot;num_models&quot;</span><span class="p">:</span> <span class="n">num_models</span><span class="p">,</span>
             <span class="s2">&quot;num_epochs&quot;</span><span class="p">:</span> <span class="n">num_epochs</span><span class="p">,</span>
