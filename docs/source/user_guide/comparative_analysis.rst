@@ -41,11 +41,11 @@ Compare different index methods:
     >>> volatilities = [volatility(index) for index in indices]
     >>> volatilities[0].head()
            roll      mean    median
-    1  0.016313  0.057788  0.051364
-    2  0.022051  0.057788  0.051364
-    3  0.026690  0.057788  0.051364
-    4  0.016093  0.057788  0.051364
-    5  0.024070  0.057788  0.051364
+    1  0.016309  0.057789  0.051363
+    2  0.022051  0.057789  0.051363
+    3  0.026687  0.057789  0.051363
+    4  0.016094  0.057789  0.051363
+    5  0.024067  0.057789  0.051363
 
     >>> volatilities[1].head()
            roll      mean    median
