@@ -231,7 +231,7 @@ class ResponseTransformer:
         Returns:
              pd.Series: Transformed response data.
         """
-        return np.log1p(y) - np.log1p(self.median_)
+        return np.log(y) - np.log(self.median_)
 
     def inverse_transform(self, y: pd.Series) -> pd.Series:
         """Inverse tansform the response data.
@@ -242,7 +242,7 @@ class ResponseTransformer:
         Returns:
             pd.Series: Inverse transformed response data.
         """
-        return np.expm1(y + np.log1p(self.median_))
+        return np.exp(y + np.log(self.median_))
 
     def fit_transform(self, y: pd.Series) -> pd.Series:
         """Fit and transform the response data.

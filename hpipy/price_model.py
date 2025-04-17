@@ -181,7 +181,7 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
 
         # Calculate price differential.
         if log_dep:
-            price_diff = np.log1p(self.hpi_df["price_2"]) - np.log1p(self.hpi_df["price_1"])
+            price_diff = np.log(self.hpi_df["price_2"]) - np.log(self.hpi_df["price_1"])
         else:
             price_diff = self.hpi_df["price_2"] - self.hpi_df["price_1"]
 
@@ -348,7 +348,7 @@ class HedonicModel(BaseHousePriceModel):
                 hpi_df[var] = hpi_df[var].cat.codes
 
         X = pd.concat([hpi_df[ind_var].reset_index(drop=True), X_cats], axis=1)
-        y = np.log1p(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
+        y = np.log(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
 
         # Extract base period mean price.
         base_price = hpi_df["price"][hpi_df["trans_period"] == hpi_df["trans_period"].min()].mean()

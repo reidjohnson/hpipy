@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import MagicMock
 
 import numpy as np
 import pandas as pd
@@ -7,6 +8,7 @@ import torch
 import torch.nn as nn
 
 from hpipy.extensions import NeuralNetworkIndex
+from hpipy.extensions.neural.neural_avm.data_preprocessors import GeospatialPreprocessor
 from hpipy.extensions.neural.neural_avm.model_layers import MonotonicDense, OrdinalEmbedding
 from hpipy.extensions.neural.neural_avm.utils.data import prepare_dataframe, prepare_tensor
 from hpipy.extensions.neural.neural_avm.utils.model import mixup, quantile_loss
@@ -15,6 +17,7 @@ from hpipy.extensions.neural.neural_avm.utils.model import mixup, quantile_loss
 @pytest.mark.usefixtures("seattle_dataset")
 @pytest.mark.parametrize("estimator", ["residual", "attributional"])
 def test_nn_create_trans(seattle_dataset: pd.DataFrame, estimator: str) -> None:
+    """Test creation of neural network index."""
     nn_index = NeuralNetworkIndex().create_index(
         seattle_dataset,
         date="sale_date",
@@ -341,3 +344,115 @@ def test_prepare_tensor() -> None:
     # Check values for a few features.
     assert torch.equal(result["numeric_feature"], test_tensor[:, 1])
     assert torch.equal(result["categorical_feature"], test_tensor[:, 3])
+
+
+@pytest.mark.usefixtures("seattle_dataset")
+def test_nn_invalid_estimator(seattle_dataset: pd.DataFrame) -> None:
+    """Test handling of invalid estimator type."""
+    nn_index = NeuralNetworkIndex().create_index(
+        seattle_dataset,
+        date="sale_date",
+        price="sale_price",
+        trans_id="sale_id",
+        prop_id="pinx",
+        dep_var="price",
+        ind_var=["area", "baths", "beds"],
+        estimator="invalid_estimator",
+        num_models=1,
+        num_epochs=1,
+        min_pred_epoch=1,
+    )
+    assert nn_index.model.params["estimator"] == "residual"
+
+
+@pytest.mark.usefixtures("seattle_dataset")
+def test_nn_no_log_dep(seattle_dataset: pd.DataFrame) -> None:
+    """Test handling of non-log dependent variable."""
+    with pytest.raises(NotImplementedError):
+        NeuralNetworkIndex().create_index(
+            seattle_dataset,
+            date="sale_date",
+            price="sale_price",
+            trans_id="sale_id",
+            prop_id="pinx",
+            dep_var="price",
+            ind_var=["area", "baths", "beds"],
+            log_dep=False,
+            num_models=1,
+            num_epochs=1,
+            min_pred_epoch=1,
+        )
+
+
+@pytest.mark.usefixtures("seattle_dataset")
+def test_nn_missing_geo_columns(seattle_dataset: pd.DataFrame) -> None:
+    """Test handling of missing geospatial columns."""
+    data = seattle_dataset.drop(columns=["latitude", "longitude"])
+    nn_index = NeuralNetworkIndex().create_index(
+        data,
+        date="sale_date",
+        price="sale_price",
+        trans_id="sale_id",
+        prop_id="pinx",
+        dep_var="price",
+        ind_var=["area", "baths", "beds"],
+        preprocess_geo=True,
+        num_models=1,
+        num_epochs=1,
+        min_pred_epoch=1,
+    )
+    assert nn_index is not None
+
+
+@pytest.mark.usefixtures("seattle_dataset")
+def test_nn_missing_date_column(seattle_dataset: pd.DataFrame) -> None:
+    """Test handling of missing date column for temporal preprocessing."""
+    data = seattle_dataset.copy().rename(columns={"sale_date": "transaction_date"})
+    with pytest.raises(KeyError):
+        _ = NeuralNetworkIndex().create_index(
+            data,
+            date="sale_date",  # this column no longer exists
+            price="sale_price",
+            trans_id="sale_id",
+            prop_id="pinx",
+            dep_var="price",
+            ind_var=["area", "baths", "beds"],
+            preprocess_time=True,
+            num_models=1,
+            num_epochs=1,
+            min_pred_epoch=1,
+        )
+
+
+@pytest.mark.usefixtures("seattle_dataset")
+def test_nn_model_inputs_to_features(seattle_dataset: pd.DataFrame) -> None:
+    """Test conversion of model inputs to features."""
+    nn_index = NeuralNetworkIndex().create_index(
+        seattle_dataset,
+        date="sale_date",
+        price="sale_price",
+        trans_id="sale_id",
+        prop_id="pinx",
+        dep_var="price",
+        ind_var=["area", "baths", "beds"],
+        num_models=1,
+        num_epochs=1,
+        min_pred_epoch=1,
+    )
+
+    # Create a mock data pipeline with preprocessors.
+    data_pipeline = MagicMock()
+    data_pipeline.feature_preprocessors_ = [
+        GeospatialPreprocessor(
+            resolutions=[6],
+            latitude_col="latitude",
+            longitude_col="longitude",
+        )
+    ]
+
+    # Test feature conversion.
+    features = nn_index.model._model_inputs_to_features(  # type: ignore
+        data_pipeline, ["latitude", "longitude"]
+    )
+    assert isinstance(features, list)
+    assert len(features) > 0

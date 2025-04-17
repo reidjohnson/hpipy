@@ -93,7 +93,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
                 model = self._model_attributional(model, **kwargs["predict"])
             else:
                 raise ValueError
-            model_df = pd.DataFrame({"time": periods, "coefficient": model.coef_})  # type: ignore
+            model_df = pd.DataFrame({"time": periods, "coefficient": model.coef_})
             model.coef_ = model_df
             return model
         else:
@@ -109,9 +109,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
                     model_i = self._model_attributional(model, **kwargs["predict"])
                 else:
                     raise ValueError
-                model_i_df = pd.DataFrame(
-                    {"time": periods, "coefficient": model_i.coef_}
-                )  # type: ignore
+                model_i_df = pd.DataFrame({"time": periods, "coefficient": model_i.coef_})
                 for col in partition_cols:
                     model_i_df[col] = row[col][0]
                 coef.append(model_i_df)
@@ -159,20 +157,21 @@ class NeuralNetworkModel(BaseHousePriceModel):
             coef_df.loc[after_start & before_end, "period"] = row["period"]
 
         # Calculate average value for each period and filter to needed periods.
-        coef_df = coef_df.groupby("period").mean().reset_index()
-        # coef_df = coef_df[coef_df["period"].isin(self.hpi_df["trans_period"].unique())]
-        coef_df = coef_df.merge(
-            pd.DataFrame({"period": self.hpi_df["trans_period"].unique()}), how="right"
+        period_df = pd.DataFrame({"period": self.hpi_df["trans_period"].unique()})
+        coef_df = (
+            coef_df.groupby("period")
+            .mean()
+            .reset_index()
+            .rename(columns={0: "yhat"})
+            .merge(period_df, how="right")
+            .drop(columns=["period", date])
         )
-        coef_df = coef_df.drop(columns=["period", date])
 
         # Normalize coefficients by baseline value.
-        base_coef = coef_df[0][0]
-        coef_df[0] = coef_df[0] * (1.0 / base_coef)
+        base_coef = coef_df["yhat"].iloc[0]
+        coefs = coef_df["yhat"] - base_coef
 
-        coef = coef_df.loc[:, 0] - 1
-
-        return coef
+        return coefs
 
     @staticmethod
     def _model_inputs_to_features(
@@ -229,11 +228,13 @@ class NeuralNetworkModel(BaseHousePriceModel):
         )
         X2 = X2[-len(X_input) :, :]
 
-        coef_df = pd.DataFrame(np.exp(X2))
-        coef_df = pd.concat([explain_df[[date]], coef_df], axis=1)
-        coef_df[date] = pd.to_datetime(coef_df[date], format="%Y-%m-%d")
+        coef_df = (
+            pd.DataFrame(X2)
+            .pipe(lambda x: pd.concat([explain_df[[date]], x], axis=1))
+            .assign(**{date: lambda x: pd.to_datetime(x[date], format="%Y-%m-%d")})
+        )
 
-        model.coef_ = self._explainer_output_to_coef(coef_df, date)  # type: ignore
+        model.coef_ = self._explainer_output_to_coef(coef_df, date)
 
         return model
 
@@ -274,12 +275,16 @@ class NeuralNetworkModel(BaseHousePriceModel):
             X_input, X_baseline, quantile=quantile, min_epoch=min_pred_epoch, **kwargs
         )
 
-        coef_df = df_attrs[features + ["_quantile"]]
-        coef_df = pd.concat([explain_df[date], coef_df], axis=1)
-        coef_df = np.exp(coef_df.set_index(date).sum(axis=1)).reset_index()
-        coef_df[date] = pd.to_datetime(coef_df[date], format="%Y-%m-%d")
+        coef_df = (
+            df_attrs.loc[:, features + ["_quantile"]]
+            .pipe(lambda x: pd.concat([explain_df[date], x], axis=1))
+            .set_index(date)
+            .sum(axis=1)
+            .reset_index()
+            .assign(**{date: lambda x: pd.to_datetime(x[date], format="%Y-%m-%d")})
+        )
 
-        model.coef_ = self._explainer_output_to_coef(coef_df, date)  # type: ignore
+        model.coef_ = self._explainer_output_to_coef(coef_df, date)
 
         return model
 
@@ -349,6 +354,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
         ind_var: list[str],
         date: str,
         estimator: str = "residual",
+        log_dep: bool = True,
         feature_dict: Optional[dict[str, list[str]]] = None,
         num_models: int = 5,
         num_epochs: int = 20,
@@ -394,6 +400,8 @@ class NeuralNetworkModel(BaseHousePriceModel):
                 "residual" (extracts index from market pathway) or
                 "attributional" (derives index  through explainability).
                 Defaults to "residual".
+            log_dep (bool, optional): Log transform the dependent variable.
+                Defaults to True.
             feature_dict (Optional[dict[str, list[str]]], optional): Feature
                 dictionary.
                 Defaults to None.
@@ -432,6 +440,9 @@ class NeuralNetworkModel(BaseHousePriceModel):
             verbose (bool, optional): Verbose output.
                 Defaults to False.
         """
+        if not log_dep:
+            raise NotImplementedError
+
         if feature_dict is None:
             feature_dict = {"log_numerics": ind_var, "hpi": [date]}
 
@@ -523,6 +534,7 @@ class NeuralNetworkModel(BaseHousePriceModel):
             "dep_var": dep_var,
             "date": date,
             "estimator": estimator,
+            "log_dep": log_dep,
             "feature_dict": feature_dict,
             "num_models": num_models,
             "num_epochs": num_epochs,

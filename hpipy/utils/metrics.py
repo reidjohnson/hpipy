@@ -226,7 +226,7 @@ def insample_error_rtdata(pred_df: pd.DataFrame, index: pd.Series) -> pd.DataFra
 
     # Measure the error (difference from actual).
     error = (pred_price - pred_df["price_2"]) / pred_df["price_2"]
-    logerror = np.log1p(pred_price) - np.log1p(pred_df["price_2"])
+    logerror = np.log(pred_price) - np.log(pred_df["price_2"])
 
     error_df = pd.DataFrame(
         {

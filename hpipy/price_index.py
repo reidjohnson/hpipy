@@ -99,10 +99,10 @@ class BaseHousePriceIndex(ABC):
         max_period = int(coef_df["time"].max())
 
         # Convert estimate to an index value.
-        if log_dep:
-            estimate = np.expm1(coef_df["coefficient"])
-            index_value = ((estimate + 1) * 100)[:max_period]
-        else:
+        if log_dep:  # coefficients represent log-ratio: log(Pt / P0)
+            estimate = np.exp(coef_df["coefficient"])
+            index_value = ((estimate) * 100)[:max_period]
+        else:  # coefficients represent price delta: Pt - P0
             estimate = (coef_df["coefficient"] + base_price) / base_price
             index_value = ((estimate) * 100)[:max_period]
         index = index_value

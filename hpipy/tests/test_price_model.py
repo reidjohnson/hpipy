@@ -55,7 +55,7 @@ def test_rt_model(seattle_dataset: pd.DataFrame) -> None:
     repeat_trans_data200 = copy.deepcopy(repeat_trans_data)
     repeat_trans_data200.trans_df = repeat_trans_data200.trans_df[0:199]
     time_matrix200 = TimeMatrixMixin().create_time_matrix(repeat_trans_data200.trans_df)
-    price_diff_l200 = np.log1p(repeat_trans_data200.trans_df["price_2"]) - np.log1p(
+    price_diff_l200 = np.log(repeat_trans_data200.trans_df["price_2"]) - np.log(
         repeat_trans_data200.trans_df["price_1"]
     )
     price_diff200 = (

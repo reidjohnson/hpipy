@@ -95,11 +95,13 @@ class RandomForestModel(BaseHousePriceModel):
             .bfill()
         )
 
+        base_yhat = pdp_df["yhat"].iloc[0]
+
         # Add coefficients.
         if log_dep:
-            coefs = pdp_df["yhat"] - pdp_df["yhat"].iloc[0]
+            coefs = pdp_df["yhat"] - base_yhat
         else:
-            coefs = pdp_df["yhat"] / pdp_df["yhat"].iloc[0]
+            coefs = pdp_df["yhat"] / base_yhat
 
         model.coef_ = coefs
 
@@ -184,7 +186,7 @@ class RandomForestModel(BaseHousePriceModel):
                 hpi_df[var] = hpi_df[var].cat.codes
 
         X = hpi_df[ind_var + ["trans_period"]].reset_index(drop=True)
-        y = np.log1p(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
+        y = np.log(hpi_df[dep_var]) if log_dep else hpi_df[dep_var]
 
         # Extract base period mean price.
         base_price = hpi_df["price"][hpi_df["trans_period"] == hpi_df["trans_period"].min()].mean()

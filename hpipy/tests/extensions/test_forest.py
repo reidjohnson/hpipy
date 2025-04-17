@@ -11,6 +11,7 @@ from hpipy.extensions import RandomForestIndex
 @pytest.mark.parametrize("estimator", ["pdp"])
 @pytest.mark.parametrize("log_dep", [True, False])
 def test_rf_create_trans(seattle_dataset: pd.DataFrame, estimator: str, log_dep: bool) -> None:
+    """Test creation of random forest index."""
     rf_index = RandomForestIndex().create_index(
         seattle_dataset,
         date="sale_date",
@@ -38,6 +39,7 @@ def test_rf_create_trans_small(
     sim_count: Optional[int],
     sim_per: Optional[float],
 ) -> None:
+    """Test creation of random forest index with small dataset."""
     rf_index = RandomForestIndex().create_index(
         seattle_dataset.iloc[:100],
         date="sale_date",
@@ -58,6 +60,7 @@ def test_rf_create_trans_small(
 
 @pytest.mark.usefixtures("seattle_dataset")
 def test_rf_create_trans_bad(seattle_dataset: pd.DataFrame) -> None:
+    """Test creation of random forest index with bad data."""
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=RuntimeWarning)
         with pytest.raises(ValueError):
