@@ -52,12 +52,12 @@ Compare metrics between different index methods:
     ...    }
     ... )
 
-    >>> df_mean_volatilities.sort_values(by="Volatility")
+    >>> df_mean_volatilities.sort_values(by="Volatility").round(3)
                         Index  Volatility
-    3      NeuralNetworkIndex    0.009072
-    2       RandomForestIndex    0.013561
-    0  RepeatTransactionIndex    0.017214
-    1            HedonicIndex    0.022898
+    3      NeuralNetworkIndex       0.009
+    2       RandomForestIndex       0.014
+    0  RepeatTransactionIndex       0.017
+    1            HedonicIndex       0.023
 
 Visualize different index methods:
 
