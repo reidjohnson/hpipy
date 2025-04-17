@@ -67,9 +67,7 @@ def accuracy(
     # Check for smooth.
     if smooth and not hasattr(hpi_obj, "smooth"):
         msg = "'hpi_obj' has no smoothed index. Please add one or set 'smooth' to False."
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)
 
     # Clip pred_df to size of index.
     if test_type == "rt" and df["period_2"].max() > hpi_obj.periods.max():
@@ -150,9 +148,7 @@ def series_accuracy(
                 f"({type(series_obj)}) you must provide an 'pred_df' object of the necessary "
                 f"class, in this case: {test_type}."
             )
-            raise ValueError(
-                msg,
-            )
+            raise ValueError(msg)
     else:
         trans_data: TransactionData = series_obj.data
 
@@ -294,9 +290,7 @@ def kfold_error(
     # Check k.
     if not isinstance(k, int | float) or k < 2:
         msg = "Number of folds ('k' argument) must be a positive integer greater than 1."
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)
 
     # Check seed.
     if not isinstance(seed, int | float) or seed < 0:
@@ -510,9 +504,7 @@ def revision(
     else:
         if smooth:
             msg = "No smoothed indices found. Create them with 'smooth_series' and try again."
-            raise Exception(
-                msg,
-            )
+            raise Exception(msg)
         # index_name = "value"
         indices = [hpi_obj.value for hpi_obj in series_obj.hpis]
 
@@ -600,9 +592,7 @@ def volatility(
         msg = (
             "'window' argument must be a positive integer less than half the length of the index."
         )
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)
 
     # Calculate changes.
     deltas = pd.Series((df[1:].to_numpy() - df[:-1].to_numpy()) / df[:-1].to_numpy())

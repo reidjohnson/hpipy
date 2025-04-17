@@ -16,15 +16,6 @@ class TimeMatrixMixin:
             "period_1" and "period_2" columns containing integer values
             representing periods (i.e., time series expressed as integer).
 
-    Example:
-        >>> repeat_trans_df = pd.DataFrame({
-        ...     "period_1": [1, 1, 2, 2],
-        ...     "period_2": [2, 2, 3, 3],
-        ...     "price_1": [100, 100, 100, 100],
-        ...     "price_2": [110, 110, 110, 110],
-        ... })
-        >>> time_matrix = TimeMatrixMixin().create_time_matrix(repeat_trans_df)
-
     """
 
     def create_time_matrix(self, repeat_trans_df: pd.DataFrame) -> pd.DataFrame:

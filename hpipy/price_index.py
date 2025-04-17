@@ -300,9 +300,7 @@ class BaseHousePriceIndex(ABC):
                         "When supplying a raw dataframe to the 'trans_df' object, a valid 'date' "
                         "argument must be supplied."
                     )
-                    raise ValueError(
-                        msg,
-                    )
+                    raise ValueError(msg)
 
                 # Create period table object.
                 trans_data = PeriodTable(trans_data).create_period_table(
@@ -318,26 +316,20 @@ class BaseHousePriceIndex(ABC):
                     "When not supplying an 'hpidata' object, a 'trans_id' argument must be "
                     "supplied."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
 
             if prop_id is None:
                 msg = (
                     "When not supplying an 'hpidata' object, a 'prop_id' argument must be "
                     "supplied."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
 
             if price is None:
                 msg = (
                     "When not supplying an 'hpidata' object, a 'price' argument must be supplied."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
 
             # Create transaction data object.
             trans_data = cls._create_transactions(
@@ -413,9 +405,7 @@ class BaseHousePriceIndex(ABC):
                 "'train_period' is greater than the length of the "
                 "index and/or the 'max_period' argument."
             )
-            raise ValueError(
-                msg,
-            )
+            raise ValueError(msg)
 
         # Trim by time.
         time_range = list(range(train_period + 1, max_period + 1))
@@ -489,9 +479,7 @@ class BaseHousePriceIndex(ABC):
                     "'order' argument must be a positive integer or list of positive integers "
                     " less than half the length of the index."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
 
         # Create smoothed index (retain existing).
         s_index = self.value
@@ -577,10 +565,10 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
         >>> from hpipy.price_index import RepeatTransactionIndex
         >>> # Create sample transaction data.
         >>> data = pd.DataFrame({
-        ...     "property_id": [1, 1, 2, 2],
-        ...     "transaction_id": [1, 2, 3, 4],
-        ...     "price": [200000, 250000, 300000, 350000],
-        ...     "date": ["2020-01", "2021-01", "2020-02", "2021-02"],
+        ...     "property_id": [1, 1, 2],
+        ...     "transaction_id": [1, 2, 3],
+        ...     "price": [200000, 250000, 300000],
+        ...     "date": pd.to_datetime(["2020-01", "2021-01", "2020-02"]),
         ... })
         >>> # Create index.
         >>> index = RepeatTransactionIndex.create_index(
@@ -588,9 +576,12 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
         ...     prop_id="property_id",
         ...     trans_id="transaction_id",
         ...     price="price",
-        ...     periodicity="M",
+        ...     date="date",
+        ...     periodicity="Y",
         ...     min_date="2020-01",
         ...     max_date="2021-02",
+        ...     estimator="robust",
+        ...     log_dep=True,
         ... )
 
     """
@@ -682,12 +673,12 @@ class HedonicIndex(BaseHousePriceIndex):
         >>> from hpipy.price_index import HedonicIndex
         >>> # Create sample transaction data.
         >>> data = pd.DataFrame({
-        ...     "property_id": [1, 2, 3, 4],
-        ...     "transaction_id": [1, 2, 3, 4],
-        ...     "price": [200000, 250000, 300000, 350000],
-        ...     "date": ["2020-01", "2020-01", "2021-01", "2021-01"],
-        ...     "sqft": [1500, 1800, 2000, 2200],
-        ...     "bedrooms": [3, 3, 4, 4],
+        ...     "property_id": [1, 2, 3],
+        ...     "transaction_id": [1, 2, 3],
+        ...     "price": [200000, 250000, 300000],
+        ...     "date": pd.to_datetime(["2020-01", "2021-01", "2020-02"]),
+        ...     "sqft": [1500, 1800, 2000],
+        ...     "bedrooms": [3, 3, 4],
         ... })
         >>> # Create index.
         >>> index = HedonicIndex.create_index(
@@ -695,9 +686,11 @@ class HedonicIndex(BaseHousePriceIndex):
         ...     prop_id="property_id",
         ...     trans_id="transaction_id",
         ...     price="price",
-        ...     periodicity="M",
+        ...     date="date",
+        ...     periodicity="A",
         ...     min_date="2020-01",
         ...     max_date="2021-01",
+        ...     dep_var="price",
         ...     ind_var=["sqft", "bedrooms"],
         ... )
 
@@ -758,6 +751,4 @@ class HedonicIndex(BaseHousePriceIndex):
         if dep_var is not None and ind_var is not None:
             return cls.get_model()(trans_data).fit(dep_var=dep_var, ind_var=ind_var, **kwargs)
         msg = "A dependent (dep_var) and independent variables (ind_var) must be provided."
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)

@@ -16,7 +16,8 @@ class InvisibleAltairPlot(SphinxDirective):
 
         chart = ns.get("chart")
         if not isinstance(chart, alt.TopLevelMixin):
-            raise ValueError("Expected a variable named 'chart' with an Altair chart object.")
+            msg = "Expected a variable named 'chart' with an Altair chart object."
+            raise ValueError(msg)
 
         chart_id = f"vega-spec-{uuid.uuid4().hex}"
         spec = chart.to_json(indent=None)
@@ -48,5 +49,5 @@ class InvisibleAltairPlot(SphinxDirective):
         return [nodes.raw("", html, format="html")]
 
 
-def setup(app):
+def setup(app) -> None:
     app.add_directive("invisible-altair-plot", InvisibleAltairPlot)

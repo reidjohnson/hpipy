@@ -76,17 +76,13 @@ class MonotonicDense(nn.Linear):
                     "`activation_weights` must have exactly three components, got "
                     f"{activation_weights}."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
             if (np.array(activation_weights) < 0).any():
                 msg = (
                     "`activation_weights` values must be non-negative, got "
                     f"{activation_weights}."
                 )
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
         self.activation_weights = torch.Tensor(activation_weights, device=device)
         self.activation_weights = self.activation_weights / self.activation_weights.sum(dim=0)
 

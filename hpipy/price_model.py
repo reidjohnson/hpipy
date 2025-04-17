@@ -104,9 +104,7 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
                 "Number of observations of 'repeat_trans_df', 'time_matrix' and 'price_diff' do "
                 "not match."
             )
-            raise ValueError(
-                msg,
-            )
+            raise ValueError(msg)
 
         # Check for sparseness.
         if len(repeat_trans_df) < len(period_table):

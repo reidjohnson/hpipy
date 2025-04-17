@@ -792,9 +792,7 @@ class NeuralAVM:
                 "The model is not fitted yet. Call `fit` with appropriate "
                 "arguments before using this model."
             )
-            raise NotFittedError(
-                msg,
-            )
+            raise NotFittedError(msg)
 
         X_dict = self.prepare_model_input(X_predict)
 
@@ -872,9 +870,7 @@ class NeuralAVM:
                 "The model is not fitted yet. Call `fit` with appropriate "
                 "arguments before using this model."
             )
-            raise NotFittedError(
-                msg,
-            )
+            raise NotFittedError(msg)
 
         num_background = len(X_baseline)
         explainer = DeepLift if num_background == 1 else DeepLiftShap

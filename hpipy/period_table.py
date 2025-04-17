@@ -197,9 +197,7 @@ class PeriodTable:
                 "'periodicity' must be one of: 'weekly', 'monthly', 'quarterly', "
                 "'annual', 'equalfreq' or 'equalsample'."
             )
-            raise ValueError(
-                msg,
-            )
+            raise ValueError(msg)
         if periodicity in ["yearly", "y", "a"]:
             periodicity = "annual"
         elif periodicity == "q":

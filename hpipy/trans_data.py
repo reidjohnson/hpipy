@@ -30,11 +30,13 @@ class TransactionData:
         period_table (pd.DataFrame): Period table.
 
     Example:
+        >>> import pandas as pd
+        >>> from hpipy.trans_data import TransactionData
         >>> trans_data = pd.DataFrame({
         ...     "prop_id": [1, 2, 3],
         ...     "trans_id": [1, 2, 3],
         ...     "price": [100, 200, 300],
-        ...     "date": ["2020-01-01", "2020-01-02", "2020-01-03"],
+        ...     "date": pd.to_datetime(["2020-01", "2021-01", "2020-02"]),
         ... })
         >>> trans_data = TransactionData(trans_data)
 
@@ -92,9 +94,7 @@ class TransactionData:
         if not isinstance(self.trans_data, PeriodTable):
             if date is None:
                 msg = "You must provide the name of a field with date of transaction (date=)."
-                raise ValueError(
-                    msg,
-                )
+                raise ValueError(msg)
             if periodicity is None:
                 logging.warning("No periodicity (periodicity=) provided, defaulting to yearly.")
                 periodicity = "yearly"
@@ -203,7 +203,7 @@ class RepeatTransactionData(TransactionData):
             )
             .assign(
                 trans_period=lambda x: x["trans_period"].astype(int),
-                temp=lambda x: x["prop_id"] + "_" + x["trans_period"].astype(str),
+                temp=lambda x: x["prop_id"].astype(str) + "_" + x["trans_period"].astype(str),
             )
             .drop_duplicates("temp")  # remove any properties that sold twice in same time period
             .drop(columns="temp")
