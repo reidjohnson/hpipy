@@ -6,7 +6,7 @@ We will demonstrate how to analyze and visualize house price index series. We wi
 Basic Setup
 -----------
 
-First, we will import the necessary modules and load some sales data:
+First, we will import the necessary modules, load some sales data, and create an index:
 
 .. code-block:: python
 
@@ -33,6 +33,7 @@ Now, create and visualize a series of indices from the index:
 
     >>> from hpipy.utils.plotting import plot_series
 
+    # Create a series of indices.
     >>> hpi_series = hpi.create_series(train_period=24, max_period=30, smooth=True)
 
     # Plot index series.

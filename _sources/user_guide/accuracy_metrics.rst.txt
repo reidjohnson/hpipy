@@ -6,7 +6,7 @@ Accuracy metrics measure how well the index predicts actual property values. We 
 Basic Setup
 -----------
 
-First, we will import the necessary modules and load some sales data and create an index:
+First, we will import the necessary modules, load some sales data, and create an index:
 
 .. code-block:: python
 
@@ -30,7 +30,7 @@ First, we will import the necessary modules and load some sales data and create 
 Calculating Accuracy
 --------------------
 
-Calculate the accuracy of the index using the ``accuracy`` function:
+To calculate the accuracy of the index, you can use the ``accuracy`` function:
 
 .. code-block:: python
 

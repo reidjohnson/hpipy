@@ -7,7 +7,7 @@ The random forest method applies an ensemble machine learning approach to index 
 
     Background on model construction for the interpretable random forest can be found in:
 
-    Krause (2019), "A Machine Learning Approach to House Prince Indexes". `https://github.com/andykrause/hpi_research/tree/master/papers/irf <https://github.com/andykrause/hpi_research/tree/master/papers/irf>`_.
+    Krause (2019), "A Machine Learning Approach to House Price Indexes". `https://github.com/andykrause/hpi_research/tree/master/papers/irf <https://github.com/andykrause/hpi_research/tree/master/papers/irf>`_.
 
 Overview
 --------
@@ -16,7 +16,7 @@ The random forest method:
 
 1. Uses an ensemble of decision trees
 2. Handles both numerical and categorical features
-3. Automatically handles non-linear relationships
+3. Automatically handles nonlinear relationships
 4. Uses partial dependence plots to derive index
 
 Data Preparation
@@ -108,7 +108,7 @@ The random forest model is implemented using the `RandomForestRegressor <https:/
     >>> importance
     array(...)
 
-Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/stable/modules/partial_dependence.html>`_ function to plot the partial dependence of the model on particular features. Here, we plot the partial dependence of the model on the transaction period, which is used to derive the index:
+Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/stable/modules/partial_dependence.html>`_ function to plot the partial dependence of the model on particular features. Here, we plot the partial dependence on the transaction period, which is used to derive the index:
 
 .. code-block:: python
 

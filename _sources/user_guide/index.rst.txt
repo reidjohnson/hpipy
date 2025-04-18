@@ -30,13 +30,13 @@ Use one of the following methods to build house price indices:
       :link: random_forest
       :link-type: doc
 
-      Use an ensemble of decision trees to learn complex, non-linear price patterns.
+      Use an ensemble of decision trees to learn complex, nonlinear price patterns.
 
    .. grid-item-card:: 🧠 Bifurcated Neural Network
       :link: neural_network
       :link-type: doc
 
-      Apply a deep learning model to learn complex, non-linear price patterns.
+      Apply a deep learning model to learn complex, nonlinear price patterns.
 
 Evaluation & Comparison
 -----------------------

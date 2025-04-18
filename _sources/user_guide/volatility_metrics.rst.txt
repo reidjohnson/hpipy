@@ -6,7 +6,7 @@ Volatility metrics measure the stability and smoothness of the index. We will de
 Basic Setup
 -----------
 
-First, we will import the necessary modules and load some sales data and create an index:
+First, we will import the necessary modules, load some sales data, and create an index:
 
 .. code-block:: python
 
@@ -30,7 +30,7 @@ First, we will import the necessary modules and load some sales data and create 
 Calculating Volatility
 ----------------------
 
-Calculate the volatility of the index using the ``volatility`` function:
+To calculate the volatility of the index, you can use the ``volatility`` function:
 
 .. code-block:: python
 

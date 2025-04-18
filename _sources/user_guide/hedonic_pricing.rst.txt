@@ -20,7 +20,7 @@ For hedonic pricing, your data should include:
 * Property characteristics columns (e.g., "sqft", "bedrooms", "bathrooms")
 * A transaction identifier column (e.g., "sale_id")
 
-Here's how to prepare your data:
+You can prepare your data as follows:
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ Here's how to prepare your data:
     # Load sales data.
     >>> df = load_ex_sales()
 
-    # Create a period table.
+    # Create period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
     ...     "sale_date",
     ...     periodicity="monthly",
