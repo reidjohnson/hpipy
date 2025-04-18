@@ -1,7 +1,7 @@
 Bifurcated Neural Network
 =========================
 
-The neural network method offers a deep learning–based approach to constructing house price indices. It automatically learns complex, nonlinear relationships between property features and sale prices, enabling it to separate individual property effects from broader market trends. While it requires large volumes of sales and property data, it is particularly powerful at scale and can produce accurate, fine-grained, and timely indices without relying on repeat sales.
+The neural network method offers a deep learning-based approach to constructing house price indices. It automatically learns complex, nonlinear relationships between property features and sale prices, enabling it to separate individual property effects from broader market trends. While it requires large volumes of sales and property data, it is particularly powerful at scale and can produce accurate, fine-grained, and timely indices without relying on repeat sales.
 
 .. note::
 
@@ -15,11 +15,11 @@ Overview
 The neural network method:
 
 1. Separates property-specific and market-level effects
-2. Learns non-linear relationships automatically
+2. Learns nonlinear relationships automatically
 3. Can handle high-dimensional feature spaces
 4. Supports both local and global market patterns
 
-The neural network method supports two distinct approaches for extracting the house price index:
+The method supports two distinct approaches for extracting the house price index:
 
 .. list-table::
    :header-rows: 1
@@ -29,11 +29,11 @@ The neural network method supports two distinct approaches for extracting the ho
      - Residual Approach
      - Attributional Approach
    * - Description
-     - Extracts the index directly from the market pathway by isolating temporal market effects.
-     - Uses explainability techniques (e.g., SHAP )to attribute prediction components to market-level factors.
+     - Extracts the index directly from the market pathway by isolating temporal market effects. Default in `hpiPy`.
+     - Uses explainability techniques (e.g., SHAP) to attribute prediction components to market-level factors.
    * - Steps
      - 1. Train on full feature set
-       2. Zero out non-market (i.e., property-specific) feautures
+       2. Zero out non-market (i.e., property-specific) features
        3. Extract residual market effects
        4. Convert to index
      - 1. Train on full feature set
@@ -43,7 +43,6 @@ The neural network method supports two distinct approaches for extracting the ho
    * - Benefits
      - * Explicit separation of effects
        * Structural interpretation
-       * Default in `hpiPy`
      - * Granular effect decomposition
        * Feature-level interpretability
    * - Drawbacks
@@ -52,7 +51,7 @@ The neural network method supports two distinct approaches for extracting the ho
 
 **Attributional Approach**
 
-The attributional approach decomposes the logarithm of a property's value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by macroeconomic conditions and the characteristics of the property itself (`ref <ref-lusk_>`_):
+The attributional approach decomposes the logarithm of a property's value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by market conditions and the characteristics of the property itself (`Clapham et al. <ref-clapham_>`_):
 
 .. math::
 
@@ -69,7 +68,7 @@ This model is conceptually similar to hedonic or repeat-sales approaches, where 
 
 **Residual Approach**
 
-The residual approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (`ref <ref-deeplift_>`_):
+The residual approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (`Shrikumar et al. <ref-shrikumar_>`_):
 
 .. math::
 
@@ -93,8 +92,8 @@ where:
 
 This approach allows for interpretability of complex nonlinear models by expressing the prediction in terms of feature-level contributions.
 
-.. _ref-lusk: https://lusk.usc.edu/research/working-papers/revisiting-past-revision-repeat-sales-and-hedonic-indexes-house-prices
-.. _ref-deeplift: https://arxiv.org/abs/1704.02685
+.. _ref-clapham: https://lusk.usc.edu/research/working-papers/revisiting-past-revision-repeat-sales-and-hedonic-indexes-house-prices
+.. _ref-shrikumar: https://arxiv.org/abs/1704.02685
 
 Data Preparation
 ----------------

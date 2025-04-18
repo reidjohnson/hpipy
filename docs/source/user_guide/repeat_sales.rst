@@ -19,7 +19,7 @@ To create a repeat sales index, you first need to prepare your data. The data sh
 * A property identifier column (e.g., "pinx")
 * A transaction identifier column (e.g., "sale_id")
 
-Here's how to prepare your data:
+You can prepare your data as follows:
 
 .. code-block:: python
 
@@ -30,7 +30,7 @@ Here's how to prepare your data:
     # Load sales data.
     >>> df = load_ex_sales()
 
-    # Create a period table (converts dates to periods)
+    # Create period table.
     >>> sales_hdata = PeriodTable(df).create_period_table(
     ...     "sale_date",
     ...     periodicity="monthly",  # or "quarterly", "yearly"

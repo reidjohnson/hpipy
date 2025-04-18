@@ -3,6 +3,15 @@
 Release Notes
 =============
 
+Version 0.1.5 (released April 18, 2025)
+---------------------------------------
+
+* Add quantile param to RF
+* Update evaluation metrics
+* Update documentation
+
+**Full Changelog**: https://github.com/reidjohnson/hpipy/compare/v0.1.4...v0.1.5
+
 Version 0.1.4 (released April 17, 2025)
 ---------------------------------------
 

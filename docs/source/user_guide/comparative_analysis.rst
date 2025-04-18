@@ -1,7 +1,7 @@
 Comparative Analysis
 ====================
 
-It is often useful to compare the performance of different index methods. We will demonstrate how to do this by comparing metrics and visualizing indices.
+It is often useful to compare the performance of different index methods. We will demonstrate how to do this by comparing metrics and visualizing the indices.
 
 Basic Setup
 -----------
