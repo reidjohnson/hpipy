@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=fd825880"></script>
+    <script src="../../_static/documentation_options.js?v=59fadc99"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,7 @@
     <link rel="prev" title="hpipy.extensions.RandomForestIndex.revision_smooth" href="hpipy.extensions.RandomForestIndex.revision_smooth.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.4" />
+  <meta name="docsearch:version" content="0.1.5" />
   </head>
   
   
@@ -611,6 +611,23 @@
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hpipy.extensions.</span></span><span class="sig-name descname"><span class="pre">NeuralNetworkIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/hpipy/extensions/neural/_base.html#NeuralNetworkIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HedonicIndex</span></code></p>
 <p>Neural network house price index.</p>
+<p>Estimates the relationship between independent variables and the dependent
+variable using a neural network model. The index can be derived from the
+model using two distinct approaches:</p>
+<ol class="arabic simple">
+<li><p>Residual Approach: This method extracts the house price index directly
+from the market pathway of the neural network. It isolates the temporal
+component of price changes by zeroing out all non-time features and
+examining the network’s output, effectively capturing the “residual”
+market trend.</p></li>
+<li><p>Attributional Approach: This method derives the index by analyzing the
+explainability of both market and time components. It uses attribution
+techniques to decompose the network’s predictions and to assess the
+conditional marginal impact of each time period on price changes, which
+are converted into an index.</p></li>
+</ol>
+<p>Both approaches aim to capture market trends, but differ in how they extract
+temporal information from the neural network’s learned representations.</p>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>

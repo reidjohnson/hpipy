@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=fd825880"></script>
+    <script src="../../../../_static/documentation_options.js?v=59fadc99"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.4" />
+  <meta name="docsearch:version" content="0.1.5" />
   </head>
   
   
@@ -381,26 +381,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for hpipy.extensions.neural._base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Neural network HPI extensions.</span>
-
-<span class="sd">This module implements neural network-based house price indices using two</span>
-<span class="sd">distinct approaches:</span>
-
-<span class="sd">1. Residual Approach: This method extracts the house price index directly from</span>
-<span class="sd">   the market pathway of the neural network. It isolates the temporal</span>
-<span class="sd">   component of price changes by  zeroing out all non-time features and</span>
-<span class="sd">   examining the network&#39;s output, effectively capturing the &quot;residual&quot; market</span>
-<span class="sd">   trend.</span>
-
-<span class="sd">2. Attributional Approach: This method derives the index by analyzing the</span>
-<span class="sd">   explainability of both market and time components. It uses attribution</span>
-<span class="sd">   techniques to decompose the  network&#39;s predictions and identify how much of</span>
-<span class="sd">   the price change can be attributed to  temporal factors versus other market</span>
-<span class="sd">   characteristics.</span>
-
-<span class="sd">Both approaches aim to capture market trends, but differ in how they extract</span>
-<span class="sd">temporal information from the neural network&#39;s learned representations.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Neural network HPI extensions.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -440,7 +421,28 @@
 <div class="viewcode-block" id="NeuralNetworkIndex">
 <a class="viewcode-back" href="../../../../api/_autosummary/hpipy.extensions.NeuralNetworkIndex.html#hpipy.extensions.NeuralNetworkIndex">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NeuralNetworkIndex</span><span class="p">(</span><span class="n">HedonicIndex</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Neural network house price index.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Neural network house price index.</span>
+
+<span class="sd">    Estimates the relationship between independent variables and the dependent</span>
+<span class="sd">    variable using a neural network model. The index can be derived from the</span>
+<span class="sd">    model using two distinct approaches:</span>
+
+<span class="sd">    1. Residual Approach: This method extracts the house price index directly</span>
+<span class="sd">       from the market pathway of the neural network. It isolates the temporal</span>
+<span class="sd">       component of price changes by zeroing out all non-time features and</span>
+<span class="sd">       examining the network&#39;s output, effectively capturing the &quot;residual&quot;</span>
+<span class="sd">       market trend.</span>
+
+<span class="sd">    2. Attributional Approach: This method derives the index by analyzing the</span>
+<span class="sd">       explainability of both market and time components. It uses attribution</span>
+<span class="sd">       techniques to decompose the network&#39;s predictions and to assess the</span>
+<span class="sd">       conditional marginal impact of each time period on price changes, which</span>
+<span class="sd">       are converted into an index.</span>
+
+<span class="sd">    Both approaches aim to capture market trends, but differ in how they extract</span>
+<span class="sd">    temporal information from the neural network&#39;s learned representations.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NeuralNetworkIndex.get_model">
 <a class="viewcode-back" href="../../../../api/_autosummary/hpipy.extensions.NeuralNetworkIndex.get_model.html#hpipy.extensions.NeuralNetworkIndex.get_model">[docs]</a>

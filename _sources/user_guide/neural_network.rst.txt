@@ -64,7 +64,7 @@ where:
 - :math:`Q_i` is the time-invariant quality or quantity of property *i* (e.g., structural/locational attributes).
 - :math:`\varepsilon_{it}` is a residual term capturing idiosyncratic noise or omitted effects.
 
-This model is conceptually similar to hedonic or repeat-sales approaches, where market effects and property characteristics are disentangled.
+This model is conceptually similar to hedonic or repeat-sales approaches, where market effects and property characteristics are disentangled. The index is derived by directly extracting the market-level estimates for each time period from the model and normalizing them to a base period.
 
 **Residual Approach**
 
@@ -90,7 +90,7 @@ where:
 - :math:`\Delta \hat{V}_i` is the total difference in predicted value from the baseline.
 - :math:`C_j` is the contribution of feature :math:`j`, computed as the product of the feature’s difference from baseline, :math:`\Delta x_{ij} = x_{ij} - x_{j}^{\text{ref}}`, and its multiplier :math:`m_j`, which represents the sensitivity of the output to that feature.
 
-This approach allows for interpretability of complex nonlinear models by expressing the prediction in terms of feature-level contributions.
+This approach allows for interpretability of complex nonlinear models by expressing the prediction in terms of feature-level contributions. The index is derived by estimating the attributions for the temporal features at each time period and normalizing them to a base period.
 
 .. _ref-clapham: https://lusk.usc.edu/research/working-papers/revisiting-past-revision-repeat-sales-and-hedonic-indexes-house-prices
 .. _ref-shrikumar: https://arxiv.org/abs/1704.02685

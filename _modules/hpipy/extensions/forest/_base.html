@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=fd825880"></script>
+    <script src="../../../../_static/documentation_options.js?v=59fadc99"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.4" />
+  <meta name="docsearch:version" content="0.1.5" />
   </head>
   
   
@@ -404,7 +404,15 @@
 <div class="viewcode-block" id="RandomForestIndex">
 <a class="viewcode-back" href="../../../../api/_autosummary/hpipy.extensions.RandomForestIndex.html#hpipy.extensions.RandomForestIndex">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RandomForestIndex</span><span class="p">(</span><span class="n">HedonicIndex</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random forest house price index.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Random forest house price index.</span>
+
+<span class="sd">    Estimates the relationship between independent and dependent variables</span>
+<span class="sd">    using a random forest model. Extracts the coefficients of temporal</span>
+<span class="sd">    variables to represent the marginal contribution of each time period.</span>
+<span class="sd">    Partial dependence is used to assess the conditional marginal impact of</span>
+<span class="sd">    each time period on price changes, which are converted into an index.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RandomForestIndex.get_model">
 <a class="viewcode-back" href="../../../../api/_autosummary/hpipy.extensions.RandomForestIndex.get_model.html#hpipy.extensions.RandomForestIndex.get_model">[docs]</a>
