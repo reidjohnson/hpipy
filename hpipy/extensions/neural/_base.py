@@ -1,23 +1,4 @@
-"""Neural network HPI extensions.
-
-This module implements neural network-based house price indices using two
-distinct approaches:
-
-1. Residual Approach: This method extracts the house price index directly from
-   the market pathway of the neural network. It isolates the temporal
-   component of price changes by  zeroing out all non-time features and
-   examining the network's output, effectively capturing the "residual" market
-   trend.
-
-2. Attributional Approach: This method derives the index by analyzing the
-   explainability of both market and time components. It uses attribution
-   techniques to decompose the  network's predictions and identify how much of
-   the price change can be attributed to  temporal factors versus other market
-   characteristics.
-
-Both approaches aim to capture market trends, but differ in how they extract
-temporal information from the neural network's learned representations.
-"""
+"""Neural network HPI extensions."""
 
 import copy
 import logging
@@ -55,7 +36,28 @@ class NeuralAVMWithCoef(NeuralAVM):
 
 
 class NeuralNetworkIndex(HedonicIndex):
-    """Neural network house price index."""
+    """Neural network house price index.
+
+    Estimates the relationship between independent variables and the dependent
+    variable using a neural network model. The index can be derived from the
+    model using two distinct approaches:
+
+    1. Residual Approach: This method extracts the house price index directly
+       from the market pathway of the neural network. It isolates the temporal
+       component of price changes by zeroing out all non-time features and
+       examining the network's output, effectively capturing the "residual"
+       market trend.
+
+    2. Attributional Approach: This method derives the index by analyzing the
+       explainability of both market and time components. It uses attribution
+       techniques to decompose the network's predictions and to assess the
+       conditional marginal impact of each time period on price changes, which
+       are converted into an index.
+
+    Both approaches aim to capture market trends, but differ in how they extract
+    temporal information from the neural network's learned representations.
+
+    """
 
     @staticmethod
     def get_model() -> type[BaseHousePriceModel]:

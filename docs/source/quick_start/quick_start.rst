@@ -54,7 +54,7 @@ Here's a simple example of creating a house price index using repeat sales data:
         log_dep=True,
         smooth=True,
     )
-    chart = plot_index(hpi, smooth=True).properties(width=600, title="Example Index")
+    chart = plot_index(hpi, smooth=True).properties(title="Example Index", width=600)
 
 .. toctree::
    :maxdepth: 1

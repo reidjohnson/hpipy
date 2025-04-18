@@ -19,7 +19,15 @@ from hpipy.price_model import BaseHousePriceModel
 
 
 class RandomForestIndex(HedonicIndex):
-    """Random forest house price index."""
+    """Random forest house price index.
+
+    Estimates the relationship between independent and dependent variables
+    using a random forest model. Extracts the coefficients of temporal
+    variables to represent the marginal contribution of each time period.
+    Partial dependence is used to assess the conditional marginal impact of
+    each time period on price changes, which are converted into an index.
+
+    """
 
     @staticmethod
     def get_model() -> type[BaseHousePriceModel]:
