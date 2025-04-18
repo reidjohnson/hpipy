@@ -46,6 +46,8 @@
       ~NeuralNetworkIndex.index
       ~NeuralNetworkIndex.imputed
       ~NeuralNetworkIndex.smooth
+      ~NeuralNetworkIndex.accuracy
+      ~NeuralNetworkIndex.accuracy_smooth
       ~NeuralNetworkIndex.volatility
       ~NeuralNetworkIndex.volatility_smooth
       ~NeuralNetworkIndex.revision

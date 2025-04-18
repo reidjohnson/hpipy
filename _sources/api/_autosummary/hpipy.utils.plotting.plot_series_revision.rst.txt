@@ -1,0 +1,28 @@
+﻿hpipy.utils.plotting.plot\_series\_revision
+===========================================
+
+.. currentmodule:: hpipy.utils.plotting
+
+.. autoclass:: plot_series_revision
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __init__, __call__
+   :member-order: bysource
+   :undoc-members:
+   :no-index:
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

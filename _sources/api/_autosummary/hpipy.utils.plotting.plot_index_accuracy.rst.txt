@@ -1,9 +1,9 @@
-﻿hpipy.utils.metrics.kfold\_error
-================================
+﻿hpipy.utils.plotting.plot\_index\_accuracy
+==========================================
 
-.. currentmodule:: hpipy.utils.metrics
+.. currentmodule:: hpipy.utils.plotting
 
-.. autoclass:: kfold_error
+.. autoclass:: plot_index_accuracy
    :show-inheritance:
    :inherited-members:
    :special-members: __init__, __call__

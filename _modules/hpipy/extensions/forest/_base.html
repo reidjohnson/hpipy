@@ -446,6 +446,7 @@
         <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RandomForestRegressor</span> <span class="o">|</span> <span class="n">RandomForestQuantileRegressor</span><span class="p">:</span>
@@ -456,6 +457,7 @@
 <span class="sd">            y (pd.Series): Dependent variable.</span>
 <span class="sd">            estimator (str): Estimator type.</span>
 <span class="sd">            n_estimators (int): Number of estimators.</span>
+<span class="sd">            quantile (float | None): Quantile to compute.</span>
 <span class="sd">            random_seed (int): Random seed.</span>
 <span class="sd">            **kwargs: Additional keyword arguments.</span>
 
@@ -464,15 +466,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Fit the model.</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span>
-            <span class="n">y</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># model = RangerForestRegressor(</span>
-        <span class="c1">#    n_estimators=n_estimators,</span>
-        <span class="c1">#    categorical_features=[&quot;trans_period&quot;],</span>
-        <span class="c1">#    seed=random_seed,</span>
-        <span class="c1"># ).fit(X, y)</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">RandomForestQuantileRegressor</span> <span class="k">if</span> <span class="n">quantile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">RandomForestRegressor</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="c1"># categorical_features=[&quot;trans_period&quot;],</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;pdp&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_pdp</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
@@ -586,6 +585,7 @@
         <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pdp&quot;</span><span class="p">,</span>
         <span class="n">log_dep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">n_estimators</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
@@ -602,6 +602,8 @@
 <span class="sd">                Defaults to True.</span>
 <span class="sd">            n_estimators (int, optional): Number of estimators.</span>
 <span class="sd">                Defaults to 100.</span>
+<span class="sd">            quantile (float | None, optional): Quantile to compute.</span>
+<span class="sd">                Defaults to None.</span>
 <span class="sd">            random_seed (int, optional): Random seed to use.</span>
 <span class="sd">                Defaults to 0.</span>
 
@@ -652,6 +654,7 @@
             <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
             <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
             <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">,</span>
             <span class="n">log_dep</span><span class="o">=</span><span class="n">log_dep</span><span class="p">,</span>
             <span class="n">random_seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>

@@ -299,4 +299,4 @@ Evaluate the neural network index using various metrics:
             .transform_calculate(method="'Attributional'")
             .encode(color=alt.Color("method:N", title="Method"))
         ),
-    ).properties(title="Neural Network Index", width=525)
+    ).properties(title="Neural Network Index", width=500)

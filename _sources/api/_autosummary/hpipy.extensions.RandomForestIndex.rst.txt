@@ -46,6 +46,8 @@
       ~RandomForestIndex.index
       ~RandomForestIndex.imputed
       ~RandomForestIndex.smooth
+      ~RandomForestIndex.accuracy
+      ~RandomForestIndex.accuracy_smooth
       ~RandomForestIndex.volatility
       ~RandomForestIndex.volatility_smooth
       ~RandomForestIndex.revision

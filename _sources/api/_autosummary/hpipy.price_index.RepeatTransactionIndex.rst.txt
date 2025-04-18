@@ -46,6 +46,8 @@
       ~RepeatTransactionIndex.index
       ~RepeatTransactionIndex.imputed
       ~RepeatTransactionIndex.smooth
+      ~RepeatTransactionIndex.accuracy
+      ~RepeatTransactionIndex.accuracy_smooth
       ~RepeatTransactionIndex.volatility
       ~RepeatTransactionIndex.volatility_smooth
       ~RepeatTransactionIndex.revision

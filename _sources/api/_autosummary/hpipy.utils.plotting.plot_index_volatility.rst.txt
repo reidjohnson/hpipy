@@ -1,9 +1,9 @@
-﻿hpipy.utils.metrics.insample\_error
-===================================
+﻿hpipy.utils.plotting.plot\_index\_volatility
+============================================
 
-.. currentmodule:: hpipy.utils.metrics
+.. currentmodule:: hpipy.utils.plotting
 
-.. autoclass:: insample_error
+.. autoclass:: plot_index_volatility
    :show-inheritance:
    :inherited-members:
    :special-members: __init__, __call__

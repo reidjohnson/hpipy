@@ -46,6 +46,8 @@
       ~HedonicIndex.index
       ~HedonicIndex.imputed
       ~HedonicIndex.smooth
+      ~HedonicIndex.accuracy
+      ~HedonicIndex.accuracy_smooth
       ~HedonicIndex.volatility
       ~HedonicIndex.volatility_smooth
       ~HedonicIndex.revision

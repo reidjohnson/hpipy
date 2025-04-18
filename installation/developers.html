@@ -467,7 +467,8 @@ pre-commit<span class="w"> </span>install
 </pre></div>
 </div>
 <p>To test the documentation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="n">pytest</span> <span class="o">--</span><span class="n">doctest</span><span class="o">-</span><span class="n">glob</span><span class="o">=</span><span class="s2">&quot;*.rst&quot;</span> <span class="o">--</span><span class="n">doctest</span><span class="o">-</span><span class="n">modules</span> <span class="n">docs</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">pytest</span> <span class="o">--</span><span class="n">doctest</span><span class="o">-</span><span class="n">glob</span><span class="o">=</span><span class="s2">&quot;*.rst&quot;</span> <span class="o">--</span><span class="n">doctest</span><span class="o">-</span><span class="n">modules</span> <span class="n">docs</span>
 </pre></div>
 </div>
 </section>

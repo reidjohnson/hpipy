@@ -54,7 +54,7 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Time Window Analysis" href="time_window_analysis.html" />
+    <link rel="next" title="Series Metrics" href="series_metrics.html" />
     <link rel="prev" title="Volatility Metrics" href="volatility_metrics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -354,7 +354,7 @@
 <li class="toctree-l1"><a class="reference internal" href="accuracy_metrics.html">Accuracy Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="volatility_metrics.html">Volatility Metrics</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Revision Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_window_analysis.html">Time Window Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="series_metrics.html">Series Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="comparative_analysis.html">Comparative Analysis</a></li>
 </ul>
 </div>
@@ -411,10 +411,12 @@
                   
   <section id="revision-metrics">
 <h1>Revision Metrics<a class="headerlink" href="#revision-metrics" title="Link to this heading">#</a></h1>
-<p>Revision metrics assess how index values change as new data becomes available:</p>
+<p>Revision metrics assess how index values change as new data becomes available. We will demonstrate how to calculate and visualize revision metrics.</p>
+<section id="basic-setup">
+<h2>Basic Setup<a class="headerlink" href="#basic-setup" title="Link to this heading">#</a></h2>
+<p>First, we will import the necessary modules and load some sales data and create a series of indices:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_seattle_sales</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_index</span><span class="w"> </span><span class="kn">import</span> <span class="n">RepeatTransactionIndex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">revision</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">load_seattle_sales</span><span class="p">()</span>
 
@@ -431,17 +433,25 @@
 <span class="gp">... </span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hpi_series</span> <span class="o">=</span> <span class="n">hpi</span><span class="o">.</span><span class="n">create_series</span><span class="p">(</span><span class="n">train_period</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">max_period</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rev</span> <span class="o">=</span> <span class="n">revision</span><span class="p">(</span><span class="n">hpi_series</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rev</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<span class="go">   period      mean    median</span>
-<span class="go">0       1  0.000000  0.000000</span>
-<span class="go">1       2 -0.161268 -0.242763</span>
-<span class="go">2       3 -1.107773  0.037327</span>
-<span class="go">3       4 -2.159030 -1.220268</span>
-<span class="go">4       5 -1.570491 -1.096907</span>
 </pre></div>
 </div>
+</section>
+<section id="calculating-revision">
+<h2>Calculating Revision<a class="headerlink" href="#calculating-revision" title="Link to this heading">#</a></h2>
+<p>Calculate the revision of the index using the <code class="docutils literal notranslate"><span class="pre">revision</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.utils.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">revision</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rev</span> <span class="o">=</span> <span class="n">revision</span><span class="p">(</span><span class="n">hpi_series</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rev</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">   period   mean  median</span>
+<span class="go">0       1  0.000   0.000</span>
+<span class="go">1       2 -0.161  -0.243</span>
+<span class="go">2       3 -1.108   0.037</span>
+<span class="go">3       4 -2.159  -1.220</span>
+<span class="go">4       5 -1.570  -1.097</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -464,11 +474,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="time_window_analysis.html"
+       href="series_metrics.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Time Window Analysis</p>
+        <p class="prev-next-title">Series Metrics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -482,6 +492,19 @@
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-setup">Basic Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-revision">Calculating Revision</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">

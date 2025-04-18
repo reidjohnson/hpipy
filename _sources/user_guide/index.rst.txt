@@ -65,17 +65,17 @@ Once you've created your indices, use the following tools to evaluate and compar
 
       Track how index values change with new data over time.
 
+   .. grid-item-card:: Series Metrics
+      :link: series_metrics
+      :link-type: doc
+
+      Learn how to analyze and visualize index series.
+
    .. grid-item-card:: Comparative Analysis
       :link: comparative_analysis
       :link-type: doc
 
       Compare multiple index construction methods side by side.
-
-   .. grid-item-card:: Time Window Analysis
-      :link: time_window_analysis
-      :link-type: doc
-
-      Evaluate metrics across different rolling time windows.
 
 .. toctree::
    :hidden:
@@ -95,5 +95,5 @@ Once you've created your indices, use the following tools to evaluate and compar
    accuracy_metrics
    volatility_metrics
    revision_metrics
-   time_window_analysis
+   series_metrics
    comparative_analysis

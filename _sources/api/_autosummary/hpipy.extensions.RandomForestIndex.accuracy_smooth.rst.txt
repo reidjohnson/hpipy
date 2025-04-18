@@ -1,0 +1,6 @@
+hpipy.extensions.RandomForestIndex.accuracy\_smooth
+===================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: RandomForestIndex.accuracy_smooth

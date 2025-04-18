@@ -393,7 +393,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.exponential_smoothing.ets</span><span class="w"> </span><span class="kn">import</span> <span class="n">ETSModel</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_index</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span> <span class="n">HedonicIndex</span><span class="p">,</span> <span class="n">RepeatTransactionIndex</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span> <span class="n">HedonicModel</span><span class="p">,</span> <span class="n">RepeatTransactionModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.price_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span> <span class="n">RepeatTransactionModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.trans_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">HedonicTransactionData</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">,</span> <span class="n">TransactionData</span>
 
 
@@ -402,7 +402,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span>
     <span class="n">hpi_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
     <span class="n">test_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;insample&quot;</span><span class="p">,</span>
-    <span class="n">test_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span>
+    <span class="n">test_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -414,9 +414,10 @@
 <span class="sd">    Args:</span>
 <span class="sd">        hpi_obj (BaseHousePriceIndex): Index object.</span>
 <span class="sd">        test_method (str, optional): Testing method.</span>
-<span class="sd">            Defaults to &quot;insample&quot;.</span>
+<span class="sd">            Defaults to &quot;insample&quot;. Also supports &quot;kfold&quot;.</span>
 <span class="sd">        test_type (str, optional): Testing type.</span>
-<span class="sd">            Defaults to &quot;rt&quot;.</span>
+<span class="sd">            Defaults to None. If None, the test_type is inferred from the</span>
+<span class="sd">            index object.</span>
 <span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
 <span class="sd">            calculated based on the smoothed indices.</span>
 <span class="sd">            Defaults to False.</span>
@@ -438,7 +439,13 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Check for allowed test_method.</span>
-    <span class="k">if</span> <span class="n">test_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="s2">&quot;hed&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">test_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpi_obj</span><span class="p">,</span> <span class="n">RepeatTransactionIndex</span><span class="p">):</span>
+            <span class="n">test_type</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">test_type</span> <span class="o">=</span> <span class="s2">&quot;hed&quot;</span>
+
+    <span class="k">elif</span> <span class="n">test_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="s2">&quot;hed&quot;</span><span class="p">]:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;test_type&#39; must be one of &#39;rt&#39;, &#39;hed&#39;.&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -466,11 +473,11 @@
         <span class="n">index</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span>
         <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span>
-        <span class="n">accr_obj</span> <span class="o">=</span> <span class="n">insample_error</span><span class="p">(</span><span class="n">pred_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">index_type</span><span class="o">=</span><span class="n">index_type</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">accr_obj</span> <span class="o">=</span> <span class="n">_insample_error</span><span class="p">(</span><span class="n">pred_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">index_type</span><span class="o">=</span><span class="n">index_type</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
 
     <span class="c1"># K-fold.</span>
     <span class="k">if</span> <span class="n">test_method</span> <span class="o">==</span> <span class="s2">&quot;kfold&quot;</span><span class="p">:</span>
-        <span class="n">accr_obj</span> <span class="o">=</span> <span class="n">kfold_error</span><span class="p">(</span><span class="n">hpi_obj</span><span class="o">=</span><span class="n">hpi_obj</span><span class="p">,</span> <span class="n">pred_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">accr_obj</span> <span class="o">=</span> <span class="n">_kfold_error</span><span class="p">(</span><span class="n">hpi_obj</span><span class="o">=</span><span class="n">hpi_obj</span><span class="p">,</span> <span class="n">pred_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">hpi_obj</span><span class="p">,</span> <span class="n">in_place_name</span><span class="p">,</span> <span class="n">accr_obj</span><span class="p">)</span>
@@ -480,123 +487,7 @@
 
 
 
-<div class="viewcode-block" id="series_accuracy">
-<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.series_accuracy.html#hpipy.utils.metrics.series_accuracy">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">series_accuracy</span><span class="p">(</span>
-    <span class="n">series_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
-    <span class="n">test_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;insample&quot;</span><span class="p">,</span>
-    <span class="n">test_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span>
-    <span class="n">pred_df</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">summarize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">in_place_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the accuracy of a series.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        series_obj (BaseHousePriceIndex): Series object.</span>
-<span class="sd">        test_method (str, optional): Testing method.</span>
-<span class="sd">            Defaults to &quot;insample&quot;.</span>
-<span class="sd">        test_type (str, optional): Testing type.</span>
-<span class="sd">            Defaults to &quot;rt&quot;.</span>
-<span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
-<span class="sd">            calculated based on the smoothed indices.</span>
-<span class="sd">            Defaults to False.</span>
-<span class="sd">        summarize (bool, optional): Summarize the accuracy.</span>
-<span class="sd">            Defaults to False.</span>
-<span class="sd">        in_place (bool, optional): Return accuracy in-place.</span>
-<span class="sd">            Defaults to False.</span>
-<span class="sd">        in_place_name (str, optional): In-place attribute name.</span>
-<span class="sd">            Defualts to &quot;accuracy&quot;.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Series object containing the accuracy or DataFrame.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check for allowed test_method.</span>
-    <span class="k">if</span> <span class="n">test_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;insample&quot;</span><span class="p">,</span> <span class="s2">&quot;kfold&quot;</span><span class="p">,</span> <span class="s2">&quot;forecast&quot;</span><span class="p">]:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;test_method&#39; must be one of &#39;insample&#39;, &#39;kfold&#39; or &#39;forecast&#39;.&quot;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="c1"># Check for allowed test_method.</span>
-    <span class="k">if</span> <span class="n">test_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="s2">&quot;hed&quot;</span><span class="p">]:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;test_type&#39; must be one of &#39;rt&#39;, &#39;hed&#39;.&quot;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="c1"># Check agreement between test_type and hpi_obj.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">)</span> <span class="ow">and</span> <span class="n">test_type</span> <span class="o">==</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">HedonicTransactionData</span><span class="p">)</span> <span class="ow">and</span> <span class="n">test_type</span> <span class="o">==</span> <span class="s2">&quot;hed&quot;</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="k">if</span> <span class="n">pred_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;When &#39;test_type&#39; (</span><span class="si">{</span><span class="n">test_type</span><span class="si">}</span><span class="s2">) does not match the &#39;hpi&#39; object model type &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">series_obj</span><span class="p">)</span><span class="si">}</span><span class="s2">) you must provide an &#39;pred_df&#39; object of the necessary &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;class, in this case: </span><span class="si">{</span><span class="n">test_type</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">=</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">data</span>
-
-    <span class="n">accr_dfs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">test_method</span> <span class="o">!=</span> <span class="s2">&quot;forecast&quot;</span><span class="p">:</span>
-        <span class="c1"># Check for smooth indices.</span>
-        <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No smoothed indices found. Please add or set smooth to False.&quot;</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="c1"># Calculate accuracy.</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">):</span>
-            <span class="n">hpi_obj_i</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">series_obj</span><span class="p">)</span>
-            <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span>
-            <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span>
-            <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-                <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span>
-
-            <span class="n">accr_df_i</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="n">accuracy</span><span class="p">(</span>
-                    <span class="n">hpi_obj_i</span><span class="p">,</span>
-                    <span class="n">test_method</span><span class="p">,</span>
-                    <span class="n">test_type</span><span class="p">,</span>
-                    <span class="n">trans_data</span><span class="p">,</span>
-                    <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
-                    <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-            <span class="n">accr_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accr_df_i</span><span class="p">)</span>
-
-        <span class="n">accr_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">accr_dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># If summarizing.</span>
-        <span class="k">if</span> <span class="n">summarize</span><span class="p">:</span>
-            <span class="n">accr_df</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">accr_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;pair_id&quot;</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;pred_price&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;log_error&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">})</span>
-                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-            <span class="p">)</span>
-
-    <span class="c1"># If it is a forecast method.</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">accr_df</span> <span class="o">=</span> <span class="n">forecast_error</span><span class="p">(</span><span class="n">is_obj</span><span class="o">=</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="c1"># Return if not in place.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">accr_df</span>
-
-    <span class="c1"># Add to series object.</span>
-    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="n">in_place_name</span> <span class="o">==</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span>
-        <span class="n">in_place_name</span> <span class="o">=</span> <span class="s2">&quot;accuracy_smooth&quot;</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">in_place_name</span><span class="p">,</span> <span class="n">accr_df</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">series_obj</span></div>
-
-
-
-<div class="viewcode-block" id="insample_error">
-<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.insample_error.html#hpipy.utils.metrics.insample_error">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">insample_error</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insample_error</span><span class="p">(</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">index_type</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span>
     <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
@@ -606,14 +497,12 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;pred_df&#39; argument must be a dataframe.&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index_type</span><span class="p">,</span> <span class="n">RepeatTransactionModel</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">insample_error_rtdata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index_type</span><span class="p">,</span> <span class="n">HedonicModel</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">insample_error_heddata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span></div>
+        <span class="k">return</span> <span class="n">_insample_error_rtdata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_insample_error_heddata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">insample_error_rtdata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insample_error_rtdata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for repeat transaction index and data.&quot;&quot;&quot;</span>
     <span class="c1"># Calculate the index adjustment to apply.</span>
     <span class="n">adj</span> <span class="o">=</span> <span class="p">[]</span>
@@ -639,15 +528,17 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">insample_error_heddata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insample_error_heddata</span><span class="p">(</span>
+    <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for hedonic index and data.&quot;&quot;&quot;</span>
     <span class="c1"># Future method.</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
-<div class="viewcode-block" id="kfold_error">
-<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.kfold_error.html#hpipy.utils.metrics.kfold_error">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">kfold_error</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_kfold_error</span><span class="p">(</span>
     <span class="n">hpi_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -695,7 +586,7 @@
 
     <span class="n">kf</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">test_idx</span> <span class="ow">in</span> <span class="n">kf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">trans_df</span><span class="p">):</span>
-        <span class="n">train_df</span><span class="p">,</span> <span class="n">score_df</span> <span class="o">=</span> <span class="n">create_kfold_data</span><span class="p">(</span><span class="n">test_idx</span><span class="p">,</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
+        <span class="n">train_df</span><span class="p">,</span> <span class="n">score_df</span> <span class="o">=</span> <span class="n">_create_kfold_data</span><span class="p">(</span><span class="n">test_idx</span><span class="p">,</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
 
         <span class="n">train_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">train_data</span><span class="o">.</span><span class="n">trans_df</span> <span class="o">=</span> <span class="n">train_df</span>
@@ -721,25 +612,22 @@
             <span class="n">index</span> <span class="o">=</span> <span class="n">k_index</span><span class="o">.</span><span class="n">smooth_index</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">smooth_order</span><span class="p">)</span>
 
         <span class="c1"># Calc errors.</span>
-        <span class="n">k_error</span> <span class="o">=</span> <span class="n">insample_error</span><span class="p">(</span><span class="n">score_df</span><span class="p">,</span> <span class="n">index_type</span><span class="o">=</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">k_error</span> <span class="o">=</span> <span class="n">_insample_error</span><span class="p">(</span><span class="n">score_df</span><span class="p">,</span> <span class="n">index_type</span><span class="o">=</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_error</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">create_kfold_data</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_kfold_data</span><span class="p">(</span>
     <span class="n">score_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create k-fold for transaction data.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">full_data</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">create_kfold_data_rtdata</span><span class="p">(</span><span class="n">score_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">return</span> <span class="n">_create_kfold_data_rtdata</span><span class="p">(</span><span class="n">score_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">create_kfold_data_rtdata</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_kfold_data_rtdata</span><span class="p">(</span>
     <span class="n">score_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -748,39 +636,41 @@
     <span class="n">train_df</span> <span class="o">=</span> <span class="n">full_data</span><span class="o">.</span><span class="n">trans_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span>
         <span class="o">~</span><span class="n">full_data</span><span class="o">.</span><span class="n">trans_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">score_ids</span><span class="p">)</span>
     <span class="p">]</span>
-    <span class="n">score_df</span> <span class="o">=</span> <span class="n">match_kfold</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">,</span> <span class="n">full_data</span><span class="p">)</span>
+    <span class="n">score_df</span> <span class="o">=</span> <span class="n">_match_kfold</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">,</span> <span class="n">full_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">train_df</span><span class="p">,</span> <span class="n">score_df</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">match_kfold</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_match_kfold</span><span class="p">(</span>
     <span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for transaction data.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">full_data</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="n">_match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_match_kfold_heddata</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for repeat transaction data.&quot;&quot;&quot;</span>
     <span class="n">trans_pair</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id2&quot;</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">pred_df</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id2&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">trans_pair</span><span class="p">)]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">match_kfold_heddata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_match_kfold_heddata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for hedonic transaction data.&quot;&quot;&quot;</span>
     <span class="c1"># Choose every other one.</span>
-    <span class="n">x1</span> <span class="o">=</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># even rows</span>
-    <span class="n">x2</span> <span class="o">=</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># odd rows</span>
-    <span class="c1"># return pred_df[np.unique(zip(x1, x2))]</span>
-    <span class="k">return</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="o">~</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id&quot;</span><span class="p">])</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">pred_df</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="o">~</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id&quot;</span><span class="p">])</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">pred_df</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="n">selected_indices</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selected_indices</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="forecast_error">
-<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.forecast_error.html#hpipy.utils.metrics.forecast_error">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">forecast_error</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_forecast_error</span><span class="p">(</span>
     <span class="n">is_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
     <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
     <span class="n">forecast_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -849,15 +739,14 @@
     <span class="c1"># Iterate through forecasts and calculate errors.</span>
     <span class="n">fc_error</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">preddata</span><span class="p">,</span> <span class="n">forecasts</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fc_preddata</span><span class="p">,</span> <span class="n">fc_forecasts</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="n">insample_error</span><span class="p">(</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">_insample_error</span><span class="p">(</span>
             <span class="n">pred_df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">preddata</span><span class="p">],</span>
             <span class="n">index_type</span><span class="o">=</span><span class="n">index_type</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">forecasts</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">forecasts</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span>
         <span class="p">)</span>
         <span class="n">fc_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">fc_error</span><span class="p">)</span></div>
-
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">fc_error</span><span class="p">)</span>
 
     <span class="c1"># self.error_df = error_df</span>
     <span class="c1"># self.test_method = &#39;forecast&#39;</span>
@@ -865,80 +754,6 @@
     <span class="c1"># If returning forecasts.</span>
     <span class="c1"># if return_forecasts:</span>
     <span class="c1">#    self.forecasts = fc_forecasts</span>
-
-
-<div class="viewcode-block" id="revision">
-<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.revision.html#hpipy.utils.metrics.revision">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">revision</span><span class="p">(</span>
-    <span class="n">series_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
-    <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the revision of a series.</span>
-
-<span class="sd">    This is done by calculating the difference between consecutive indexes</span>
-<span class="sd">    (n to n+1) and then calculating the mean and median of the differences.</span>
-<span class="sd">    This is done for each period and the results are returned as a DataFrame.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        series_obj (BaseHousePriceIndex): Series object.</span>
-<span class="sd">        in_place (bool, optional): If True, the revision is placed into the</span>
-<span class="sd">            series object as a named list.</span>
-<span class="sd">            Defaults to False.</span>
-<span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
-<span class="sd">            calculated based on the smoothed indices.</span>
-<span class="sd">            Defaults to False.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">         Revision and associated statistics as object or DataFrame.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check class.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">BaseHousePriceIndex</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;series_obj&#39; must be an index instance.&quot;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">smooth</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># index_name = &quot;smooth&quot;</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span> <span class="k">for</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No smoothed indices found. Create them with &#39;smooth_series&#39; and try again.&quot;</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="c1"># index_name = &quot;value&quot;</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">]</span>
-
-    <span class="c1"># Calculate the differences in the indices (n to n+1).</span>
-    <span class="n">index_diffs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))]</span>
-
-    <span class="c1"># Extract differences into lists by period (essentially transposing list).</span>
-    <span class="n">period_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">index_diffs</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
-
-    <span class="c1"># Convert to vector format in correct order.</span>
-    <span class="n">period_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
-
-    <span class="c1"># Calculate the mean and medians.</span>
-    <span class="n">period_means</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
-    <span class="n">period_medians</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
-
-    <span class="c1"># Package and return.</span>
-    <span class="n">rev_obj</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_means</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">period_means</span><span class="p">,</span>
-            <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">period_medians</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-            <span class="n">series_obj</span><span class="o">.</span><span class="n">revision_smooth</span> <span class="o">=</span> <span class="n">rev_obj</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">series_obj</span><span class="o">.</span><span class="n">revision</span> <span class="o">=</span> <span class="n">rev_obj</span>
-        <span class="k">return</span> <span class="n">series_obj</span>
-
-    <span class="k">return</span> <span class="n">rev_obj</span></div>
-
 
 
 <div class="viewcode-block" id="volatility">
@@ -949,7 +764,7 @@
     <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate index volatility.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the volatility of an index.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        index (BaseHousePriceIndex | pd.DataFrame): Index object.</span>
@@ -1030,13 +845,214 @@
 
 
 
+<div class="viewcode-block" id="revision">
+<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.revision.html#hpipy.utils.metrics.revision">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">revision</span><span class="p">(</span>
+    <span class="n">series_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
+    <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the revision for a series of indices.</span>
+
+<span class="sd">    This is done by calculating the difference between consecutive indexes</span>
+<span class="sd">    (n to n+1) and then calculating the mean and median of the differences.</span>
+<span class="sd">    This is done for each period and the results are returned as a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series_obj (BaseHousePriceIndex): Series object.</span>
+<span class="sd">        in_place (bool, optional): If True, the revision is placed into the</span>
+<span class="sd">            series object as a named list.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
+<span class="sd">            calculated based on the smoothed indices.</span>
+<span class="sd">            Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Revision and associated statistics as object or DataFrame.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check class.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">BaseHousePriceIndex</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;series_obj&#39; must be an index instance.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">smooth</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># index_name = &quot;smooth&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span> <span class="k">for</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No smoothed indices found. Create them with &#39;smooth_series&#39; and try again.&quot;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c1"># index_name = &quot;value&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">]</span>
+
+    <span class="c1"># Calculate the differences in the indices (n to n+1).</span>
+    <span class="n">index_diffs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))]</span>
+
+    <span class="c1"># Extract differences into lists by period (essentially transposing list).</span>
+    <span class="n">period_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">index_diffs</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+
+    <span class="c1"># Convert to vector format in correct order.</span>
+    <span class="n">period_diffs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
+
+    <span class="c1"># Calculate the mean and medians.</span>
+    <span class="n">period_means</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
+    <span class="n">period_medians</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">period_diffs</span><span class="p">]</span>
+
+    <span class="c1"># Package and return.</span>
+    <span class="n">rev_obj</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_means</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">period_means</span><span class="p">,</span>
+            <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">period_medians</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="n">series_obj</span><span class="o">.</span><span class="n">revision_smooth</span> <span class="o">=</span> <span class="n">rev_obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">series_obj</span><span class="o">.</span><span class="n">revision</span> <span class="o">=</span> <span class="n">rev_obj</span>
+        <span class="k">return</span> <span class="n">series_obj</span>
+
+    <span class="k">return</span> <span class="n">rev_obj</span></div>
+
+
+
+<div class="viewcode-block" id="series_accuracy">
+<a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.series_accuracy.html#hpipy.utils.metrics.series_accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">series_accuracy</span><span class="p">(</span>
+    <span class="n">series_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
+    <span class="n">test_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;insample&quot;</span><span class="p">,</span>
+    <span class="n">test_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span>
+    <span class="n">pred_df</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">summarize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">in_place_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the accuracy for a series of indices.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series_obj (BaseHousePriceIndex): Series object.</span>
+<span class="sd">        test_method (str, optional): Testing method.</span>
+<span class="sd">            Defaults to &quot;insample&quot;. Also supports &quot;kfold&quot; or &quot;forecast&quot;.</span>
+<span class="sd">        test_type (str, optional): Testing type.</span>
+<span class="sd">            Defaults to &quot;rt&quot;.</span>
+<span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
+<span class="sd">            calculated based on the smoothed indices.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        summarize (bool, optional): Summarize the accuracy.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        in_place (bool, optional): Return accuracy in-place.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        in_place_name (str, optional): In-place attribute name.</span>
+<span class="sd">            Defualts to &quot;accuracy&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Series object containing the accuracy or DataFrame.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check for allowed test_method.</span>
+    <span class="k">if</span> <span class="n">test_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;insample&quot;</span><span class="p">,</span> <span class="s2">&quot;kfold&quot;</span><span class="p">,</span> <span class="s2">&quot;forecast&quot;</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;test_method&#39; must be one of &#39;insample&#39;, &#39;kfold&#39; or &#39;forecast&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Check for allowed test_method.</span>
+    <span class="k">if</span> <span class="n">test_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="s2">&quot;hed&quot;</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;test_type&#39; must be one of &#39;rt&#39;, &#39;hed&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Check agreement between test_type and hpi_obj.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">)</span> <span class="ow">and</span> <span class="n">test_type</span> <span class="o">==</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">HedonicTransactionData</span><span class="p">)</span> <span class="ow">and</span> <span class="n">test_type</span> <span class="o">==</span> <span class="s2">&quot;hed&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">pred_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;When &#39;test_type&#39; (</span><span class="si">{</span><span class="n">test_type</span><span class="si">}</span><span class="s2">) does not match the &#39;hpi&#39; object model type &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">series_obj</span><span class="p">)</span><span class="si">}</span><span class="s2">) you must provide an &#39;pred_df&#39; object of the necessary &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;class, in this case: </span><span class="si">{</span><span class="n">test_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">trans_data</span><span class="p">:</span> <span class="n">TransactionData</span> <span class="o">=</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">accr_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">test_method</span> <span class="o">!=</span> <span class="s2">&quot;forecast&quot;</span><span class="p">:</span>
+        <span class="c1"># Check for smooth indices.</span>
+        <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No smoothed indices found. Please add or set smooth to False.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># Calculate accuracy.</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">):</span>
+            <span class="n">hpi_obj_i</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">series_obj</span><span class="p">)</span>
+            <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+                <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span>
+
+            <span class="n">accr_df_i</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">accuracy</span><span class="p">(</span>
+                    <span class="n">hpi_obj_i</span><span class="p">,</span>
+                    <span class="n">test_method</span><span class="p">,</span>
+                    <span class="n">test_type</span><span class="p">,</span>
+                    <span class="n">trans_data</span><span class="p">,</span>
+                    <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                    <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">accr_df_i</span> <span class="o">=</span> <span class="n">accr_df_i</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">accr_df_i</span><span class="o">.</span><span class="n">columns</span><span class="p">)]]</span>
+
+            <span class="n">accr_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accr_df_i</span><span class="p">)</span>
+
+        <span class="n">accr_df</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">accr_dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;pred_period&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If summarizing.</span>
+        <span class="k">if</span> <span class="n">summarize</span><span class="p">:</span>
+            <span class="n">accr_df</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">accr_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;pair_id&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;pred_price&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;log_error&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">})</span>
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="p">)</span>
+
+    <span class="c1"># If it is a forecast method.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">accr_df</span> <span class="o">=</span> <span class="n">_forecast_error</span><span class="p">(</span>
+            <span class="n">is_obj</span><span class="o">=</span><span class="n">series_obj</span><span class="p">,</span>
+            <span class="n">trans_data</span><span class="o">=</span><span class="n">trans_data</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Return if not in place.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">accr_df</span>
+
+    <span class="c1"># Add to series object.</span>
+    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="n">in_place_name</span> <span class="o">==</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span>
+        <span class="n">in_place_name</span> <span class="o">=</span> <span class="s2">&quot;accuracy_smooth&quot;</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">in_place_name</span><span class="p">,</span> <span class="n">accr_df</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">series_obj</span></div>
+
+
+
 <div class="viewcode-block" id="series_volatility">
 <a class="viewcode-back" href="../../../api/_autosummary/hpipy.utils.metrics.series_volatility.html#hpipy.utils.metrics.series_volatility">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">series_volatility</span><span class="p">(</span>
     <span class="n">series_obj</span><span class="p">:</span> <span class="n">BaseHousePriceIndex</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span><span class="p">:</span>
+    <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">in_place_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;volatility&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseHousePriceIndex</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate volatility for a series of indices.</span>
 
 <span class="sd">    Args:</span>
@@ -1045,13 +1061,47 @@
 <span class="sd">            Defaults to 3.</span>
 <span class="sd">        smooth (bool, optional): Smooth the index.</span>
 <span class="sd">            Defaults to False.</span>
+<span class="sd">        in_place (bool, optional): Return index in place.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        in_place_name (str, optional): Name of the in-place attribute.</span>
+<span class="sd">            Defaults to &quot;volatility&quot;.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Index object with series volatility calculation.</span>
+<span class="sd">        Index object with series volatility calculation or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">hpi</span> <span class="ow">in</span> <span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">:</span>
-        <span class="n">hpi</span> <span class="o">=</span> <span class="n">volatility</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">vol_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Check for smooth indices.</span>
+    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;smooth&quot;</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No smoothed indices found. Please add or set smooth to False.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Calculate volatility.</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">hpi_obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series_obj</span><span class="o">.</span><span class="n">hpis</span><span class="p">):</span>
+        <span class="n">hpi_obj_i</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">series_obj</span><span class="p">)</span>
+        <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+            <span class="n">hpi_obj_i</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="n">hpi_obj</span><span class="o">.</span><span class="n">smooth</span>
+
+        <span class="n">vol_df_i</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">volatility</span><span class="p">(</span><span class="n">hpi_obj_i</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">vol_df_i</span> <span class="o">=</span> <span class="n">vol_df_i</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">vol_df_i</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">:,</span> <span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">vol_df_i</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+        <span class="p">]</span>
+
+        <span class="n">vol_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vol_df_i</span><span class="p">)</span>
+
+    <span class="n">vol_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">vol_dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Return if not in place.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vol_df</span>
+
+    <span class="c1"># Add to series object.</span>
+    <span class="k">if</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="n">in_place_name</span> <span class="o">==</span> <span class="s2">&quot;volatility&quot;</span><span class="p">:</span>
+        <span class="n">in_place_name</span> <span class="o">=</span> <span class="s2">&quot;volatility_smooth&quot;</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">series_obj</span><span class="p">,</span> <span class="n">in_place_name</span><span class="p">,</span> <span class="n">vol_df</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">series_obj</span></div>
 
 </pre></div>

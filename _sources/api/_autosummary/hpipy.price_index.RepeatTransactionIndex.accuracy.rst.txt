@@ -1,0 +1,6 @@
+hpipy.price\_index.RepeatTransactionIndex.accuracy
+==================================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: RepeatTransactionIndex.accuracy

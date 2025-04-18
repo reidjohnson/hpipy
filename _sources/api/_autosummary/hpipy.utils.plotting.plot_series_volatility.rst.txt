@@ -1,9 +1,9 @@
-﻿hpipy.utils.metrics.forecast\_error
-===================================
+﻿hpipy.utils.plotting.plot\_series\_volatility
+=============================================
 
-.. currentmodule:: hpipy.utils.metrics
+.. currentmodule:: hpipy.utils.plotting
 
-.. autoclass:: forecast_error
+.. autoclass:: plot_series_volatility
    :show-inheritance:
    :inherited-members:
    :special-members: __init__, __call__

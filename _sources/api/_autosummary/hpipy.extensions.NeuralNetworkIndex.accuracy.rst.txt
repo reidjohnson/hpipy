@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.accuracy
+============================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkIndex.accuracy

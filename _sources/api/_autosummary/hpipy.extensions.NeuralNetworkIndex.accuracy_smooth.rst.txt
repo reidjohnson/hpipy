@@ -1,0 +1,6 @@
+hpipy.extensions.NeuralNetworkIndex.accuracy\_smooth
+====================================================
+
+.. currentmodule:: hpipy.extensions
+
+.. autoattribute:: NeuralNetworkIndex.accuracy_smooth

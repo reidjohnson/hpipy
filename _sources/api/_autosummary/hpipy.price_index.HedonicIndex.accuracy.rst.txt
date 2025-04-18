@@ -1,0 +1,6 @@
+hpipy.price\_index.HedonicIndex.accuracy
+========================================
+
+.. currentmodule:: hpipy.price_index
+
+.. autoattribute:: HedonicIndex.accuracy
