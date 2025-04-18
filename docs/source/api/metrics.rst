@@ -8,10 +8,7 @@ Evaluation Metrics
    :template: class.rst
 
    accuracy
-   series_accuracy
-   insample_error
-   kfold_error
-   forecast_error
-   revision
    volatility
+   revision
+   series_accuracy
    series_volatility

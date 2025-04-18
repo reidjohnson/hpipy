@@ -1,13 +1,17 @@
 Revision Metrics
 ================
 
-Revision metrics assess how index values change as new data becomes available:
+Revision metrics assess how index values change as new data becomes available. We will demonstrate how to calculate and visualize revision metrics.
+
+Basic Setup
+-----------
+
+First, we will import the necessary modules and load some sales data and create a series of indices:
 
 .. code-block:: python
 
     >>> from hpipy.datasets import load_seattle_sales
     >>> from hpipy.price_index import RepeatTransactionIndex
-    >>> from hpipy.utils.metrics import revision
 
     >>> df = load_seattle_sales()
 
@@ -25,11 +29,20 @@ Revision metrics assess how index values change as new data becomes available:
 
     >>> hpi_series = hpi.create_series(train_period=24, max_period=30)
 
+Calculating Revision
+--------------------
+
+Calculate the revision of the index using the ``revision`` function:
+
+.. code-block:: python
+
+    >>> from hpipy.utils.metrics import revision
+
     >>> rev = revision(hpi_series)
-    >>> rev.head()
-       period      mean    median
-    0       1  0.000000  0.000000
-    1       2 -0.161268 -0.242763
-    2       3 -1.107773  0.037327
-    3       4 -2.159030 -1.220268
-    4       5 -1.570491 -1.096907
+    >>> rev.round(3).head()
+       period   mean  median
+    0       1  0.000   0.000
+    1       2 -0.161  -0.243
+    2       3 -1.108   0.037
+    3       4 -2.159  -1.220
+    4       5 -1.570  -1.097

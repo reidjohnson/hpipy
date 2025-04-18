@@ -77,6 +77,7 @@ To test the code and produce a coverage report::
 
 To test the documentation::
 
+  uv run pip install -e .
   uv run pytest --doctest-glob="*.rst" --doctest-modules docs
 
 Documentation

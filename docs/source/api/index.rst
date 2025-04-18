@@ -15,4 +15,5 @@ This page contains detailed API documentation for all public classes and functio
    period_table
    time_matrix
    metrics
+   plotting
    datasets
