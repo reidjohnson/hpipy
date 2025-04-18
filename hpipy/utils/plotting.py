@@ -14,7 +14,7 @@ def plot_index(
     show_imputed: bool = False,
     smooth: bool = False,
 ) -> alt.LayerChart:
-    """Plot index.
+    """Plot an index.
 
     Args:
         hpi (BaseHousePriceIndex): HPI object.
@@ -253,7 +253,7 @@ def plot_series(
     """Plot an index series.
 
     Args:
-        source (BaseHousePriceIndex): Source object.
+        source (BaseHousePriceIndex | pd.DataFrame): Source object.
         smooth (bool, optional): Use smoothed index.
             Defaults to False.
 
@@ -308,7 +308,7 @@ def plot_series_accuracy(
     measure: str = "error",
     smooth: bool = False,
 ) -> alt.LayerChart:
-    """Plot accuracy for a series of indices.
+    """Plot accuracy for index series.
 
     Args:
         source (BaseHousePriceIndex | pd.DataFrame): Source object.
@@ -370,7 +370,7 @@ def plot_series_volatility(
     source: BaseHousePriceIndex | pd.DataFrame,
     smooth: bool = False,
 ) -> alt.LayerChart:
-    """Plot volatility for a series of indices.
+    """Plot volatility for index series.
 
     Args:
         source (BaseHousePriceIndex | pd.DataFrame): Source object.
@@ -430,7 +430,7 @@ def plot_series_revision(
     measure: str = "median",
     smooth: bool = False,
 ) -> alt.LayerChart:
-    """Plot revision for a series of indices.
+    """Plot revision for index series.
 
     Args:
         source (BaseHousePriceIndex | pd.DataFrame): Source object.
