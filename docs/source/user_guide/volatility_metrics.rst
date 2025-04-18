@@ -38,13 +38,13 @@ To calculate the volatility of the index, you can use the ``volatility`` functio
     >>> from hpipy.utils.plotting import plot_index_volatility
 
     >>> vol = volatility(hpi)
-    >>> vol.head()
-           roll      mean    median
-    1  0.024743  0.017214  0.016522
-    2  0.027512  0.017214  0.016522
-    3  0.023363  0.017214  0.016522
-    4  0.015850  0.017214  0.016522
-    5  0.004755  0.017214  0.016522
+    >>> vol.round(3).head()
+        roll   mean  median
+    1  0.025  0.017   0.017
+    2  0.028  0.017   0.017
+    3  0.023  0.017   0.017
+    4  0.016  0.017   0.017
+    5  0.005  0.017   0.017
 
     >>> plot_index_volatility(vol).properties(title="Volatility Metrics")
     alt.LayerChart(...)
