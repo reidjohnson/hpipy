@@ -55,6 +55,7 @@ class RandomForestModel(BaseHousePriceModel):
         y: pd.Series,
         estimator: str,
         n_estimators: int,
+        quantile: float | None,
         random_seed: int,
         **kwargs: Any,
     ) -> RandomForestRegressor | RandomForestQuantileRegressor:
@@ -65,6 +66,7 @@ class RandomForestModel(BaseHousePriceModel):
             y (pd.Series): Dependent variable.
             estimator (str): Estimator type.
             n_estimators (int): Number of estimators.
+            quantile (float | None): Quantile to compute.
             random_seed (int): Random seed.
             **kwargs: Additional keyword arguments.
 
@@ -73,15 +75,12 @@ class RandomForestModel(BaseHousePriceModel):
 
         """
         # Fit the model.
-        model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_seed).fit(
-            X,
-            y,
-        )
-        # model = RangerForestRegressor(
-        #    n_estimators=n_estimators,
-        #    categorical_features=["trans_period"],
-        #    seed=random_seed,
-        # ).fit(X, y)
+        cls = RandomForestQuantileRegressor if quantile is not None else RandomForestRegressor
+        model = cls(
+            n_estimators=n_estimators,
+            # categorical_features=["trans_period"],
+            random_state=random_seed,
+        ).fit(X, y)
         if estimator == "pdp":
             return self._model_pdp(model, X, y, random_seed=random_seed, **kwargs)
         raise ValueError
@@ -193,6 +192,7 @@ class RandomForestModel(BaseHousePriceModel):
         estimator: str = "pdp",
         log_dep: bool = True,
         n_estimators: int = 100,
+        quantile: float | None = None,
         random_seed: int = 0,
         **kwargs: Any,
     ) -> Self:
@@ -209,6 +209,8 @@ class RandomForestModel(BaseHousePriceModel):
                 Defaults to True.
             n_estimators (int, optional): Number of estimators.
                 Defaults to 100.
+            quantile (float | None, optional): Quantile to compute.
+                Defaults to None.
             random_seed (int, optional): Random seed to use.
                 Defaults to 0.
 
@@ -259,6 +261,7 @@ class RandomForestModel(BaseHousePriceModel):
             y=y,
             estimator=estimator,
             n_estimators=n_estimators,
+            quantile=quantile,
             log_dep=log_dep,
             random_seed=random_seed,
             **kwargs,

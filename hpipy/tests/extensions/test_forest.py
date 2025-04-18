@@ -27,12 +27,14 @@ def test_rf_create_trans(seattle_dataset: pd.DataFrame, estimator: str, log_dep:
 
 
 @pytest.mark.usefixtures("seattle_dataset")
+@pytest.mark.parametrize("quantile", [None, 0.5])
 @pytest.mark.parametrize("log_dep", [True, False])
 @pytest.mark.parametrize("sim_ids", [None, [0, 1]])
 @pytest.mark.parametrize("sim_count", [None, 10])
 @pytest.mark.parametrize("sim_per", [None, 0.1])
 def test_rf_create_trans_small(
     seattle_dataset: pd.DataFrame,
+    quantile: float | None,
     log_dep: bool,
     sim_ids: list[int] | None,
     sim_count: int | None,
@@ -48,6 +50,7 @@ def test_rf_create_trans_small(
         dep_var="price",
         ind_var=["tot_sf", "beds", "baths"],
         estimator="pdp",
+        quantile=quantile,
         log_dep=log_dep,
         periodicity="monthly",
         sim_ids=sim_ids,
