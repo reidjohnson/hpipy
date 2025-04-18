@@ -21,8 +21,8 @@ def stineman_slope(x: np.ndarray, y: np.ndarray, scale: bool = False) -> np.ndar
         np.ndarray: Array of estimated slopes of the interpolant at (x, y).
 
     References:
-        [1] Stineman, Russell W. "A Consistently Well-Behaved Method of
-            Interpolation." Creative Computing 6.7 (1980): 54-57.
+        [1] Stineman, R. W. "A Consistently Well-Behaved Method of
+            Interpolation." Creative Computing, 6(7), 1980.
 
     """
     m = len(x)
@@ -121,8 +121,8 @@ def calculate_stineman_interpolant(
             the interpolant at the points specified by `xout`.
 
     References:
-        [1] Stineman, Russell W. "A Consistently Well-Behaved Method of
-            Interpolation." Creative Computing 6.7 (1980): 54-57.
+        [1] Stineman, R. W. "A Consistently Well-Behaved Method of
+            Interpolation." Creative Computing, 6(7), 1980.
 
     """
     if x is None or y is None or xout is None:

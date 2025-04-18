@@ -38,9 +38,9 @@ def mixup(
         The mixed-up inputs, pairs of responses, and lambda.
 
     References:
-        [1] Zhang, Hongyi, Moustapha Cisse, Yann N. Dauphin, and David
-            Lopez-Paz. "mixup: Beyond Empirical Risk Minimization."
-            International Conference on Learning Representations. ICLR, 2018.
+        [1] Zhang, H., M. Cisse, Y. N. Dauphin, and D. Lopez-Paz. "mixup:
+        Beyond Empirical Risk Minimization." International Conference on
+        Learning Representations, 2018.
 
     """
     indices = torch.randperm(y.size(0))

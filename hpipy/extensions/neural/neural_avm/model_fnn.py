@@ -65,12 +65,12 @@ class BaseNeuralAVM(nn.Module):
     monotonicity of the quantile predictions and prohibit crossing quantiles.
 
     References:
-        [1] Tagasovska, Natasa, and David Lopez-Paz. "Single-Model
-            Uncertainties for Deep Learning." Advances in Neural Information
-            Processing Systems 32 (2019).
-        [2] Runje, Davor, and Sharath M. Shankaranarayana. "Constrained
-            Monotonic Neural Networks." International Conference on Machine
-            Learning. PMLR, 2023.
+        [1] Tagasovska, N., and D. Lopez-Paz. "Single-Model Uncertainties for
+            Deep Learning." Advances in Neural Information Processing Systems,
+            32, 2019.
+        [2] Runje, D., and S. M. Shankaranarayana. "Constrained Monotonic
+            Neural Networks." Proceedings of the International Conference on
+            Machine Learning. PMLR, 2023.
 
     """
 

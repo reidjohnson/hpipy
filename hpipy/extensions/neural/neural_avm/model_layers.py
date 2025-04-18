@@ -16,9 +16,9 @@ class MonotonicDense(nn.Linear):
     Implements a monotonically constrained layer as described in [1].
 
     References:
-        [1] Runje, Davor, and Sharath M. Shankaranarayana. "Constrained
-            Monotonic Neural Networks." International Conference on Machine
-            Learning. PMLR, 2023.
+        [1] Runje, D., and S. M. Shankaranarayana. "Constrained Monotonic
+            Neural Networks." Proceedings of the International Conference on
+            Machine Learning. PMLR, 2023.
 
     """
 
