@@ -36,6 +36,8 @@ class MockHPI(BaseHousePriceIndex):
         self.value = pd.Series(np.random.randn(12), name="value") if values is None else values
         self.imputed = pd.Series(np.zeros(12), name="imputed") if imputed is None else imputed
         self.smooth = pd.Series(np.random.randn(12), name="smooth")
+        self.volatility = pd.Series(np.random.randn(12), name="volatility")
+        self.volatility_smooth = pd.Series(np.random.randn(12), name="volatility_smooth")
         self.model = type(
             "MockModel",
             (),
@@ -62,7 +64,7 @@ class MockHPI(BaseHousePriceIndex):
         )
 
 
-class MockHPISeries:
+class MockHPISeries(MockHPI):
     """Mock HPI series class for testing."""
 
     def __init__(self, n_series=3) -> None:

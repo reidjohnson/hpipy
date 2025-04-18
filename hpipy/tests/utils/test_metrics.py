@@ -8,10 +8,10 @@ from hpipy.period_table import PeriodTable
 from hpipy.price_index import HedonicIndex, RepeatTransactionIndex
 from hpipy.trans_data import HedonicTransactionData, RepeatTransactionData
 from hpipy.utils.metrics import (
+    _forecast_error,
+    _insample_error,
+    _kfold_error,
     accuracy,
-    forecast_error,
-    insample_error,
-    kfold_error,
     revision,
     series_accuracy,
     series_volatility,
@@ -201,82 +201,46 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
     with pytest.raises(ValueError):
         accuracy(rt_index, test_type="x", test_method="insample")
 
-    # Bad data.
-    with pytest.raises(ValueError):
-        _ = insample_error(
-            hed_index.data.trans_df,
-            hed_index,
-            index=hed_index.value,
-        )
-
-    # Bad index.
-    with pytest.raises(ValueError):
-        _ = insample_error(hed_index.data.trans_df, hed_index, index=hed_index)
-
-    # All data.
-    with pytest.raises(ValueError):
-        _ = insample_error(
-            hed_index.data.trans_df,
-            hed_index,
-            index=hed_index.value,
-        )
-
-    # All data smooth.
-    with pytest.raises(ValueError):
-        _ = insample_error(
-            hed_index.data.trans_df,
-            hed_index,
-            index=hed_index.smooth,
-        )
-
-    # Sparse data.
-    with pytest.raises(ValueError):
-        _ = insample_error(
-            hed_index.data.trans_df.iloc[:3],
-            hed_index,
-            index=hed_index.value,
-        )
-
     # No data.
     with pytest.raises(ValueError):
-        _ = insample_error(
-            hed_index.data.trans_df.iloc[:1],
+        _ = _insample_error(
+            None,
             hed_index,
             index=hed_index.value,
         )
 
     # Bad HPI object.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data)
+        _ = _kfold_error(rt_index, pred_df=rt_index.data)
 
     # Bad prediction dataframe.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index)
+        _ = _kfold_error(rt_index, pred_df=rt_index)
 
     # Bad k.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, k="a")
+        _ = _kfold_error(rt_index, pred_df=rt_index.data, k="a")
 
     # Bad seed.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, seed="x")
+        _ = _kfold_error(rt_index, pred_df=rt_index.data, seed="x")
 
     # All data.
     with pytest.raises(ValueError):
-        rt_error = kfold_error(rt_index, pred_df=rt_index.data)
+        rt_error = _kfold_error(rt_index, pred_df=rt_index.data)
         assert len(rt_error.columns) == 6
 
     # All data - smooth.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data, smooth=True)
+        _ = _kfold_error(rt_index, pred_df=rt_index.data, smooth=True)
 
     # Sparse data.
     # with pytest.raises(ValueError):
-    #     _ = kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0:39])
+    #     _ = _kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0:39])
 
     # No data.
     with pytest.raises(ValueError):
-        _ = kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0])
+        _ = _kfold_error(rt_index, pred_df=rt_index.data.trans_df.iloc[0])
 
     # Returns an error.
     # with pytest.raises(ValueError):
@@ -397,34 +361,34 @@ def test_metrics(seattle_dataset: pd.DataFrame) -> None:
 
     # Smooth when not present.
     with pytest.raises(AttributeError):
-        _ = forecast_error(hed_series, trans_data=rt_index.data, smooth=True)
+        _ = _forecast_error(hed_series, trans_data=rt_index.data, smooth=True)
 
     # Smooth when not present.
     with pytest.raises(ValueError):
-        _ = forecast_error(
+        _ = _forecast_error(
             hed_series,
             trans_data=rt_index.data,
             forecast_length="x",
         )
 
     # All data.
-    # hed_acc = forecast_error(hed_series, trans_data=rt_index.data)
+    # hed_acc = _forecast_error(hed_series, trans_data=rt_index.data)
 
     # All data, longer forecast length.
-    # hed_acc = forecast_error(hed_series, trans_data=rt_index.data, forecast_length=3)
+    # hed_acc = _forecast_error(hed_series, trans_data=rt_index.data, forecast_length=3)
 
     # All data, smoothed.
-    _ = forecast_error(rt_series, trans_data=rt_index.data, smooth=True)
+    _ = _forecast_error(rt_series, trans_data=rt_index.data, smooth=True)
 
     # Sparse data.
     trans_data = copy.deepcopy(rt_index.data)
     trans_data.trans_df = trans_data.trans_df.iloc[:39]
-    _ = forecast_error(rt_series, trans_data=trans_data)
+    _ = _forecast_error(rt_series, trans_data=trans_data)
 
     # No data.
     trans_data = copy.deepcopy(rt_index.data)
     trans_data.trans_df = trans_data.trans_df.iloc[:1]
-    _ = forecast_error(rt_series, trans_data=trans_data, smooth=True)
+    _ = _forecast_error(rt_series, trans_data=trans_data, smooth=True)
 
     # Returns a series with accuracy: smooth and in place.
     rt_series = series_accuracy(

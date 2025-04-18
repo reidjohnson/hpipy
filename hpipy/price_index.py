@@ -31,6 +31,8 @@ class BaseHousePriceIndex(ABC):
     index: Any
     imputed: np.ndarray
     smooth: Any
+    accuracy: pd.DataFrame
+    accuracy_smooth: pd.DataFrame
     volatility: pd.DataFrame
     volatility_smooth: pd.DataFrame
     revision: pd.DataFrame

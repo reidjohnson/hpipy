@@ -10,14 +10,14 @@ from sklearn.model_selection import KFold
 from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 
 from hpipy.price_index import BaseHousePriceIndex, HedonicIndex, RepeatTransactionIndex
-from hpipy.price_model import BaseHousePriceModel, HedonicModel, RepeatTransactionModel
+from hpipy.price_model import BaseHousePriceModel, RepeatTransactionModel
 from hpipy.trans_data import HedonicTransactionData, RepeatTransactionData, TransactionData
 
 
 def accuracy(
     hpi_obj: BaseHousePriceIndex,
     test_method: str = "insample",
-    test_type: str = "rt",
+    test_type: str | None = None,
     pred_df: TransactionData | pd.DataFrame | None = None,
     smooth: bool = False,
     in_place: bool = False,
@@ -29,9 +29,10 @@ def accuracy(
     Args:
         hpi_obj (BaseHousePriceIndex): Index object.
         test_method (str, optional): Testing method.
-            Defaults to "insample".
+            Defaults to "insample". Also supports "kfold".
         test_type (str, optional): Testing type.
-            Defaults to "rt".
+            Defaults to None. If None, the test_type is inferred from the
+            index object.
         smooth (bool, optional): Smooth the index. If True, the revision is
             calculated based on the smoothed indices.
             Defaults to False.
@@ -53,7 +54,13 @@ def accuracy(
         raise ValueError(msg)
 
     # Check for allowed test_method.
-    if test_type not in ["rt", "hed"]:
+    if test_type is None:
+        if isinstance(hpi_obj, RepeatTransactionIndex):
+            test_type = "rt"
+        else:
+            test_type = "hed"
+
+    elif test_type not in ["rt", "hed"]:
         msg = "'test_type' must be one of 'rt', 'hed'."
         raise ValueError(msg)
 
@@ -81,11 +88,11 @@ def accuracy(
         index = hpi_obj.value
         if smooth:
             index = hpi_obj.smooth
-        accr_obj = insample_error(pred_df=df, index_type=index_type, index=index)
+        accr_obj = _insample_error(pred_df=df, index_type=index_type, index=index)
 
     # K-fold.
     if test_method == "kfold":
-        accr_obj = kfold_error(hpi_obj=hpi_obj, pred_df=df, smooth=smooth, **kwargs)
+        accr_obj = _kfold_error(hpi_obj=hpi_obj, pred_df=df, smooth=smooth, **kwargs)
 
     if in_place:
         setattr(hpi_obj, in_place_name, accr_obj)
@@ -94,118 +101,7 @@ def accuracy(
     return accr_obj
 
 
-def series_accuracy(
-    series_obj: BaseHousePriceIndex,
-    test_method: str = "insample",
-    test_type: str = "rt",
-    pred_df: TransactionData | pd.DataFrame | None = None,
-    smooth: bool = False,
-    summarize: bool = False,
-    in_place: bool = False,
-    in_place_name: str = "accuracy",
-    **kwargs: Any,
-) -> BaseHousePriceIndex | pd.DataFrame | list[pd.DataFrame]:
-    """Calculate the accuracy of a series.
-
-    Args:
-        series_obj (BaseHousePriceIndex): Series object.
-        test_method (str, optional): Testing method.
-            Defaults to "insample".
-        test_type (str, optional): Testing type.
-            Defaults to "rt".
-        smooth (bool, optional): Smooth the index. If True, the revision is
-            calculated based on the smoothed indices.
-            Defaults to False.
-        summarize (bool, optional): Summarize the accuracy.
-            Defaults to False.
-        in_place (bool, optional): Return accuracy in-place.
-            Defaults to False.
-        in_place_name (str, optional): In-place attribute name.
-            Defualts to "accuracy".
-
-    Returns:
-        Series object containing the accuracy or DataFrame.
-
-    """
-    # Check for allowed test_method.
-    if test_method not in ["insample", "kfold", "forecast"]:
-        msg = "'test_method' must be one of 'insample', 'kfold' or 'forecast'."
-        raise ValueError(msg)
-
-    # Check for allowed test_method.
-    if test_type not in ["rt", "hed"]:
-        msg = "'test_type' must be one of 'rt', 'hed'."
-        raise ValueError(msg)
-
-    # Check agreement between test_type and hpi_obj.
-    if not (
-        (isinstance(series_obj.data, RepeatTransactionData) and test_type == "rt")
-        or (isinstance(series_obj.data, HedonicTransactionData) and test_type == "hed")
-    ):
-        if pred_df is None:
-            msg = (
-                f"When 'test_type' ({test_type}) does not match the 'hpi' object model type "
-                f"({type(series_obj)}) you must provide an 'pred_df' object of the necessary "
-                f"class, in this case: {test_type}."
-            )
-            raise ValueError(msg)
-    else:
-        trans_data: TransactionData = series_obj.data
-
-    accr_dfs = []
-    if test_method != "forecast":
-        # Check for smooth indices.
-        if smooth and not hasattr(series_obj.hpis[0], "smooth"):
-            msg = "No smoothed indices found. Please add or set smooth to False."
-            raise ValueError(msg)
-
-        # Calculate accuracy.
-        for _, hpi_obj in enumerate(series_obj.hpis):
-            hpi_obj_i = copy.deepcopy(series_obj)
-            hpi_obj_i.data = hpi_obj.data
-            hpi_obj_i.value = hpi_obj.value
-            if smooth:
-                hpi_obj_i.smooth = hpi_obj.smooth
-
-            accr_df_i = pd.DataFrame(
-                accuracy(
-                    hpi_obj_i,
-                    test_method,
-                    test_type,
-                    trans_data,
-                    smooth=smooth,
-                    in_place=False,
-                ),
-            )
-            accr_dfs.append(accr_df_i)
-
-        accr_df = pd.concat(accr_dfs, ignore_index=True)
-
-        # If summarizing.
-        if summarize:
-            accr_df = (
-                accr_df.groupby("pair_id")
-                .agg({"pred_price": "mean", "error": "mean", "log_error": "mean"})
-                .reset_index()
-            )
-
-    # If it is a forecast method.
-    else:
-        accr_df = forecast_error(is_obj=series_obj, trans_data=trans_data, smooth=smooth, **kwargs)
-
-    # Return if not in place.
-    if not in_place:
-        return accr_df
-
-    # Add to series object.
-    if smooth and in_place_name == "accuracy":
-        in_place_name = "accuracy_smooth"
-    setattr(series_obj, in_place_name, accr_df)
-
-    return series_obj
-
-
-def insample_error(
+def _insample_error(
     pred_df: pd.DataFrame,
     index_type: BaseHousePriceModel,
     index: pd.Series,
@@ -215,13 +111,12 @@ def insample_error(
         msg = "'pred_df' argument must be a dataframe."
         raise ValueError(msg)
     if isinstance(index_type, RepeatTransactionModel):
-        return insample_error_rtdata(pred_df, index)
-    if isinstance(index_type, HedonicModel):
-        return insample_error_heddata(pred_df, index)
-    raise ValueError
+        return _insample_error_rtdata(pred_df, index)
+    else:
+        return _insample_error_heddata(pred_df, index)
 
 
-def insample_error_rtdata(pred_df: pd.DataFrame, index: pd.Series) -> pd.DataFrame:
+def _insample_error_rtdata(pred_df: pd.DataFrame, index: pd.Series) -> pd.DataFrame:
     """Calculate in-sample error for repeat transaction index and data."""
     # Calculate the index adjustment to apply.
     adj = []
@@ -247,13 +142,17 @@ def insample_error_rtdata(pred_df: pd.DataFrame, index: pd.Series) -> pd.DataFra
     )
 
 
-def insample_error_heddata(pred_df: pd.DataFrame, index: pd.Series, **kwargs: Any) -> pd.DataFrame:
+def _insample_error_heddata(
+    pred_df: pd.DataFrame,
+    index: pd.Series,
+    **kwargs: Any,
+) -> pd.DataFrame:
     """Calculate in-sample error for hedonic index and data."""
     # Future method.
     raise NotImplementedError
 
 
-def kfold_error(
+def _kfold_error(
     hpi_obj: BaseHousePriceIndex,
     pred_df: pd.DataFrame,
     smooth: bool = False,
@@ -301,7 +200,7 @@ def kfold_error(
 
     kf = KFold(n_splits=k, shuffle=True, random_state=seed)
     for _, test_idx in kf.split(hpi_obj.data.trans_df):
-        train_df, score_df = create_kfold_data(test_idx, hpi_obj.data, pred_df)
+        train_df, score_df = _create_kfold_data(test_idx, hpi_obj.data, pred_df)
 
         train_data = copy.deepcopy(hpi_obj.data)
         train_data.trans_df = train_df
@@ -327,24 +226,22 @@ def kfold_error(
             index = k_index.smooth_index(order=smooth_order)
 
         # Calc errors.
-        k_error = insample_error(score_df, index_type=hpi_obj.model, index=index)
+        k_error = _insample_error(score_df, index_type=hpi_obj.model, index=index)
         errors.append(k_error)
 
     return pd.concat(errors)
 
 
-def create_kfold_data(
+def _create_kfold_data(
     score_ids: np.ndarray,
     full_data: TransactionData,
     pred_df: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Create k-fold for transaction data."""
-    if isinstance(full_data, RepeatTransactionData):
-        return create_kfold_data_rtdata(score_ids, full_data, pred_df)
-    raise NotImplementedError
+    return _create_kfold_data_rtdata(score_ids, full_data, pred_df)
 
 
-def create_kfold_data_rtdata(
+def _create_kfold_data_rtdata(
     score_ids: np.ndarray,
     full_data: TransactionData,
     pred_df: pd.DataFrame,
@@ -353,37 +250,41 @@ def create_kfold_data_rtdata(
     train_df = full_data.trans_df.iloc[
         ~full_data.trans_df.reset_index(drop=True).index.isin(score_ids)
     ]
-    score_df = match_kfold(train_df, pred_df, full_data)
+    score_df = _match_kfold(train_df, pred_df, full_data)
     return train_df, score_df
 
 
-def match_kfold(
+def _match_kfold(
     train_df: pd.DataFrame,
     pred_df: pd.DataFrame,
     full_data: TransactionData,
 ) -> pd.DataFrame:
     """Match k-fold for transaction data."""
     if isinstance(full_data, RepeatTransactionData):
-        return match_kfold_rtdata(train_df, pred_df)
-    raise NotImplementedError
+        return _match_kfold_rtdata(train_df, pred_df)
+    else:
+        return _match_kfold_heddata(train_df, pred_df)
 
 
-def match_kfold_rtdata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
+def _match_kfold_rtdata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
     """Match k-fold for repeat transaction data."""
     trans_pair = list(train_df["trans_id1"] + "_" + train_df["trans_id2"])
     return pred_df[~(pred_df["trans_id1"] + "_" + pred_df["trans_id2"]).isin(trans_pair)]
 
 
-def match_kfold_heddata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
+def _match_kfold_heddata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
     """Match k-fold for hedonic transaction data."""
     # Choose every other one.
-    x1 = pred_df.iloc[::2]  # even rows
-    x2 = pred_df.iloc[1::2]  # odd rows
-    # return pred_df[np.unique(zip(x1, x2))]
-    return pred_df.loc[pd.MultiIndex.from_tuples(zip(x1, x2, strict=False)).unique()]
+    mask1 = ~pred_df["trans_id1"].isin(train_df["trans_id"])
+    x1 = pred_df[mask1].iloc[::2].index
+    mask2 = ~pred_df["trans_id2"].isin(train_df["trans_id"])
+    x2 = pred_df[mask2].iloc[::2].index
+
+    selected_indices = x1.union(x2)
+    return pred_df.loc[selected_indices]
 
 
-def forecast_error(
+def _forecast_error(
     is_obj: BaseHousePriceIndex,
     trans_data: TransactionData,
     forecast_length: int = 1,
@@ -452,7 +353,7 @@ def forecast_error(
     # Iterate through forecasts and calculate errors.
     fc_error = []
     for preddata, forecasts in zip(fc_preddata, fc_forecasts, strict=False):
-        error = insample_error(
+        error = _insample_error(
             pred_df=df.iloc[preddata],
             index_type=index_type,
             index=pd.Series(forecasts, index=np.arange(1, len(forecasts) + 1)),
@@ -469,84 +370,13 @@ def forecast_error(
     #    self.forecasts = fc_forecasts
 
 
-def revision(
-    series_obj: BaseHousePriceIndex,
-    in_place: bool = False,
-    smooth: bool = False,
-) -> BaseHousePriceIndex | pd.DataFrame:
-    """Calculate the revision of a series.
-
-    This is done by calculating the difference between consecutive indexes
-    (n to n+1) and then calculating the mean and median of the differences.
-    This is done for each period and the results are returned as a DataFrame.
-
-    Args:
-        series_obj (BaseHousePriceIndex): Series object.
-        in_place (bool, optional): If True, the revision is placed into the
-            series object as a named list.
-            Defaults to False.
-        smooth (bool, optional): Smooth the index. If True, the revision is
-            calculated based on the smoothed indices.
-            Defaults to False.
-
-    Returns:
-         Revision and associated statistics as object or DataFrame.
-
-    """
-    # Check class.
-    if not isinstance(series_obj, BaseHousePriceIndex):
-        msg = "'series_obj' must be an index instance."
-        raise ValueError(msg)
-
-    if smooth and len(series_obj.hpis[0].smooth) > 0:
-        # index_name = "smooth"
-        indices = [hpi_obj.smooth for hpi_obj in series_obj.hpis]
-    else:
-        if smooth:
-            msg = "No smoothed indices found. Create them with 'smooth_series' and try again."
-            raise Exception(msg)
-        # index_name = "value"
-        indices = [hpi_obj.value for hpi_obj in series_obj.hpis]
-
-    # Calculate the differences in the indices (n to n+1).
-    index_diffs = [(indices[i][:-1] - indices[i - 1]) for i in range(1, len(indices))]
-
-    # Extract differences into lists by period (essentially transposing list).
-    period_diffs = [list(x) for x in zip(*index_diffs, strict=False)]
-
-    # Convert to vector format in correct order.
-    period_diffs = [list(reversed(x)) for x in period_diffs]
-
-    # Calculate the mean and medians.
-    period_means = [np.mean(x) for x in period_diffs]
-    period_medians = [np.median(x) for x in period_diffs]
-
-    # Package and return.
-    rev_obj = pd.DataFrame(
-        {
-            "period": range(1, len(period_means) + 1),
-            "mean": period_means,
-            "median": period_medians,
-        },
-    )
-
-    if in_place:
-        if smooth:
-            series_obj.revision_smooth = rev_obj
-        else:
-            series_obj.revision = rev_obj
-        return series_obj
-
-    return rev_obj
-
-
 def volatility(
     index: BaseHousePriceIndex | pd.DataFrame,
     window: int = 3,
     in_place: bool = False,
     smooth: bool = False,
 ) -> BaseHousePriceIndex | pd.DataFrame:
-    """Calculate index volatility.
+    """Calculate the volatility of an index.
 
     Args:
         index (BaseHousePriceIndex | pd.DataFrame): Index object.
@@ -626,11 +456,206 @@ def volatility(
     return vol_obj
 
 
+def revision(
+    series_obj: BaseHousePriceIndex,
+    in_place: bool = False,
+    smooth: bool = False,
+) -> BaseHousePriceIndex | pd.DataFrame:
+    """Calculate the revision for a series of indices.
+
+    This is done by calculating the difference between consecutive indexes
+    (n to n+1) and then calculating the mean and median of the differences.
+    This is done for each period and the results are returned as a DataFrame.
+
+    Args:
+        series_obj (BaseHousePriceIndex): Series object.
+        in_place (bool, optional): If True, the revision is placed into the
+            series object as a named list.
+            Defaults to False.
+        smooth (bool, optional): Smooth the index. If True, the revision is
+            calculated based on the smoothed indices.
+            Defaults to False.
+
+    Returns:
+        Revision and associated statistics as object or DataFrame.
+
+    """
+    # Check class.
+    if not isinstance(series_obj, BaseHousePriceIndex):
+        msg = "'series_obj' must be an index instance."
+        raise ValueError(msg)
+
+    if smooth and len(series_obj.hpis[0].smooth) > 0:
+        # index_name = "smooth"
+        indices = [hpi_obj.smooth for hpi_obj in series_obj.hpis]
+    else:
+        if smooth:
+            msg = "No smoothed indices found. Create them with 'smooth_series' and try again."
+            raise Exception(msg)
+        # index_name = "value"
+        indices = [hpi_obj.value for hpi_obj in series_obj.hpis]
+
+    # Calculate the differences in the indices (n to n+1).
+    index_diffs = [(indices[i][:-1] - indices[i - 1]) for i in range(1, len(indices))]
+
+    # Extract differences into lists by period (essentially transposing list).
+    period_diffs = [list(x) for x in zip(*index_diffs, strict=False)]
+
+    # Convert to vector format in correct order.
+    period_diffs = [list(reversed(x)) for x in period_diffs]
+
+    # Calculate the mean and medians.
+    period_means = [np.mean(x) for x in period_diffs]
+    period_medians = [np.median(x) for x in period_diffs]
+
+    # Package and return.
+    rev_obj = pd.DataFrame(
+        {
+            "period": range(1, len(period_means) + 1),
+            "mean": period_means,
+            "median": period_medians,
+        },
+    )
+
+    if in_place:
+        if smooth:
+            series_obj.revision_smooth = rev_obj
+        else:
+            series_obj.revision = rev_obj
+        return series_obj
+
+    return rev_obj
+
+
+def series_accuracy(
+    series_obj: BaseHousePriceIndex,
+    test_method: str = "insample",
+    test_type: str = "rt",
+    pred_df: TransactionData | pd.DataFrame | None = None,
+    smooth: bool = False,
+    summarize: bool = False,
+    in_place: bool = False,
+    in_place_name: str = "accuracy",
+    **kwargs: Any,
+) -> BaseHousePriceIndex | pd.DataFrame | list[pd.DataFrame]:
+    """Calculate the accuracy for a series of indices.
+
+    Args:
+        series_obj (BaseHousePriceIndex): Series object.
+        test_method (str, optional): Testing method.
+            Defaults to "insample". Also supports "kfold" or "forecast".
+        test_type (str, optional): Testing type.
+            Defaults to "rt".
+        smooth (bool, optional): Smooth the index. If True, the revision is
+            calculated based on the smoothed indices.
+            Defaults to False.
+        summarize (bool, optional): Summarize the accuracy.
+            Defaults to False.
+        in_place (bool, optional): Return accuracy in-place.
+            Defaults to False.
+        in_place_name (str, optional): In-place attribute name.
+            Defualts to "accuracy".
+
+    Returns:
+        Series object containing the accuracy or DataFrame.
+
+    """
+    # Check for allowed test_method.
+    if test_method not in ["insample", "kfold", "forecast"]:
+        msg = "'test_method' must be one of 'insample', 'kfold' or 'forecast'."
+        raise ValueError(msg)
+
+    # Check for allowed test_method.
+    if test_type not in ["rt", "hed"]:
+        msg = "'test_type' must be one of 'rt', 'hed'."
+        raise ValueError(msg)
+
+    # Check agreement between test_type and hpi_obj.
+    if not (
+        (isinstance(series_obj.data, RepeatTransactionData) and test_type == "rt")
+        or (isinstance(series_obj.data, HedonicTransactionData) and test_type == "hed")
+    ):
+        if pred_df is None:
+            msg = (
+                f"When 'test_type' ({test_type}) does not match the 'hpi' object model type "
+                f"({type(series_obj)}) you must provide an 'pred_df' object of the necessary "
+                f"class, in this case: {test_type}."
+            )
+            raise ValueError(msg)
+    else:
+        trans_data: TransactionData = series_obj.data
+
+    accr_dfs = []
+    if test_method != "forecast":
+        # Check for smooth indices.
+        if smooth and not hasattr(series_obj.hpis[0], "smooth"):
+            msg = "No smoothed indices found. Please add or set smooth to False."
+            raise ValueError(msg)
+
+        # Calculate accuracy.
+        for idx, hpi_obj in enumerate(series_obj.hpis):
+            hpi_obj_i = copy.deepcopy(series_obj)
+            hpi_obj_i.data = hpi_obj.data
+            hpi_obj_i.value = hpi_obj.value
+            if smooth:
+                hpi_obj_i.smooth = hpi_obj.smooth
+
+            accr_df_i = pd.DataFrame(
+                accuracy(
+                    hpi_obj_i,
+                    test_method,
+                    test_type,
+                    trans_data,
+                    smooth=smooth,
+                    in_place=False,
+                )
+            )
+            accr_df_i = accr_df_i.assign(index=idx).loc[:, ["index", *list(accr_df_i.columns)]]
+
+            accr_dfs.append(accr_df_i)
+
+        accr_df = (
+            pd.concat(accr_dfs, ignore_index=True)
+            .sort_values(by=["index", "pred_period"])
+            .reset_index(drop=True)
+        )
+
+        # If summarizing.
+        if summarize:
+            accr_df = (
+                accr_df.groupby("pair_id")
+                .agg({"pred_price": "mean", "error": "mean", "log_error": "mean"})
+                .reset_index()
+            )
+
+    # If it is a forecast method.
+    else:
+        accr_df = _forecast_error(
+            is_obj=series_obj,
+            trans_data=trans_data,
+            smooth=smooth,
+            **kwargs,
+        )
+
+    # Return if not in place.
+    if not in_place:
+        return accr_df
+
+    # Add to series object.
+    if smooth and in_place_name == "accuracy":
+        in_place_name = "accuracy_smooth"
+    setattr(series_obj, in_place_name, accr_df)
+
+    return series_obj
+
+
 def series_volatility(
     series_obj: BaseHousePriceIndex,
     window: int = 3,
     smooth: bool = False,
-) -> BaseHousePriceIndex:
+    in_place: bool = False,
+    in_place_name: str = "volatility",
+) -> BaseHousePriceIndex | pd.DataFrame:
     """Calculate volatility for a series of indices.
 
     Args:
@@ -639,11 +664,45 @@ def series_volatility(
             Defaults to 3.
         smooth (bool, optional): Smooth the index.
             Defaults to False.
+        in_place (bool, optional): Return index in place.
+            Defaults to False.
+        in_place_name (str, optional): Name of the in-place attribute.
+            Defaults to "volatility".
 
     Returns:
-        Index object with series volatility calculation.
+        Index object with series volatility calculation or DataFrame.
 
     """
-    for hpi in series_obj.hpis:
-        hpi = volatility(hpi, window, smooth=smooth, in_place=True)
+    vol_dfs = []
+    # Check for smooth indices.
+    if smooth and not hasattr(series_obj.hpis[0], "smooth"):
+        msg = "No smoothed indices found. Please add or set smooth to False."
+        raise ValueError(msg)
+
+    # Calculate volatility.
+    for idx, hpi_obj in enumerate(series_obj.hpis):
+        hpi_obj_i = copy.deepcopy(series_obj)
+        hpi_obj_i.data = hpi_obj.data
+        hpi_obj_i.value = hpi_obj.value
+        if smooth:
+            hpi_obj_i.smooth = hpi_obj.smooth
+
+        vol_df_i = pd.DataFrame(volatility(hpi_obj_i, window, smooth=smooth, in_place=False))
+        vol_df_i = vol_df_i.assign(index=idx, period=vol_df_i.index).loc[
+            :, ["index", "period", *list(vol_df_i.columns)]
+        ]
+
+        vol_dfs.append(vol_df_i)
+
+    vol_df = pd.concat(vol_dfs, ignore_index=True)
+
+    # Return if not in place.
+    if not in_place:
+        return vol_df
+
+    # Add to series object.
+    if smooth and in_place_name == "volatility":
+        in_place_name = "volatility_smooth"
+    setattr(series_obj, in_place_name, vol_df)
+
     return series_obj
