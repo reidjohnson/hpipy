@@ -53,6 +53,7 @@ class MonotonicDense(nn.Linear):
                 initialize the layer. Defaults to None.
             dtype (torch.dtype | None, optional): Data type of the layer.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
 
         """
         factory_kwargs = {"device": device, "dtype": dtype}
@@ -92,7 +93,12 @@ class MonotonicDense(nn.Linear):
 
     @contextmanager
     def _replace_kernel(self) -> Generator:
-        """Replace kernel weights with signed values as indicated."""
+        """Replace kernel weights with signed values as indicated.
+
+        Yields:
+            Generator: Generator object.
+
+        """
         original_weight = self.weight
 
         if self.monotonicity_indicator is not None:
@@ -111,7 +117,15 @@ class MonotonicDense(nn.Linear):
         self.weight = original_weight
 
     def _activation_selector(self, x: torch.Tensor) -> torch.Tensor:
-        """Select activation sign."""
+        """Select activation sign.
+
+        Args:
+            x (torch.Tensor): Input data.
+
+        Returns:
+            torch.Tensor: Activation sign.
+
+        """
         return torch.cat(
             [
                 torch.ones((x.shape[0], self.n_convex), dtype=torch.int, device=x.device),
@@ -128,7 +142,7 @@ class MonotonicDense(nn.Linear):
             x (torch.Tensor): Input data.
 
         Returns:
-            Output data.
+            torch.Tensor: Output data.
 
         """
         with self._replace_kernel():
@@ -220,7 +234,7 @@ class OrdinalEmbedding(nn.Module):
             x (torch.Tensor): Input data.
 
         Returns:
-            Output data.
+            torch.Tensor: Output data.
 
         """
         x = x.reshape(-1, 1)
@@ -235,7 +249,7 @@ class OrdinalEmbedding(nn.Module):
         """Format display representation.
 
         Returns:
-            String representation.
+            str: String representation.
 
         """
         s = "{num_embeddings}, {embedding_dim}"

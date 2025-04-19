@@ -21,7 +21,31 @@ from hpipy.utils.stineman_interpolation import interpolate_stineman
 
 
 class BaseHousePriceIndex(ABC):
-    """Abstract base house price index class."""
+    """Abstract base house price index class.
+
+    Args:
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        data: TransactionData. The transaction data used to construct the
+            index.
+        model: BaseHousePriceModel. The underlying price model used to
+            estimate the index.
+        name (pd.Series): The names of the time periods in the index.
+        periods (pd.Series): The time periods covered by the index.
+        value (pd.Series): The index values.
+        index (Any): The index values in an alternate format.
+        imputed (np.ndarray): Boolean array indicating which periods were
+            imputed.
+        smooth (Any): Smoothed version of the index values.
+        accuracy (pd.DataFrame): Accuracy measures for the index.
+        accuracy_smooth (pd.DataFrame): Smoothed accuracy measures.
+        volatility (pd.DataFrame): Volatility measures for the index.
+        volatility_smooth (pd.DataFrame): Smoothed volatility measures.
+        revision (pd.DataFrame): Revision measures for the index.
+        revision_smooth (pd.DataFrame): Smoothed revision measures.
+
+    """
 
     data: TransactionData
     model: BaseHousePriceModel
@@ -550,17 +574,17 @@ class RepeatTransactionIndex(BaseHousePriceIndex):
             estimate the index.
 
     Attributes:
-        name: pd.Series. The names of the time periods in the index.
-        periods: pd.Series. The time periods covered by the index.
-        value: pd.Series. The index values.
-        index: Any. The index values in an alternate format.
-        imputed: np.ndarray. Boolean array indicating which periods were
+        name (pd.Series): The names of the time periods in the index.
+        periods (pd.Series): The time periods covered by the index.
+        value (pd.Series): The index values.
+        index (Any): The index values in an alternate format.
+        imputed (np.ndarray): Boolean array indicating which periods were
             imputed.
-        smooth: Any. Smoothed version of the index values.
-        volatility: pd.DataFrame. Volatility measures for the index.
-        volatility_smooth: pd.DataFrame. Smoothed volatility measures.
-        revision: pd.DataFrame. Revision measures for the index.
-        revision_smooth: pd.DataFrame. Smoothed revision measures.
+        smooth (Any): Smoothed version of the index values.
+        volatility (pd.DataFrame): Volatility measures for the index.
+        volatility_smooth (pd.DataFrame): Smoothed volatility measures.
+        revision (pd.DataFrame): Revision measures for the index.
+        revision_smooth (pd.DataFrame): Smoothed revision measures.
 
     Example:
         >>> import pandas as pd
@@ -658,17 +682,17 @@ class HedonicIndex(BaseHousePriceIndex):
             estimate the index.
 
     Attributes:
-        name: pd.Series. The names of the time periods in the index.
-        periods: pd.Series. The time periods covered by the index.
-        value: pd.Series. The index values.
-        index: Any. The index values in an alternate format.
-        imputed: np.ndarray. Boolean array indicating which periods were
+        name (pd.Series): The names of the time periods in the index.
+        periods (pd.Series): The time periods covered by the index.
+        value (pd.Series): The index values.
+        index (Any): The index values in an alternate format.
+        imputed (np.ndarray): Boolean array indicating which periods were
             imputed.
-        smooth: Any. Smoothed version of the index values.
-        volatility: pd.DataFrame. Volatility measures for the index.
-        volatility_smooth: pd.DataFrame. Smoothed volatility measures.
-        revision: pd.DataFrame. Revision measures for the index.
-        revision_smooth: pd.DataFrame. Smoothed revision measures.
+        smooth (Any): Smoothed version of the index values.
+        volatility (pd.DataFrame): Volatility measures for the index.
+        volatility_smooth (pd.DataFrame): Smoothed volatility measures.
+        revision (pd.DataFrame): Revision measures for the index.
+        revision_smooth (pd.DataFrame): Smoothed revision measures.
 
     Example:
         >>> import pandas as pd

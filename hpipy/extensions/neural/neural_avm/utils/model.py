@@ -35,7 +35,8 @@ def mixup(
             Defaults to 1.
 
     Returns:
-        The mixed-up inputs, pairs of responses, and lambda.
+        tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]: The
+            mixed-up inputs, pairs of responses, and lambda.
 
     References:
         [1] Zhang, H., M. Cisse, Y. N. Dauphin, and D. Lopez-Paz. "mixup:
@@ -65,7 +66,7 @@ def quantile_loss(
         quantile (torch.Tensor): Quantile to estimate.
 
     Returns:
-        Quantile loss.
+        torch.Tensor: Quantile loss.
 
     """
     error = y_pred - y_true

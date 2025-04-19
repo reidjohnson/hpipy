@@ -19,7 +19,8 @@ def prepare_dataframe(
         feature_dict (dict[str, list[str]]): Input feature dictionary.
 
     Returns:
-        Dictionary of feature names mapped to NumPy arrays.
+        dict[str, np.ndarray]: Dictionary of feature names mapped to NumPy
+            arrays.
 
     """
     X_out = {}
@@ -47,7 +48,8 @@ def prepare_tensor(X: torch.Tensor, feature_dict: dict[str, list[str]]) -> dict[
         feature_dict (dict[str, list[str]]): Input feature dictionary.
 
     Returns:
-        Dictionary of feature names mapped to Tensors.
+        dict[str, torch.Tensor]: Dictionary of feature names mapped to
+            Tensors.
 
     """
     X_out = {}

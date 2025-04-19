@@ -61,6 +61,14 @@ class PeriodTable:
 
     Organizes transaction data into defined time periods.
 
+    Args:
+        trans_df (pd.DataFrame): Transaction data.
+        period_table (pd.DataFrame | None): Period table.
+
+    Attributes:
+        trans_df (pd.DataFrame): Transaction data.
+        period_table (pd.DataFrame): Period table.
+
     """
 
     trans_df: pd.DataFrame
@@ -414,6 +422,7 @@ class PeriodTable:
                 Defaults to None.
             adj_type (str | None, optional): Adjustment type.
                 Defaults to "move".
+            **kwargs: Additional keyword arguments.
 
         Returns:
             Self: Period table.

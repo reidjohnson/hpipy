@@ -183,7 +183,16 @@ class NeuralNetworkModel(BaseHousePriceModel):
         return explain_df, X_input
 
     def _explainer_output_to_coef(self, coef_df: pd.DataFrame, date: str) -> pd.Series:
-        """Convert explainer output to index coefficients."""
+        """Convert explainer output to index coefficients.
+
+        Args:
+            coef_df (pd.DataFrame): Coefficient data.
+            date (str): Date column name.
+
+        Returns:
+            pd.Series: Index coefficients.
+
+        """
         # Match coefficients with their corresponding periods.
         for _, row in self.period_table.iterrows():
             after_start = coef_df[date] >= row["start_date"]

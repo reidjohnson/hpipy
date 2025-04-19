@@ -88,6 +88,10 @@ class TransactionData:
             date (str | None): Date column name.
             periodicity (str | None, optional): Period frequency.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Self.
 
         """
         # Create the `trans_df` if not provided.
@@ -125,7 +129,7 @@ class TransactionData:
                 Defaults to True.
 
         Returns:
-            Forecasts as a NumPy array.
+            np.ndarray: Forecasts as a NumPy array.
 
         """
         if not isinstance(time_cut, int) or time_cut < 1:
@@ -185,6 +189,10 @@ class RepeatTransactionData(TransactionData):
                 Defaults to False.
             min_period_dist (int | None, optional): Minimum period distance.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Self.
 
         """
         self._check_fields(prop_id, trans_id, price)
@@ -323,6 +331,10 @@ class RepeatTransactionData(TransactionData):
     def create_forecast_periods(self, *args: Any, **kwargs: Any) -> np.ndarray:
         """Create repeat transaction forecast periods.
 
+        Args:
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
         Returns:
             np.ndarray: Forecast periods as an array.
 
@@ -352,6 +364,10 @@ class HedonicTransactionData(TransactionData):
                 Defaults to None.
             periodicity (str | None, optional): Periodicity of the data.
                 Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Self: Self.
 
         """
         self._check_fields(prop_id, trans_id, price)
@@ -381,6 +397,10 @@ class HedonicTransactionData(TransactionData):
 
     def create_forecast_periods(self, *args: Any, **kwargs: Any) -> np.ndarray:
         """Create hedonic transaction forecast periods.
+
+        Args:
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
 
         Returns:
             np.ndarray: Forecast periods as an array.

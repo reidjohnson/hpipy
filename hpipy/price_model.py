@@ -25,6 +25,14 @@ class BaseHousePriceModel(ABC):
 
     Args:
         hpi_data (TransactionData): Input transaction data.
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        coefficients (pd.DataFrame): Coefficient data.
+        model_obj (Any): Model object.
+        periods (pd.DataFrame): Period data.
+        base_price (float): Base price.
+        params (dict[str, Any]): Parameters.
 
     """
 
@@ -68,11 +76,11 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
         **kwargs: Additional keyword arguments.
 
     Attributes:
-        coefficients (pd.DataFrame): The coefficients.
-        model_obj (Any): The model object.
-        periods (pd.DataFrame): The periods.
-        base_price (float): The base price.
-        params (dict[str, Any]): The parameters.
+        coefficients (pd.DataFrame): Coefficient data.
+        model_obj (Any): Model object.
+        periods (pd.DataFrame): Period data.
+        base_price (float): Base price.
+        params (dict[str, Any]): Parameters.
 
     """
 
@@ -235,6 +243,9 @@ class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
             log_dep (bool, optional): Log transform the dependent variable.
                 Defaults to True.
 
+        Returns:
+            Self: The repeat transaction house price model.
+
         """
         # Create time matrix.
         time_matrix = self.create_time_matrix(self.hpi_df)
@@ -357,7 +368,16 @@ class HedonicModel(BaseHousePriceModel):
         X: pd.DataFrame | pd.Series,
         y: pd.Series,
     ) -> LinearRegression:
-        """Fit hedonic linear regression model."""
+        """Fit hedonic linear regression model.
+
+        Args:
+            X (pd.DataFrame | pd.Series): The independent variables.
+            y (pd.Series): The dependent variable.
+
+        Returns:
+            LinearRegression: The hedonic linear regression model.
+
+        """
         return LinearRegression().fit(X, y)
 
     def _hed_model_robust(

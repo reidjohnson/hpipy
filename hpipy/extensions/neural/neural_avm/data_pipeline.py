@@ -46,7 +46,15 @@ class DataPipeline:
 
     @staticmethod
     def _get_feature_list(feature_dict: dict[str, list[str]]) -> list[str]:
-        """Get flattened feature list."""
+        """Get flattened feature list.
+
+        Args:
+            feature_dict (dict[str, list[str]]): Feature dictionary.
+
+        Returns:
+            list[str]: Flattened feature list.
+
+        """
         features = [f for type in feature_dict for f in feature_dict[type]]
         return sorted(set(features))
 

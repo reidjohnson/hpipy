@@ -33,14 +33,22 @@ def accuracy(
         test_type (str, optional): Testing type.
             Defaults to None. If None, the test_type is inferred from the
             index object.
+        pred_df (TransactionData | pd.DataFrame | None, optional): Prediction
+            data.
+            Defaults to None.
         smooth (bool, optional): Smooth the index. If True, the revision is
             calculated based on the smoothed indices.
             Defaults to False.
         in_place (bool, optional): Return accuracy in-place.
             Defaults to False.
+        in_place_name (str, optional): Name of the attribute to store the
+            accuracy in.
+            Defaults to "accuracy".
+        **kwargs: Additional keyword arguments.
 
     Returns:
-        Index object containing the accuracy or DataFrame.
+        BaseHousePriceIndex | pd.DataFrame: Index object containing the
+            accuracy or DataFrame.
 
     """
     # Check for class of hpi_obj.
@@ -106,7 +114,17 @@ def _insample_error(
     index_type: BaseHousePriceModel,
     index: pd.Series,
 ) -> pd.DataFrame:
-    """Calculate in-sample error."""
+    """Calculate in-sample error.
+
+    Args:
+        pred_df (pd.DataFrame): Prediction data.
+        index_type (BaseHousePriceModel): Index type.
+        index (pd.Series): Index.
+
+    Returns:
+        pd.DataFrame: In-sample error.
+
+    """
     if not isinstance(pred_df, pd.DataFrame):
         msg = "'pred_df' argument must be a dataframe."
         raise ValueError(msg)
@@ -117,7 +135,16 @@ def _insample_error(
 
 
 def _insample_error_rtdata(pred_df: pd.DataFrame, index: pd.Series) -> pd.DataFrame:
-    """Calculate in-sample error for repeat transaction index and data."""
+    """Calculate in-sample error for repeat transaction index and data.
+
+    Args:
+        pred_df (pd.DataFrame): Prediction data.
+        index (pd.Series): Index.
+
+    Returns:
+        pd.DataFrame: In-sample error.
+
+    """
     # Calculate the index adjustment to apply.
     adj = []
     for idx2, idx1 in zip(pred_df["period_2"] - 1, pred_df["period_1"] - 1, strict=False):
@@ -147,7 +174,17 @@ def _insample_error_heddata(
     index: pd.Series,
     **kwargs: Any,
 ) -> pd.DataFrame:
-    """Calculate in-sample error for hedonic index and data."""
+    """Calculate in-sample error for hedonic index and data.
+
+    Args:
+        pred_df (pd.DataFrame): Prediction data.
+        index (pd.Series): Index.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        pd.DataFrame: In-sample error.
+
+    """
     # Future method.
     raise NotImplementedError
 
@@ -237,7 +274,17 @@ def _create_kfold_data(
     full_data: TransactionData,
     pred_df: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Create k-fold for transaction data."""
+    """Create k-fold for transaction data.
+
+    Args:
+        score_ids (np.ndarray): Score IDs.
+        full_data (TransactionData): Full data.
+        pred_df (pd.DataFrame): Prediction data.
+
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame]: Train and score data.
+
+    """
     return _create_kfold_data_rtdata(score_ids, full_data, pred_df)
 
 
@@ -246,7 +293,17 @@ def _create_kfold_data_rtdata(
     full_data: TransactionData,
     pred_df: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Create k-fold for repeat transaction data."""
+    """Create k-fold for repeat transaction data.
+
+    Args:
+        score_ids (np.ndarray): Score IDs.
+        full_data (TransactionData): Full data.
+        pred_df (pd.DataFrame): Prediction data.
+
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame]: Train and score data.
+
+    """
     train_df = full_data.trans_df.iloc[
         ~full_data.trans_df.reset_index(drop=True).index.isin(score_ids)
     ]
@@ -259,7 +316,17 @@ def _match_kfold(
     pred_df: pd.DataFrame,
     full_data: TransactionData,
 ) -> pd.DataFrame:
-    """Match k-fold for transaction data."""
+    """Match k-fold for transaction data.
+
+    Args:
+        train_df (pd.DataFrame): Train data.
+        pred_df (pd.DataFrame): Prediction data.
+        full_data (TransactionData): Full data.
+
+    Returns:
+        pd.DataFrame: Matched data.
+
+    """
     if isinstance(full_data, RepeatTransactionData):
         return _match_kfold_rtdata(train_df, pred_df)
     else:
@@ -267,13 +334,31 @@ def _match_kfold(
 
 
 def _match_kfold_rtdata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
-    """Match k-fold for repeat transaction data."""
+    """Match k-fold for repeat transaction data.
+
+    Args:
+        train_df (pd.DataFrame): Train data.
+        pred_df (pd.DataFrame): Prediction data.
+
+    Returns:
+        pd.DataFrame: Matched data.
+
+    """
     trans_pair = list(train_df["trans_id1"] + "_" + train_df["trans_id2"])
     return pred_df[~(pred_df["trans_id1"] + "_" + pred_df["trans_id2"]).isin(trans_pair)]
 
 
 def _match_kfold_heddata(train_df: pd.DataFrame, pred_df: pd.DataFrame) -> pd.DataFrame:
-    """Match k-fold for hedonic transaction data."""
+    """Match k-fold for hedonic transaction data.
+
+    Args:
+        train_df (pd.DataFrame): Train data.
+        pred_df (pd.DataFrame): Prediction data.
+
+    Returns:
+        pd.DataFrame: Matched data.
+
+    """
     # Choose every other one.
     mask1 = ~pred_df["trans_id1"].isin(train_df["trans_id"])
     x1 = pred_df[mask1].iloc[::2].index
@@ -297,6 +382,7 @@ def _forecast_error(
         trans_data (TransactionData): Transaction data.
         forecast_length (int, optional): Forecast length.
             Defaults to 1.
+        **kwargs: Additional keyword arguments.
 
     Returns:
         pd.DataFrame: Forecast error.
@@ -388,7 +474,8 @@ def volatility(
             Defaults to False.
 
     Returns:
-        Index object with volatility calculation or DataFrame.
+        BaseHousePriceIndex | pd.DataFrame: Index object with volatility
+            calculation or DataFrame.
 
     """
     # Save index_obj for future returning.
@@ -477,7 +564,8 @@ def revision(
             Defaults to False.
 
     Returns:
-        Revision and associated statistics as object or DataFrame.
+        BaseHousePriceIndex | pd.DataFrame: Revision and associated statistics
+            as object or DataFrame.
 
     """
     # Check class.
@@ -557,7 +645,8 @@ def series_accuracy(
             Defualts to "accuracy".
 
     Returns:
-        Series object containing the accuracy or DataFrame.
+        BaseHousePriceIndex | pd.DataFrame: Series object containing the
+            accuracy or DataFrame.
 
     """
     # Check for allowed test_method.
@@ -670,7 +759,8 @@ def series_volatility(
             Defaults to "volatility".
 
     Returns:
-        Index object with series volatility calculation or DataFrame.
+        BaseHousePriceIndex | pd.DataFrame: Index object with series
+            volatility calculation or DataFrame.
 
     """
     vol_dfs = []

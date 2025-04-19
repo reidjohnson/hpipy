@@ -11,11 +11,6 @@ class TimeMatrixMixin:
     consisting of repeat transaction data. The method utilizes datetime data
     represented as periods and constructs a chronologically ordered matrix.
 
-    Args:
-        repeat_trans_df (pd.DataFrame): Input DataFrame. Must contain
-            "period_1" and "period_2" columns containing integer values
-            representing periods (i.e., time series expressed as integer).
-
     """
 
     def create_time_matrix(self, repeat_trans_df: pd.DataFrame) -> pd.DataFrame:

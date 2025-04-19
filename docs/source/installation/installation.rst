@@ -14,6 +14,7 @@ Dependencies
 
 The hpiPy package requires the following dependencies:
 
+* altair
 * captum
 * h3
 * numpy

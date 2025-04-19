@@ -36,7 +36,7 @@ def collate_fn(
         columns (list[str]): List of column names.
 
     Returns:
-        X as dict[str, torch.Tensor], y as torch.Tensor.
+        Batch: X as dict[str, torch.Tensor], y as torch.Tensor.
 
     """
     x, y = zip(*batch, strict=False)
