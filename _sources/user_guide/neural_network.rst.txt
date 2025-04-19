@@ -49,9 +49,9 @@ The method supports two distinct approaches for extracting the house price index
      - * Less flexible than attributional
      - * Relies on post-hoc attributions
 
-**Attributional Approach**
+**Residual Approach**
 
-The attributional approach decomposes the logarithm of a property's value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by market conditions and the characteristics of the property itself (`Clapham et al. <ref-clapham_>`_):
+The residual approach decomposes the logarithm of a property's value into a market-level price index and a property-specific component. This reflects the idea that housing value is jointly determined by market conditions and the characteristics of the property itself (`Clapham et al. <ref-clapham_>`_):
 
 .. math::
 
@@ -66,9 +66,9 @@ where:
 
 This model is conceptually similar to hedonic or repeat-sales approaches, where market effects and property characteristics are disentangled. The index is derived by directly extracting the market-level estimates for each time period from the model and normalizing them to a base period.
 
-**Residual Approach**
+**Attributional Approach**
 
-The residual approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (`Shrikumar et al. <ref-shrikumar_>`_):
+The attributional approach models the house price as a black-box prediction that integrates market and property factors, and then uses explainability methods to decompose this prediction into attributions. Specifically, DeepLIFT attributes the model output to individual features relative to a reference (baseline) input (`Shrikumar et al. <ref-shrikumar_>`_):
 
 .. math::
 
