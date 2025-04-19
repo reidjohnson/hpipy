@@ -574,7 +574,16 @@
         <span class="k">return</span> <span class="n">explain_df</span><span class="p">,</span> <span class="n">X_input</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_explainer_output_to_coef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coef_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert explainer output to index coefficients.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert explainer output to index coefficients.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coef_df (pd.DataFrame): Coefficient data.</span>
+<span class="sd">            date (str): Date column name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.Series: Index coefficients.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Match coefficients with their corresponding periods.</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_table</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">after_start</span> <span class="o">=</span> <span class="n">coef_df</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;start_date&quot;</span><span class="p">]</span>

@@ -418,14 +418,22 @@
 <span class="sd">        test_type (str, optional): Testing type.</span>
 <span class="sd">            Defaults to None. If None, the test_type is inferred from the</span>
 <span class="sd">            index object.</span>
+<span class="sd">        pred_df (TransactionData | pd.DataFrame | None, optional): Prediction</span>
+<span class="sd">            data.</span>
+<span class="sd">            Defaults to None.</span>
 <span class="sd">        smooth (bool, optional): Smooth the index. If True, the revision is</span>
 <span class="sd">            calculated based on the smoothed indices.</span>
 <span class="sd">            Defaults to False.</span>
 <span class="sd">        in_place (bool, optional): Return accuracy in-place.</span>
 <span class="sd">            Defaults to False.</span>
+<span class="sd">        in_place_name (str, optional): Name of the attribute to store the</span>
+<span class="sd">            accuracy in.</span>
+<span class="sd">            Defaults to &quot;accuracy&quot;.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Index object containing the accuracy or DataFrame.</span>
+<span class="sd">        BaseHousePriceIndex | pd.DataFrame: Index object containing the</span>
+<span class="sd">            accuracy or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check for class of hpi_obj.</span>
@@ -492,7 +500,17 @@
     <span class="n">index_type</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span><span class="p">,</span>
     <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+<span class="sd">        index_type (BaseHousePriceModel): Index type.</span>
+<span class="sd">        index (pd.Series): Index.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: In-sample error.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pred_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;pred_df&#39; argument must be a dataframe.&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -503,7 +521,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_insample_error_rtdata</span><span class="p">(</span><span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for repeat transaction index and data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for repeat transaction index and data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+<span class="sd">        index (pd.Series): Index.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: In-sample error.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Calculate the index adjustment to apply.</span>
     <span class="n">adj</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">idx1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;period_2&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;period_1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -533,7 +560,17 @@
     <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for hedonic index and data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate in-sample error for hedonic index and data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+<span class="sd">        index (pd.Series): Index.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: In-sample error.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Future method.</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -623,7 +660,17 @@
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create k-fold for transaction data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create k-fold for transaction data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        score_ids (np.ndarray): Score IDs.</span>
+<span class="sd">        full_data (TransactionData): Full data.</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[pd.DataFrame, pd.DataFrame]: Train and score data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_create_kfold_data_rtdata</span><span class="p">(</span><span class="n">score_ids</span><span class="p">,</span> <span class="n">full_data</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
 
 
@@ -632,7 +679,17 @@
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create k-fold for repeat transaction data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create k-fold for repeat transaction data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        score_ids (np.ndarray): Score IDs.</span>
+<span class="sd">        full_data (TransactionData): Full data.</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[pd.DataFrame, pd.DataFrame]: Train and score data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">train_df</span> <span class="o">=</span> <span class="n">full_data</span><span class="o">.</span><span class="n">trans_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span>
         <span class="o">~</span><span class="n">full_data</span><span class="o">.</span><span class="n">trans_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">score_ids</span><span class="p">)</span>
     <span class="p">]</span>
@@ -645,7 +702,17 @@
     <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">full_data</span><span class="p">:</span> <span class="n">TransactionData</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for transaction data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for transaction data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        train_df (pd.DataFrame): Train data.</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+<span class="sd">        full_data (TransactionData): Full data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Matched data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">full_data</span><span class="p">,</span> <span class="n">RepeatTransactionData</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -653,13 +720,31 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_match_kfold_rtdata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for repeat transaction data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for repeat transaction data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        train_df (pd.DataFrame): Train data.</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Matched data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">trans_pair</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id2&quot;</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">pred_df</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id2&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">trans_pair</span><span class="p">)]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_match_kfold_heddata</span><span class="p">(</span><span class="n">train_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for hedonic transaction data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match k-fold for hedonic transaction data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        train_df (pd.DataFrame): Train data.</span>
+<span class="sd">        pred_df (pd.DataFrame): Prediction data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Matched data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Choose every other one.</span>
     <span class="n">mask1</span> <span class="o">=</span> <span class="o">~</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">&quot;trans_id1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s2">&quot;trans_id&quot;</span><span class="p">])</span>
     <span class="n">x1</span> <span class="o">=</span> <span class="n">pred_df</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
@@ -683,6 +768,7 @@
 <span class="sd">        trans_data (TransactionData): Transaction data.</span>
 <span class="sd">        forecast_length (int, optional): Forecast length.</span>
 <span class="sd">            Defaults to 1.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pd.DataFrame: Forecast error.</span>
@@ -776,7 +862,8 @@
 <span class="sd">            Defaults to False.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Index object with volatility calculation or DataFrame.</span>
+<span class="sd">        BaseHousePriceIndex | pd.DataFrame: Index object with volatility</span>
+<span class="sd">            calculation or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Save index_obj for future returning.</span>
@@ -868,7 +955,8 @@
 <span class="sd">            Defaults to False.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Revision and associated statistics as object or DataFrame.</span>
+<span class="sd">        BaseHousePriceIndex | pd.DataFrame: Revision and associated statistics</span>
+<span class="sd">            as object or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check class.</span>
@@ -951,7 +1039,8 @@
 <span class="sd">            Defualts to &quot;accuracy&quot;.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Series object containing the accuracy or DataFrame.</span>
+<span class="sd">        BaseHousePriceIndex | pd.DataFrame: Series object containing the</span>
+<span class="sd">            accuracy or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check for allowed test_method.</span>
@@ -1067,7 +1156,8 @@
 <span class="sd">            Defaults to &quot;volatility&quot;.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Index object with series volatility calculation or DataFrame.</span>
+<span class="sd">        BaseHousePriceIndex | pd.DataFrame: Index object with series</span>
+<span class="sd">            volatility calculation or DataFrame.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vol_dfs</span> <span class="o">=</span> <span class="p">[]</span>

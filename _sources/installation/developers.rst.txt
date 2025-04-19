@@ -57,7 +57,7 @@ Optional dependencies for development:
 * mypy
 * pytest
 * pytest-cov
-* sphinx
+* ruff
 * types-python-dateutil
 
 Test and Coverage

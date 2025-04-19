@@ -404,7 +404,31 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseHousePriceIndex</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base house price index class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base house price index class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        data: TransactionData. The transaction data used to construct the</span>
+<span class="sd">            index.</span>
+<span class="sd">        model: BaseHousePriceModel. The underlying price model used to</span>
+<span class="sd">            estimate the index.</span>
+<span class="sd">        name (pd.Series): The names of the time periods in the index.</span>
+<span class="sd">        periods (pd.Series): The time periods covered by the index.</span>
+<span class="sd">        value (pd.Series): The index values.</span>
+<span class="sd">        index (Any): The index values in an alternate format.</span>
+<span class="sd">        imputed (np.ndarray): Boolean array indicating which periods were</span>
+<span class="sd">            imputed.</span>
+<span class="sd">        smooth (Any): Smoothed version of the index values.</span>
+<span class="sd">        accuracy (pd.DataFrame): Accuracy measures for the index.</span>
+<span class="sd">        accuracy_smooth (pd.DataFrame): Smoothed accuracy measures.</span>
+<span class="sd">        volatility (pd.DataFrame): Volatility measures for the index.</span>
+<span class="sd">        volatility_smooth (pd.DataFrame): Smoothed volatility measures.</span>
+<span class="sd">        revision (pd.DataFrame): Revision measures for the index.</span>
+<span class="sd">        revision_smooth (pd.DataFrame): Smoothed revision measures.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">data</span><span class="p">:</span> <span class="n">TransactionData</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">BaseHousePriceModel</span>
@@ -935,17 +959,17 @@
 <span class="sd">            estimate the index.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        name: pd.Series. The names of the time periods in the index.</span>
-<span class="sd">        periods: pd.Series. The time periods covered by the index.</span>
-<span class="sd">        value: pd.Series. The index values.</span>
-<span class="sd">        index: Any. The index values in an alternate format.</span>
-<span class="sd">        imputed: np.ndarray. Boolean array indicating which periods were</span>
+<span class="sd">        name (pd.Series): The names of the time periods in the index.</span>
+<span class="sd">        periods (pd.Series): The time periods covered by the index.</span>
+<span class="sd">        value (pd.Series): The index values.</span>
+<span class="sd">        index (Any): The index values in an alternate format.</span>
+<span class="sd">        imputed (np.ndarray): Boolean array indicating which periods were</span>
 <span class="sd">            imputed.</span>
-<span class="sd">        smooth: Any. Smoothed version of the index values.</span>
-<span class="sd">        volatility: pd.DataFrame. Volatility measures for the index.</span>
-<span class="sd">        volatility_smooth: pd.DataFrame. Smoothed volatility measures.</span>
-<span class="sd">        revision: pd.DataFrame. Revision measures for the index.</span>
-<span class="sd">        revision_smooth: pd.DataFrame. Smoothed revision measures.</span>
+<span class="sd">        smooth (Any): Smoothed version of the index values.</span>
+<span class="sd">        volatility (pd.DataFrame): Volatility measures for the index.</span>
+<span class="sd">        volatility_smooth (pd.DataFrame): Smoothed volatility measures.</span>
+<span class="sd">        revision (pd.DataFrame): Revision measures for the index.</span>
+<span class="sd">        revision_smooth (pd.DataFrame): Smoothed revision measures.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
@@ -1052,17 +1076,17 @@
 <span class="sd">            estimate the index.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        name: pd.Series. The names of the time periods in the index.</span>
-<span class="sd">        periods: pd.Series. The time periods covered by the index.</span>
-<span class="sd">        value: pd.Series. The index values.</span>
-<span class="sd">        index: Any. The index values in an alternate format.</span>
-<span class="sd">        imputed: np.ndarray. Boolean array indicating which periods were</span>
+<span class="sd">        name (pd.Series): The names of the time periods in the index.</span>
+<span class="sd">        periods (pd.Series): The time periods covered by the index.</span>
+<span class="sd">        value (pd.Series): The index values.</span>
+<span class="sd">        index (Any): The index values in an alternate format.</span>
+<span class="sd">        imputed (np.ndarray): Boolean array indicating which periods were</span>
 <span class="sd">            imputed.</span>
-<span class="sd">        smooth: Any. Smoothed version of the index values.</span>
-<span class="sd">        volatility: pd.DataFrame. Volatility measures for the index.</span>
-<span class="sd">        volatility_smooth: pd.DataFrame. Smoothed volatility measures.</span>
-<span class="sd">        revision: pd.DataFrame. Revision measures for the index.</span>
-<span class="sd">        revision_smooth: pd.DataFrame. Smoothed revision measures.</span>
+<span class="sd">        smooth (Any): Smoothed version of the index values.</span>
+<span class="sd">        volatility (pd.DataFrame): Volatility measures for the index.</span>
+<span class="sd">        volatility_smooth (pd.DataFrame): Smoothed volatility measures.</span>
+<span class="sd">        revision (pd.DataFrame): Revision measures for the index.</span>
+<span class="sd">        revision_smooth (pd.DataFrame): Smoothed revision measures.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>

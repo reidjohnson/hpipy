@@ -620,21 +620,29 @@ Defaults to “insample”. Also supports “kfold”.</p></li>
 <li><p><strong>test_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Testing type.
 Defaults to None. If None, the test_type is inferred from the
 index object.</p></li>
+<li><p><strong>pred_df</strong> (<em>TransactionData</em><em> | </em><em>pd.DataFrame</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Prediction
+data.
+Defaults to None.</p></li>
 <li><p><strong>smooth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Smooth the index. If True, the revision is
 calculated based on the smoothed indices.
 Defaults to False.</p></li>
 <li><p><strong>in_place</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Return accuracy in-place.
 Defaults to False.</p></li>
-<li><p><strong>pred_df</strong> (<em>TransactionData</em><em> | </em><a class="reference external" href="http://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><em>DataFrame</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>in_place_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
+<li><p><strong>in_place_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the attribute to store the
+accuracy in.
+Defaults to “accuracy”.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Index object containing the accuracy or DataFrame.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Index object containing the</dt><dd><p>accuracy or DataFrame.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>BaseHousePriceIndex</em> | <a class="reference external" href="http://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><em>DataFrame</em></a></p>
+<dd class="field-odd"><p>BaseHousePriceIndex | pd.DataFrame</p>
 </dd>
 </dl>
 <dl class="py method">
