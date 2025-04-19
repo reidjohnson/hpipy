@@ -17,7 +17,11 @@ The random forest method:
 1. Uses an ensemble of decision trees
 2. Handles both numerical and categorical features
 3. Automatically handles nonlinear relationships
-4. Uses partial dependence plots to derive index
+4. Uses explainability methods to derive index
+
+By default, the random forest method uses the `RandomForestRegressor <https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html>`_ estimator from scikit-learn. If quantiles are specified, the method uses the `RandomForestQuantileRegressor <https://zillow.github.io/quantile-forest/generated/quantile_forest.RandomForestQuantileRegressor.html>`_ estimator from quantile-forest, which extends the former implementation to allow for quantile regression.
+
+For more details on these estimators, see the `scikit-learn <https://scikit-learn.org/stable/index.html>`_ and `quantile-forest <https://zillow.github.io/quantile-forest/index.html>`_ docmentation.
 
 Data Preparation
 ----------------
@@ -100,7 +104,7 @@ The main parameters for random forest index creation are:
 Feature Importance
 ------------------
 
-The random forest model is implemented using the `RandomForestRegressor <https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html>`_ class from scikit-learn. We can access the feature importance from the model object:
+The random forest model is implemented using the `RandomForestRegressor <https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html>`_ class from scikit-learn (or the `RandomForestQuantileRegressor <https://zillow.github.io/quantile-forest/generated/quantile_forest.RandomForestQuantileRegressor.html>`_ class from quantile-forest, which extends the scikit-learn implementation). We can access the feature importance from the model object:
 
 .. code-block:: python
 
@@ -108,7 +112,7 @@ The random forest model is implemented using the `RandomForestRegressor <https:/
     >>> importance
     array(...)
 
-Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/stable/modules/partial_dependence.html>`_ function to plot the partial dependence of the model on particular features. Here, we plot the partial dependence on the transaction period, which is used to derive the index:
+Similarly, we can leverage the `partial_dependence <https://scikit-learn.org/stable/modules/partial_dependence.html>`_ function to plot the partial dependence of the model on particular features. Here, we plot the partial dependence on the transaction period, which can be used to derive the index:
 
 .. code-block:: python
 
