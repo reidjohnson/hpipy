@@ -19,6 +19,8 @@ from hpipy.period_table import PeriodTable
 class TransactionData:
     """Transaction data class.
 
+    Represents the transaction data from which to create house price indices.
+
     Args:
         trans_data (PeriodTable | pd.DataFrame): Data from which to
             create transactions.

@@ -65,24 +65,7 @@ class BaseHousePriceModel(ABC):
 
 
 class RepeatTransactionModel(BaseHousePriceModel, TimeMatrixMixin):
-    """Repeat transaction house price model.
-
-    Args:
-        repeat_trans_df (pd.DataFrame): The repeat transaction data.
-        period_table (pd.DataFrame): The period table.
-        time_matrix (pd.DataFrame): The time matrix.
-        price_diff (pd.Series): The price differential.
-        estimator (str): The estimator to use.
-        **kwargs: Additional keyword arguments.
-
-    Attributes:
-        coefficients (pd.DataFrame): Coefficient data.
-        model_obj (Any): Model object.
-        periods (pd.DataFrame): Period data.
-        base_price (float): Base price.
-        params (dict[str, Any]): Parameters.
-
-    """
+    """Repeat transaction house price model."""
 
     def _create_model(
         self,
