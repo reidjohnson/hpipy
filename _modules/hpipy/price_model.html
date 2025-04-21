@@ -450,24 +450,7 @@
 <div class="viewcode-block" id="RepeatTransactionModel">
 <a class="viewcode-back" href="../../api/_autosummary/hpipy.price_model.RepeatTransactionModel.html#hpipy.price_model.RepeatTransactionModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RepeatTransactionModel</span><span class="p">(</span><span class="n">BaseHousePriceModel</span><span class="p">,</span> <span class="n">TimeMatrixMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Repeat transaction house price model.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        repeat_trans_df (pd.DataFrame): The repeat transaction data.</span>
-<span class="sd">        period_table (pd.DataFrame): The period table.</span>
-<span class="sd">        time_matrix (pd.DataFrame): The time matrix.</span>
-<span class="sd">        price_diff (pd.Series): The price differential.</span>
-<span class="sd">        estimator (str): The estimator to use.</span>
-<span class="sd">        **kwargs: Additional keyword arguments.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        coefficients (pd.DataFrame): Coefficient data.</span>
-<span class="sd">        model_obj (Any): Model object.</span>
-<span class="sd">        periods (pd.DataFrame): Period data.</span>
-<span class="sd">        base_price (float): Base price.</span>
-<span class="sd">        params (dict[str, Any]): Parameters.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Repeat transaction house price model.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_model</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

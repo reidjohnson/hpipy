@@ -619,6 +619,18 @@
 <dd class="field-even"><p><a class="reference external" href="http://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)">pandas.DataFrame</a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">hpipy.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_ex_sales</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">load_ex_sales</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">        pinx      sale_id  sale_price  ... eff_age   longitude   latitude</span>
+<span class="go">0  ..0007600046   2011..2621      308900  ...      12 -122.302032  47.603913</span>
+<span class="go">1  ..0007600054  2010..16414      369950  ...     103 -122.302030  47.603044</span>
+<span class="go">2  ..0007600057  2014..23738      520000  ...     112 -122.302114  47.602875</span>
+<span class="go">3  ..0007600057  2016..28612      625000  ...     114 -122.302114  47.602875</span>
+<span class="go">4  ..0007600065  2014..15956      465000  ...       0 -122.297278  47.601812</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>

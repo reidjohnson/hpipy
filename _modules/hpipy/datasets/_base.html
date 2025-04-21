@@ -394,6 +394,17 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        pandas.DataFrame: A DataFrame with house sales.</span>
 
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from hpipy.datasets import load_ex_sales</span>
+<span class="sd">        &gt;&gt;&gt; df = load_ex_sales()</span>
+<span class="sd">        &gt;&gt;&gt; df.head()</span>
+<span class="sd">                pinx      sale_id  sale_price  ... eff_age   longitude   latitude</span>
+<span class="sd">        0  ..0007600046   2011..2621      308900  ...      12 -122.302032  47.603913</span>
+<span class="sd">        1  ..0007600054  2010..16414      369950  ...     103 -122.302030  47.603044</span>
+<span class="sd">        2  ..0007600057  2014..23738      520000  ...     112 -122.302114  47.602875</span>
+<span class="sd">        3  ..0007600057  2016..28612      625000  ...     114 -122.302114  47.602875</span>
+<span class="sd">        4  ..0007600065  2014..15956      465000  ...       0 -122.297278  47.601812</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="s2">&quot;hpipy.datasets.data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;ex_sales.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sale_date&quot;</span><span class="p">])</span></div>
@@ -407,6 +418,17 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pandas.DataFrame: A DataFrame with house sales.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from hpipy.datasets import load_seattle_sales</span>
+<span class="sd">        &gt;&gt;&gt; df = load_seattle_sales()</span>
+<span class="sd">        &gt;&gt;&gt; df.head()</span>
+<span class="sd">                pinx      sale_id  sale_price  ... eff_age   longitude   latitude</span>
+<span class="sd">        0  ..0001800010   2013..2432      289000  ...       6 -122.312491  47.561380</span>
+<span class="sd">        1  ..0001800066  2013..21560      356000  ...      87 -122.322007  47.550353</span>
+<span class="sd">        2  ..0001800075  2010..24221      333500  ...      80 -122.311654  47.561470</span>
+<span class="sd">        3  ..0001800075   2016..6629      577200  ...      86 -122.311654  47.561470</span>
+<span class="sd">        4  ..0001800080   2012..9521      237000  ...      72 -122.309695  47.561472</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="s2">&quot;hpipy.datasets.data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;seattle_sales.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
