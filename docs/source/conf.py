@@ -37,7 +37,7 @@ exclude_patterns = []
 
 # HTML theme settings.
 html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
+html_static_path = ["_static", "_static/css"]
 
 # Output file base name for HTML help builder.
 html_title = "hpiPy"
