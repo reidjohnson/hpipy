@@ -236,6 +236,8 @@ def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.LayerChart:
             tooltip=[
                 alt.Tooltip("x:Q", title="Time Period"),
                 alt.Tooltip("y:Q", format=".3f", title="Volatility"),
+                alt.Tooltip("mean:Q", format=".3f", title="Mean Volatility"),
+                alt.Tooltip("median:Q", format=".3f", title="Median Volatility"),
             ],
         )
     )
