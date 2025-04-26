@@ -29,18 +29,60 @@ class InvisibleAltairPlot(SphinxDirective):
             </script>
             <script>
                 (function() {{
-                    const el = document.getElementById("{chart_id}");
-                    if (el) {{
-                        const spec = JSON.parse(el.textContent);
-                        vegaEmbed(el.parentElement, spec, {{
+                    const container = document.getElementById("container-{chart_id}");
+                    const specScript = document.getElementById("{chart_id}");
+                    if (!container || !specScript) {{
+                        console.error("[AltairPlot] Missing container or spec script!");
+                        return;
+                    }}
+
+                    let lastTheme = null;
+                    let chartDiv = null;
+
+                    function getTheme() {{
+                        const dt = document.documentElement.getAttribute("data-theme");
+                        return dt === "dark" ? "dark" : "light";
+                    }}
+
+                    function renderChart() {{
+                        const theme = getTheme();
+
+                        // No need to re-render if theme did not change.
+                        if (theme === lastTheme && chartDiv) return;
+                        lastTheme = theme;
+
+                        const spec = JSON.parse(specScript.textContent);
+
+                        // Clear previous rendering.
+                        container.innerHTML = "";
+
+                        // Create a new div inside container.
+                        chartDiv = document.createElement("div");
+                        container.appendChild(chartDiv);
+
+                        vegaEmbed(chartDiv, spec, {{
+                            theme: theme,
                             actions: {{
                                 export: true,
                                 source: true,
                                 editor: true,
                                 compiled: false
-                            }}
+                            }},
+                            defaultStyle: true
                         }}).catch(console.error);
                     }}
+
+                    document.addEventListener("DOMContentLoaded", renderChart);
+
+                    const observer = new MutationObserver(mutations => {{
+                        if (mutations.some(m => m.attributeName === "data-theme")) {{
+                            renderChart();
+                        }}
+                    }});
+                    observer.observe(document.documentElement, {{
+                        attributes: true,
+                        attributeFilter: ["data-theme"]
+                    }});
                 }})();
             </script>
         </div>
