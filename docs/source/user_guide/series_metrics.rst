@@ -73,13 +73,13 @@ Evaluate how well an index predicts actual property values using the ``series_ac
 
     # Calculate accuracy metrics.
     >>> df_accuracy = series_accuracy(hpi_series)
-    >>> df_accuracy.round(3).head()
-       index  pair_id  rt_price  pred_price  error  log_error  pred_period
-    0      0      606    899000  703636.692 -0.217     -0.245            2
-    1      0     2644    330000  336918.618  0.021      0.021            3
-    2      0     3634    535000  549751.551  0.028      0.027            4
-    3      0      387    549900  582136.997  0.059      0.057            5
-    4      0     3269    305000  251097.865 -0.177     -0.194            5
+    >>> df_accuracy.round(5).head()
+       index  pair_id  rt_price    pred_price    error  log_error  pred_period
+    0      0      606    899000  703636.69197 -0.21731   -0.24502            2
+    1      0     2644    330000  336918.61764  0.02097    0.02075            3
+    2      0     3634    535000  549751.55125  0.02757    0.02720            4
+    3      0      387    549900  582136.99654  0.05862    0.05697            5
+    4      0     3269    305000  251097.86478 -0.17673   -0.19447            5
 
     # Plot accuracy over time.
     >>> plot_series_accuracy(df_accuracy)
@@ -120,13 +120,13 @@ Measure index volatility using the ``series_volatility`` function:
 
     # Calculate volatility metrics.
     >>> df_volatility = series_volatility(hpi_series)
-    >>> df_volatility.round(3).head()
-       index  period   roll   mean  median
-    0      0       1  0.233  0.215    0.14
-    1      0       2  0.119  0.215    0.14
-    2      0       3  0.053  0.215    0.14
-    3      0       4  0.047  0.215    0.14
-    4      0       5  0.100  0.215    0.14
+    >>> df_volatility.round(5).head()
+       index  period     roll     mean   median
+    0      0       1  0.23263  0.21489  0.13979
+    1      0       2  0.11915  0.21489  0.13979
+    2      0       3  0.05290  0.21489  0.13979
+    3      0       4  0.04700  0.21489  0.13979
+    4      0       5  0.09998  0.21489  0.13979
 
     # Plot volatility over time.
     >>> plot_series_volatility(df_volatility)
@@ -167,13 +167,13 @@ Track how index values change as new data becomes available using the ``revision
 
     # Calculate revision metrics.
     >>> df_revision = revision(hpi_series)
-    >>> df_revision.round(3).head()
-       period   mean  median
-    0       1  0.000   0.000
-    1       2 -0.161  -0.243
-    2       3 -1.108   0.037
-    3       4 -2.159  -1.220
-    4       5 -1.570  -1.097
+    >>> df_revision.round(5).head()
+       period     mean   median
+    0       1  0.00000  0.00000
+    1       2 -0.16127 -0.24276
+    2       3 -1.10777  0.03733
+    3       4 -2.15903 -1.22027
+    4       5 -1.57049 -1.09691
 
     # Plot revision analysis.
     >>> plot_series_revision(df_revision)

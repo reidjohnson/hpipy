@@ -137,7 +137,7 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.VConcatCha
             ),
             tooltip=[
                 alt.Tooltip("pred_period:Q", title="Time Period"),
-                alt.Tooltip("abserror:Q", format=".3f", title="Absolute Error"),
+                alt.Tooltip("abserror:Q", format=".5f", title="Absolute Error"),
             ],
         )
         .properties(height=150, width=375)
@@ -160,7 +160,7 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.VConcatCha
             ),
             tooltip=[
                 alt.Tooltip("pred_period:Q", title="Time Period"),
-                alt.Tooltip("error:Q", format=".3f", title="Error"),
+                alt.Tooltip("error:Q", format=".5f", title="Error"),
             ],
         )
         .properties(height=150, width=375)
@@ -179,8 +179,8 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.VConcatCha
             ),
             y=alt.Y("density:Q", title="Density of Error"),
             tooltip=[
-                alt.Tooltip("abserror:Q", format=".3f", title="Absolute Error"),
-                alt.Tooltip("density:Q", format=".3f", title="Density of Error"),
+                alt.Tooltip("abserror:Q", format=".5f", title="Absolute Error"),
+                alt.Tooltip("density:Q", format=".5f", title="Density of Error"),
             ],
         )
         .properties(height=150, width=375)
@@ -198,8 +198,8 @@ def plot_index_accuracy(error_df: pd.DataFrame, size: int = 3) -> alt.VConcatCha
             ),
             y=alt.Y("density:Q", title="Density of Error"),
             tooltip=[
-                alt.Tooltip("error:Q", format=".3f", title="Error"),
-                alt.Tooltip("density:Q", format=".3f", title="Density of Error"),
+                alt.Tooltip("error:Q", format=".5f", title="Error"),
+                alt.Tooltip("density:Q", format=".5f", title="Density of Error"),
             ],
         )
         .properties(height=150, width=375)
@@ -235,9 +235,9 @@ def plot_index_volatility(volatility_df: pd.DataFrame) -> alt.LayerChart:
             y=alt.Y("y:Q", scale=alt.Scale(zero=False), title="Volatility"),
             tooltip=[
                 alt.Tooltip("x:Q", title="Time Period"),
-                alt.Tooltip("y:Q", format=".3f", title="Volatility"),
-                alt.Tooltip("mean:Q", format=".3f", title="Mean Volatility"),
-                alt.Tooltip("median:Q", format=".3f", title="Median Volatility"),
+                alt.Tooltip("y:Q", format=".5f", title="Volatility"),
+                alt.Tooltip("mean:Q", format=".5f", title="Mean Volatility"),
+                alt.Tooltip("median:Q", format=".5f", title="Median Volatility"),
             ],
         )
     )
@@ -348,7 +348,7 @@ def plot_series_accuracy(
             tooltip=[
                 alt.Tooltip("index:N", title="Index"),
                 alt.Tooltip("pred_period:Q", title="Prediction Time Period"),
-                alt.Tooltip("mean(value):Q", format=".3f", title=f"Mean {measure_title}"),
+                alt.Tooltip("mean(value):Q", format=".5f", title=f"Mean {measure_title}"),
             ],
         )
         .properties(height=300, width=800)
@@ -407,7 +407,7 @@ def plot_series_volatility(
             tooltip=[
                 alt.Tooltip("index:N", title="Index"),
                 alt.Tooltip("period:Q", title="Time Period"),
-                alt.Tooltip("value:Q", format=".3f", title="Volatility"),
+                alt.Tooltip("value:Q", format=".5f", title="Volatility"),
             ],
         )
         .properties(height=300, width=800)
@@ -467,7 +467,7 @@ def plot_series_revision(
             ),
             tooltip=[
                 alt.Tooltip("period:Q", title="Time Period"),
-                alt.Tooltip(f"{measure}:Q", format=".3f", title=f"{measure_title} Revision"),
+                alt.Tooltip(f"{measure}:Q", format=".5f", title=f"{measure_title} Revision"),
             ],
         )
         .properties(height=300, width=800)
@@ -476,7 +476,16 @@ def plot_series_revision(
     line = (
         alt.Chart()
         .mark_rule(color="gray", size=3, strokeDash=[4, 4])
-        .encode(y=alt.Y(f"mean({measure}):Q"))
+        .encode(
+            y=alt.Y(f"mean({measure}):Q"),
+            tooltip=[
+                alt.Tooltip(
+                    f"mean({measure}):Q",
+                    format=".5f",
+                    title=f"Mean {measure_title} Revision",
+                ),
+            ],
+        )
     )
 
     return alt.layer(base, line, data=source)
