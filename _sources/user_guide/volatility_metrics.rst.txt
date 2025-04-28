@@ -38,13 +38,13 @@ To calculate the volatility of the index, you can use the ``volatility`` functio
     >>> from hpipy.utils.plotting import plot_index_volatility
 
     >>> vol = volatility(hpi)
-    >>> vol.round(3).head()
-        roll   mean  median
-    1  0.025  0.017   0.017
-    2  0.028  0.017   0.017
-    3  0.023  0.017   0.017
-    4  0.016  0.017   0.017
-    5  0.005  0.017   0.017
+    >>> vol.round(5).head()
+          roll     mean   median
+    1  0.02474  0.01721  0.01652
+    2  0.02751  0.01721  0.01652
+    3  0.02336  0.01721  0.01652
+    4  0.01585  0.01721  0.01652
+    5  0.00476  0.01721  0.01652
 
     >>> plot_index_volatility(vol).properties(title="Volatility Metrics")
     alt.LayerChart(...)
@@ -79,12 +79,12 @@ You can also analyze volatility over different time windows:
 .. code-block:: python
 
     >>> rolling_vol = volatility(hpi, window=12)
-    >>> rolling_vol.round(3).head()
-         roll   mean  median
-    6   0.017  0.018   0.017
-    7   0.022  0.018   0.017
-    8   0.021  0.018   0.017
-    9   0.019  0.018   0.017
-    10  0.018  0.018   0.017
+    >>> rolling_vol.round(5).head()
+           roll     mean   median
+    6   0.01655  0.01799  0.01739
+    7   0.02159  0.01799  0.01739
+    8   0.02078  0.01799  0.01739
+    9   0.01927  0.01799  0.01739
+    10  0.01837  0.01799  0.01739
 
 The `window` parameter specifies the number of periods to use for the rolling calculation.

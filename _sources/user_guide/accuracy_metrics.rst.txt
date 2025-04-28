@@ -38,13 +38,13 @@ To calculate the accuracy of the index, you can use the ``accuracy`` function:
     >>> from hpipy.utils.plotting import plot_index_accuracy
 
     >>> acc = accuracy(hpi)
-    >>> acc.round(3).head()
-       pair_id  rt_price  pred_price  error  log_error  pred_period
-    0        1    577200  555423.086 -0.038     -0.038           75
-    1        2    488737  458143.880 -0.063     -0.065           63
-    2        3    570000  582619.733  0.022      0.022           77
-    3        4    402500  416336.175  0.034      0.034           63
-    4        5    385000  429625.488  0.116      0.110           69
+    >>> acc.round(5).head()
+       pair_id  rt_price    pred_price    error  log_error  pred_period
+    0        1    577200  555423.08556 -0.03773   -0.03846           75
+    1        2    488737  458143.88008 -0.06260   -0.06464           63
+    2        3    570000  582619.73327  0.02214    0.02190           77
+    3        4    402500  416336.17537  0.03438    0.03380           63
+    4        5    385000  429625.48835  0.11591    0.10967           69
 
     >>> plot_index_accuracy(acc).properties(
     ...     title={"text": "Accuracy Metrics", "anchor": "middle"}
@@ -91,12 +91,12 @@ You can also analyze accuracy over different time windows:
 .. code-block:: python
 
     >>> rolling_acc = accuracy(hpi, window=12)
-    >>> rolling_acc.round(3).head()
-       pair_id  rt_price  pred_price  error  log_error  pred_period
-    0        1    577200  555423.086 -0.038     -0.038           75
-    1        2    488737  458143.880 -0.063     -0.065           63
-    2        3    570000  582619.733  0.022      0.022           77
-    3        4    402500  416336.175  0.034      0.034           63
-    4        5    385000  429625.488  0.116      0.110           69
+    >>> rolling_acc.round(5).head()
+       pair_id  rt_price    pred_price    error  log_error  pred_period
+    0        1    577200  555423.08556 -0.03773   -0.03846           75
+    1        2    488737  458143.88008 -0.06260   -0.06464           63
+    2        3    570000  582619.73327  0.02214    0.02190           77
+    3        4    402500  416336.17537  0.03438    0.03380           63
+    4        5    385000  429625.48835  0.11591    0.10967           69
 
 The `window` parameter specifies the number of periods to use for the rolling calculation.

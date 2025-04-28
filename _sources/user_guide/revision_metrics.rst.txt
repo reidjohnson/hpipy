@@ -39,10 +39,10 @@ Calculate the revision of the index using the ``revision`` function:
     >>> from hpipy.utils.metrics import revision
 
     >>> rev = revision(hpi_series)
-    >>> rev.round(3).head()
-       period   mean  median
-    0       1  0.000   0.000
-    1       2 -0.161  -0.243
-    2       3 -1.108   0.037
-    3       4 -2.159  -1.220
-    4       5 -1.570  -1.097
+    >>> rev.round(5).head()
+       period     mean   median
+    0       1  0.00000  0.00000
+    1       2 -0.16127 -0.24276
+    2       3 -1.10777  0.03733
+    3       4 -2.15903 -1.22027
+    4       5 -1.57049 -1.09691
