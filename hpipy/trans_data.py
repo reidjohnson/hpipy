@@ -3,12 +3,7 @@
 import itertools
 import logging
 from abc import abstractmethod
-from typing import Any
-
-try:
-    from typing import Self
-except ImportError:
-    from typing_extensions import Self
+from typing import Any, Self
 
 import numpy as np
 import pandas as pd

@@ -12,6 +12,7 @@ The module structure is the following:
 """
 
 import datetime
+import itertools
 import logging
 import os
 import random
@@ -20,14 +21,7 @@ import time
 import warnings
 from collections.abc import Callable, Iterator
 from functools import partial
-from typing import Any
-
-try:
-    from typing import Self
-except ImportError:
-    from typing_extensions import Self
-
-import itertools
+from typing import Any, Self
 
 import numpy as np
 import pandas as pd
