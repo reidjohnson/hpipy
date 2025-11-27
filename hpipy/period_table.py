@@ -16,7 +16,7 @@ import pandas as pd
 def check_date(
     date: str | datetime.date | datetime.datetime | pd.Series | None,
     name: str,
-) -> None | datetime.datetime:
+) -> None | pd.Timestamp | pd.Series:
     """Check and validate the provided date object.
 
     Checks that the date is either of type datetime or convertible to
@@ -28,8 +28,8 @@ def check_date(
         name (str): Name for the 'date' argument being checked.
 
     Returns:
-        None | datetime.datetime: Date converted to a datetime.datetime
-            object. If the input date is None, the function returns None.
+        None | pd.Timestamp | pd.Series: Date converted to a pandas Timestamp
+            or Series object. If the input date is None, returns None.
 
     Raises:
         ValueError: If date cannot be converted to a datetime object.

@@ -248,7 +248,7 @@ class BaseHousePriceIndex(ABC):
     @abstractmethod
     def _create_transactions(
         cls,
-        trans_data: TransactionData,
+        trans_data: TransactionData | PeriodTable | pd.DataFrame,
         *args: Any,
         **kwargs: Any,
     ) -> TransactionData:
