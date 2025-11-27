@@ -1,11 +1,7 @@
 """Data feature and response transformer functions."""
 
 import collections
-
-try:
-    from typing import Self
-except ImportError:
-    from typing_extensions import Self
+from typing import Self
 
 import numpy as np
 import pandas as pd
